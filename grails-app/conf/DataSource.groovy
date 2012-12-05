@@ -55,7 +55,7 @@ environments {
                validationQuery="SELECT 1"
             }
         }
-        def mongoHqUrl = System.getenv("MONGOHQ_URL")
+        def mongoHqUrl = System.env.MONGOHQ_URL
         def mongoMatcher = mongoHqUrl.trim() =~ /mongodb:\/\/(.*):(.*)@(.*):(\d+)\/(.*)/
         mongo {
             host = mongoMatcher[0][3]
