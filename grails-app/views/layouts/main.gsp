@@ -56,7 +56,7 @@
 
 <div id="header">
     <g:link base="/" class="header">
-        <img alt="JSON Editor Online" title="JSON Editor Online" src="/img/logo.png" id="logo">
+        <img alt="Share your JSON Blob" title="JSON Blob" src="/img/logo.png" id="logo">
     </g:link>
     <div id="menu">
         <ul>
@@ -101,15 +101,11 @@
 
 <div id="footer">
     <div id="footer-inner">
-        <a href="http://jsoneditoronline.org" class="footer">JSON Editor Online 1.6.2</a>
+        <g:link base="/" class="footer">JSON Blob</g:link>
     &bull;
-        <a href="changelog.txt" target="_blank" class="footer">Changelog</a>
+        <a href="https://github.com/tburch/jsonblob" target="_blank" class="footer">Sourcecode</a>
     &bull;
-        <a href="https://github.com/wjosdejong/jsoneditoronline" target="_blank" class="footer">Sourcecode</a>
-    &bull;
-        <a href="datapolicy.txt" target="_blank" class="footer">Data policy</a>
-    &bull;
-        <a href="NOTICE" target="_blank" class="footer">Copyright 2011-2012 Jos de Jong</a>
+        <a href="http://jsoneditoronline.org/" target="_blank" class="footer">Inspired by JSON Editor Online</a>
     </div>
 </div>
 
