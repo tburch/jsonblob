@@ -56,9 +56,6 @@ grails.project.dependency.resolution = {
 
         compile ':shiro:1.1.4'
 
-        compile ':heroku:1.0.1'
-        compile ':cloud-support:1.0.8'
-
         compile ":jetty:2.0.1"
 
         runtime ":database-migration:1.1"
