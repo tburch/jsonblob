@@ -55,14 +55,13 @@ environments {
                validationQuery="SELECT 1"
             }
         }
-        def mongoHqUrl = System.env.MONGOHQ_URL
-        def mongoMatcher = mongoHqUrl.trim() =~ /mongodb:\/\/(.*):(.*)@(.*):(\d+)\/(.*)/
         mongo {
-            host = mongoMatcher[0][3]
-            port = mongoMatcher[0][4]
-            username = mongoMatcher[0][1]
-            password = mongoMatcher[0][2]
-            databaseName = mongoMatcher[0][5]
+            uri = new URI(System.env.MONGOHQ_URL)
+            host = uri.host
+            port = uri.port
+            username = uri.userInfo.split(":")[0]
+            password = uri.userInfo.split(":")[1]
+            databaseName = uri.path
         }
     }
 }
