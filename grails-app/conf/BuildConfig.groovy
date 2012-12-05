@@ -35,6 +35,7 @@ grails.project.dependency.resolution = {
         compile "org.mongodb:mongo-java-driver:2.9.1"
         runtime "com.gmongo:gmongo:1.0"
         compile "com.fasterxml.jackson.core:jackson-databind:2.1.0"
+        runtime 'postgresql:postgresql:9.1-901-1.jdbc4'
     }
 
     plugins {
@@ -54,6 +55,9 @@ grails.project.dependency.resolution = {
         compile ":jaxrs:0.6"
 
         compile ':shiro:1.1.4'
+
+        compile ':heroku:1.0.1'
+        compile ':cloud-support:1.0.8'
 
         compile ":jetty:2.0.1"
 
