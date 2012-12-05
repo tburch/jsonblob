@@ -38,6 +38,8 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
+        runtime ":hibernate:$grailsVersion"
+
         runtime ":jquery:1.8.3"
         runtime ":resources:1.2.RC2"
         runtime ":zipped-resources:1.0"
@@ -51,9 +53,15 @@ grails.project.dependency.resolution = {
 
         compile ":jaxrs:0.6"
 
+        compile ':shiro:1.1.4'
+
         compile ':heroku:1.0.1'
         compile ':cloud-support:1.0.8'
 
         build ":tomcat:$grailsVersion"
+
+        runtime ":database-migration:1.1"
+
+        compile ':cache:1.0.0'
     }
 }
