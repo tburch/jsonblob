@@ -40,14 +40,16 @@
     @date     2012-11-03
     -->
 
-    <meta name="description" content="JSON Editor Online is a web-based tool to view, edit, and format JSON. It shows your data side by side in a clear, editable treeview and in formatted plain text.">
-    <meta name="keywords" content="json, editor, formatter, online, format, parser, json editor, json editor online, online json editor, javascript, javascript object notation, tools, tool, json tools, treeview, open source, free, json parser, json parser online, json formatter, json formatter online, online json formatter, online json parser, format json online">
+    <meta name="description"
+          content="JSON Editor Online is a web-based tool to view, edit, and format JSON. It shows your data side by side in a clear, editable treeview and in formatted plain text.">
+    <meta name="keywords"
+          content="json, editor, formatter, online, format, parser, json editor, json editor online, online json editor, javascript, javascript object notation, tools, tool, json tools, treeview, open source, free, json parser, json parser online, json formatter, json formatter online, online json formatter, online json parser, format json online">
     <meta name="author" content="Jos de Jong">
 
-    <r:require module="application" />
+    <r:require module="application"/>
 
     <g:layoutHead/>
-    <r:layoutResources />
+    <r:layoutResources/>
 </head>
 
 <body>
@@ -89,10 +91,10 @@
 
 <div id="auto">
     <div id="contents">
-        <div id="jsonformatter">
-            <g:layoutBody/>
-        </div>
+        <div id="jsonformatter"></div>
+
         <div id="splitter"></div>
+
         <div id="jsoneditor"></div>
     </div>
 </div>
@@ -111,14 +113,13 @@
     </div>
 </div>
 
-<r:layoutResources />
+<r:layoutResources/>
+
+<g:layoutBody/>
 
 <script type="text/javascript">
-    app.load();
     app.resize();
 </script>
-
-
 
 </body>
 </html>

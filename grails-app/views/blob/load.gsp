@@ -4,10 +4,9 @@
     <meta name="layout" content="main"/>
     <title>Welcome to jsonblob</title>
 </head>
-
 <body>
 <script type="text/javascript">
-    app.load();
+    app.load(${blob});
 </script>
 </body>
 </html>

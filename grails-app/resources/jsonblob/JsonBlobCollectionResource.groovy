@@ -18,18 +18,18 @@ import javax.ws.rs.core.UriBuilder
 @Path('/api/jsonBlob')
 @Consumes(['application/json'])
 @Produces(['application/json'])
-class JsonBlobCollectionResource implements InitializingBean {
+class JsonBlobCollectionResource  {
 
     def jsonBlobResourceService
-    def objectMapper
-    
+    def jsonService
+
     @POST
     Response create(String json) {
         def newBlob = jsonBlobResourceService.create(json)
         def objectId = newBlob["_id"]
         if (objectId) {
             URI uri = UriBuilder.fromPath(objectId.toString()).build()
-            Response.created(uri).entity(objectMapper.writeValueAsString(newBlob)).build()
+            Response.created(uri).entity(jsonService.objectMapper.writeValueAsString(newBlob)).build()
         } else {
             Response.serverError().build()
         }
@@ -37,21 +37,8 @@ class JsonBlobCollectionResource implements InitializingBean {
 
     @Path('/{id}')
     JsonBlobResource getResource(@PathParam('id') String id) {
-        new JsonBlobResource(jsonBlobResourceService: jsonBlobResourceService, objectMapper: objectMapper, id:id)
+        new JsonBlobResource(jsonBlobResourceService: jsonBlobResourceService, objectMapper: jsonService.objectMapper, id:id)
     }
 
-    void afterPropertiesSet() throws Exception {
-        def om = new ObjectMapper()
 
-        def jacksonMongoModule = new SimpleModule("MongoModule", new Version(1, 0, 0, null))
-        jacksonMongoModule.addSerializer(ObjectId, new JsonSerializer<ObjectId>() {
-            @Override
-            void serialize(ObjectId t, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-                jsonGenerator.writeString(t.toString())
-            }
-        })
-        om.registerModule(jacksonMongoModule)
-
-        this.objectMapper = om
-    }
 }

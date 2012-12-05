@@ -63,7 +63,7 @@ app.editorToFormatter = function () {
  * Load the interface (editor, formatter, splitter)
  */
 // TODO: split the method load in multiple methods, it is too large
-app.load = function() {
+app.load = function(defaultJson) {
     try {
         // notification handler
         app.notify = new Notify();
@@ -75,7 +75,7 @@ app.load = function() {
         });
 
         // default json document
-        var json = {
+        var json = defaultJson || {
             "name": "John Smith",
             "age": 32,
             "employed": true,
