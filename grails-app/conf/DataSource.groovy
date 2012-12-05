@@ -55,5 +55,13 @@ environments {
                validationQuery="SELECT 1"
             }
         }
+        def mongoMatcher = System.properties.get("MONGOHQ_URL") =~ /mongodb:\/\/(.*):(.*)@(.*):)(\d+)\/(.*)/
+        mongo {
+            host = mongoMatcher[0][3]
+            port = mongoMatcher[0][4]
+            username = mongoMatcher[0][1]
+            password = mongoMatcher[0][2]
+            databaseName = mongoMatcher[0][5]
+        }
     }
 }
