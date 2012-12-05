@@ -61,7 +61,7 @@ environments {
             port = uri.port
             username = uri.userInfo.split(":")[0]
             password = uri.userInfo.split(":")[1]
-            databaseName = uri.path
+            databaseName = uri.path.substring(1)
         }
     }
 }
