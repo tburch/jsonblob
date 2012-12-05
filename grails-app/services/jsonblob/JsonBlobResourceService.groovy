@@ -62,7 +62,7 @@ class JsonBlobResourceService implements InitializingBean {
 
             def mongo = new GMongo(host, port)
 
-            db = mongo.getDB(mongoDatabaseName)
+            db = mongo.getDB(databaseName)
             db.authenticate(username, password.toCharArray())
         } else {
             db = mongo.getDB(mongo.getDatabaseNames().first())
