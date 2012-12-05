@@ -55,7 +55,7 @@
 <body>
 
 <div id="header">
-    <g:link absolute="/" class="header">
+    <g:link base="/" class="header">
         <img alt="JSON Editor Online" title="JSON Editor Online" src="/img/logo.png" id="logo">
     </g:link>
     <div id="menu">
@@ -80,7 +80,7 @@
                 </ul>
             </li>
             <li>
-                <a id="save" title="Save file to disk">Save</a>
+                <a id="save" title="Save JSON file to disk">Save</a>
             </li>
             <li>
                 <a id="create" title="Create a shareable URL">Create URL</a>
