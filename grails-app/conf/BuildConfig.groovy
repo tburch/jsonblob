@@ -24,6 +24,11 @@ grails.project.dependency.resolution = {
 
         mavenLocal()
         mavenCentral()
+
+        mavenRepo "http://snapshots.repository.codehaus.org"
+        mavenRepo "http://repository.codehaus.org"
+        mavenRepo "http://repository.jboss.com/maven2/"
+        mavenRepo("http://maven.restlet.org")
     }
     dependencies {
         runtime "org.mongodb:mongo-java-driver:2.9.1"
