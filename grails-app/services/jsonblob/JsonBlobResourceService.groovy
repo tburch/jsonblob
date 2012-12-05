@@ -11,7 +11,7 @@ class JsonBlobResourceService {
     GMongo mongo
 
     private def blobCollection() {
-        mongo.getDB("jsonblob").getCollection("blob")
+        mongo.getDB(mongo.getDatabaseNames().first())getCollection("blob")
     }
 
     private def getDBObject(String objectId) {
