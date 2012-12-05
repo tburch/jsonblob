@@ -6,6 +6,8 @@ modules = {
         resource url: 'css/app.css', disposition: 'head'
         resource url: 'css/jsoneditor.css', disposition: 'head'
 
+        dependsOn('jquery')
+
         resource url: 'js/queryparams.js'
         resource url: 'js/ajax.js'
         resource url: 'js/fileretriever.js'

@@ -9,7 +9,7 @@ var ajax = (function () {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
-                    callback(xhr.responseText, xhr.status);
+                    callback(xhr.responseText, xhr.status, xhr);
                 }
             };
             xhr.open(method, url, true);
@@ -35,9 +35,14 @@ var ajax = (function () {
         fetch('POST', url, body, headers, callback)
     }
 
+    function put (url, body, headers, callback) {
+        fetch('PUT', url, body, headers, callback)
+    }
+
     return {
         'fetch': fetch,
         'get': get,
-        'post': post
+        'post': post,
+        'put': put
     }
 })();

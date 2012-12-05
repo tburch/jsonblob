@@ -33,7 +33,9 @@
 var editor = null;
 var formatter = null;
 
-var app = {};
+var app = {
+    apiBase : '/api/jsonBlob'
+};
 
 /**
  * Get the JSON from the formatter and load it in the editor
@@ -41,6 +43,11 @@ var app = {};
 app.formatterToEditor = function() {
     try {
         editor.set(formatter.get());
+        var data = formatter.getText();
+        if (app.blobId) {
+            ajax.put(app.apiBase + "/" + app.blobId, data, {'Content-Type': 'application/json', 'Accept':'application/json'}, function() {
+            })
+        }
     }
     catch (err) {
          app.notify.showError(err);
@@ -112,6 +119,7 @@ app.load = function(defaultJson) {
 
         // Store whether editor or formatter is last changed
         app.lastChanged = undefined;
+        app.blobId = window.location.pathname.substr(1)
 
         // formatter
         var container = document.getElementById("jsonformatter");
@@ -217,6 +225,10 @@ app.load = function(defaultJson) {
         var domSave = document.getElementById('save');
         domSave.onclick = app.saveFile;
 
+        // create url button
+        var domCreate = document.getElementById('create');
+        domCreate.onclick = app.createUrl;
+
         // TODO: implement a focus method
         formatter.textarea.focus();
 
@@ -295,6 +307,35 @@ app.saveFile = function () {
             app.notify.showError(err);
         }
     });
+};
+
+/**
+ * Open a post the JSON to the server and create a link for it
+ */
+app.createUrl = function () {
+    // first synchronize the editors and formatters contents
+    if (app.lastChanged == editor) {
+        app.editorToFormatter();
+    }
+    /* TODO: also sync from formatter to editor? will clear the history ...
+     if (app.lastChanged == formatter) {
+     app.formatterToEditor();
+     }
+     */
+    app.lastChanged = undefined;
+
+    // save the text from the formatter
+    // TODO: show a 'saving...' notification
+    var data = formatter.getText();
+    if (app.blobId) {
+        ajax.put(app.apiBase + "/" + app.blobId, data, {'Content-Type': 'application/json', 'Accept':'application/json'}, function() {
+        })
+    } else {
+        ajax.post(app.apiBase, data, {'Content-Type': 'application/json', 'Accept':'application/json'}, function(responseText, status, xhr){
+            var locationHeader = xhr.getResponseHeader("Location")
+            window.location = locationHeader.replace(app.apiBase, "")
+        })
+    }
 };
 
 /**

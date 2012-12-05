@@ -56,7 +56,7 @@
 
 <div id="header">
     <g:link absolute="/" class="header">
-        <img alt="JSON Editor Online" title="JSON Editor Online" src="img/logo.png" id="logo">
+        <img alt="JSON Editor Online" title="JSON Editor Online" src="/img/logo.png" id="logo">
     </g:link>
     <div id="menu">
         <ul>
