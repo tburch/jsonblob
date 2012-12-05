@@ -35,12 +35,11 @@ grails.project.dependency.resolution = {
         compile "org.mongodb:mongo-java-driver:2.9.1"
         runtime "com.gmongo:gmongo:1.0"
         compile "com.fasterxml.jackson.core:jackson-databind:2.1.0"
+        runtime 'postgresql:postgresql:9.1-901-1.jdbc4'
     }
 
     plugins {
         runtime ":hibernate:$grailsVersion"
-
-        runtime 'postgresql:postgresql:9.1-901-1.jdbc4'
 
         runtime ":jquery:1.8.3"
         runtime ":resources:1.2.RC2"
