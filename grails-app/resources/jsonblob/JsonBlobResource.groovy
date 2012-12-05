@@ -16,13 +16,13 @@ class JsonBlobResource {
         def blob = jsonBlobResourceService.read(id)
         Response.ok(objectMapper.writeValueAsString(blob)).build()
     }
-    
+
     @PUT
     Response update(String json) {
-        def updatedBlob = jsonBlobResourceService.update(id, dto)
+        def updatedBlob = jsonBlobResourceService.update(id, json)
         Response.ok(objectMapper.writeValueAsString(updatedBlob)).build()
     }
-    
+
     @DELETE
     void delete() {
         jsonBlobResourceService.delete(id)

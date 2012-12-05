@@ -1,4 +1,4 @@
-grails.servlet.version = "2.5" // Change depending on target container compliance (2.5 or 3.0)
+grails.servlet.version = "3.0" // Change depending on target container compliance (2.5 or 3.0)
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
@@ -24,12 +24,6 @@ grails.project.dependency.resolution = {
 
         mavenLocal()
         mavenCentral()
-
-        // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
-        //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
     }
     dependencies {
         runtime "org.mongodb:mongo-java-driver:2.9.1"
@@ -39,10 +33,6 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime ":hibernate:$grailsVersion"
-
-        runtime ":jquery:1.8.3"
-        compile ":twitter-bootstrap:2.2.1"
         runtime ":resources:1.2.RC2"
         runtime ":zipped-resources:1.0"
         runtime ":cached-resources:1.0"
@@ -53,14 +43,8 @@ grails.project.dependency.resolution = {
             excludes 'mongo-java-driver', 'gmongo'
         }
 
-        compile ':shiro:1.1.4'
-
         compile ":jaxrs:0.6"
 
         build ":tomcat:$grailsVersion"
-
-        runtime ":database-migration:1.1"
-
-        compile ':cache:1.0.0'
     }
 }

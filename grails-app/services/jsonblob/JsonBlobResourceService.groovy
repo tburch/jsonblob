@@ -1,7 +1,9 @@
 package jsonblob
 
 import com.gmongo.GMongo
+import com.mongodb.BasicDBObject
 import com.mongodb.util.JSON
+import org.bson.types.ObjectId
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
 class JsonBlobResourceService {
@@ -12,6 +14,10 @@ class JsonBlobResourceService {
         mongo.getDB("jsonblob").getCollection("blob")
     }
 
+    private def getDBObject(String objectId) {
+        new BasicDBObject("_id", new ObjectId(objectId))
+    }
+
     def create(String json) {
         def parsed = JSON.parse(json)
         blobCollection().insert(parsed)
@@ -19,31 +25,27 @@ class JsonBlobResourceService {
     }
 
     def read(String id) {
-        def obj = blobCollection().findOne(_id: id)
+        def obj = blobCollection().findOne(getDBObject(id))
         if (!obj) {
-            throw new DomainObjectNotFoundException(String.class, id)
+            throw new DomainObjectNotFoundException(ObjectId.class, id)
         }
         obj
-    }
-    
-    def readAll() {
-        blobCollection().find()
     }
     
     def update(String id, String json) {
-        def obj = blobCollection().findOne(_id: id)
+        def obj = blobCollection().findOne(getDBObject(id))
         if (!obj) {
-            throw new DomainObjectNotFoundException(String.class, id)
+            throw new DomainObjectNotFoundException(ObjectId.class, id)
         }
         def parsed = com.mongodb.util.JSON.parse(json)
-        db.doctor.update([_id:id],parsed)
-        obj
+        blobCollection().update(getDBObject(id), parsed)
+        parsed
     }
     
     void delete(String id) {
-        def obj = blobCollection().findOne(_id: id)
+        def obj = blobCollection().findOne(getDBObject(id))
         if (obj) {
-            blobCollection().remove(_id: id)
+            blobCollection().remove(getDBObject(id))
         }
     }
 

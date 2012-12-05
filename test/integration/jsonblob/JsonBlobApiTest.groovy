@@ -10,22 +10,61 @@ class JsonBlobApiTest extends IntegrationTestCase {
     @Test
     void testPostAndGet() {
         def headers = ['Content-Type':'application/json', 'Accept':'application/json']
-        def content = '{"class":"jsonblob.JsonBlob","blob":{"data": "hi"}}'
 
-        // create new person
-        sendRequest('/api/jsonBlob', 'POST', headers, content.bytes)
+        def jsonBuilder = new groovy.json.JsonBuilder()
+        jsonBuilder.dogs {
+            bella {
+                breed 'bernese mountain dog'
+                age '5'
+                address(city: 'Denver', country: 'USA', zip: 80210)
+            }
+        }
+
+        def apiBase = '/api/jsonBlob'
+
+        // create new blob
+        sendRequest(apiBase, 'POST', headers, jsonBuilder.toString().bytes)
+
+        def locationHeader = response.getHeader('Location')
+        def relativePath = locationHeader.substring(locationHeader.indexOf(apiBase))
 
         assertEquals(201, response.status)
         assertTrue(response.contentAsString.length() > 0)
         assertTrue(response.getHeader('Content-Type').startsWith('application/json'))
-        assertTrue(response.getHeader('Location') ==~ /.*\/api\/jsonBlob\/.*/)
+        assertTrue(relativePath.startsWith("$apiBase/"))
 
-        // get list of persons
-        sendRequest('/api/jsonBlob', 'GET', headers)
+        // get the newly created blob
+        sendRequest(relativePath, 'GET', headers)
 
         assertEquals(200, response.status)
         assertTrue(response.getHeader('Content-Type').startsWith('application/json'))
         assertTrue(response.contentAsString.length() > 0)
+
+        jsonBuilder.pigs {
+            wilbur {
+                breed 'rambunctious pig'
+                age '2'
+            }
+        }
+
+        // update blob
+        sendRequest(relativePath, 'PUT', headers, jsonBuilder.toString().bytes)
+
+        assertEquals(200, response.status)
+        assertTrue(response.getHeader('Content-Type').startsWith('application/json'))
+        assertTrue(response.contentAsString.contains("pigs"))
+
+        // delete blob
+        sendRequest(relativePath, 'DELETE', headers)
+
+        assertEquals(204, response.status)
+        assertTrue(response.getHeader('Content-Type').startsWith('application/json'))
+        assertTrue(response.contentAsString == null || response.contentAsString == "")
+
+        // get deleted blob
+        sendRequest(relativePath, 'GET', headers)
+
+        assertEquals(404, response.status)
     }
 
 }

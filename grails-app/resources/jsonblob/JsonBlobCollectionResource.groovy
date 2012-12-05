@@ -35,24 +35,15 @@ class JsonBlobCollectionResource implements InitializingBean {
         }
     }
 
-    @GET
-    Response readAll() {
-        def allBlobs = jsonBlobResourceService.readAll()
-        def jsonBlobs = allBlobs.collect {
-            objectMapper.writeValueAsString(it)
-        }
-        Response.ok(jsonBlobs).build()
-    }
-    
     @Path('/{id}')
-    JsonBlobResource getResource(@PathParam('id') Long id) {
+    JsonBlobResource getResource(@PathParam('id') String id) {
         new JsonBlobResource(jsonBlobResourceService: jsonBlobResourceService, objectMapper: objectMapper, id:id)
     }
 
     void afterPropertiesSet() throws Exception {
         def om = new ObjectMapper()
 
-        Module jacksonMongoModule = new SimpleModule("MongoModule", new Version(1, 0, 0, null))
+        def jacksonMongoModule = new SimpleModule("MongoModule", new Version(1, 0, 0, null))
         jacksonMongoModule.addSerializer(ObjectId, new JsonSerializer<ObjectId>() {
             @Override
             void serialize(ObjectId t, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
