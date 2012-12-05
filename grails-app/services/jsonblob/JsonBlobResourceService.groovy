@@ -52,15 +52,11 @@ class JsonBlobResourceService implements InitializingBean {
         def db
         if (System.env.MONGOHQ_URL) {
             def uri = new URI(System.env.MONGOHQ_URL)
-            def host = uri.host
-            def port = uri.port
             def username = uri.userInfo.split(":")[0]
             def password = uri.userInfo.split(":")[1]
             def databaseName = uri.path.substring(1)
 
-            log.info("Setting up mongo using config $System.env.MONGOHQ_URL. Parsed into host=$host, port=$port, username=$username, databaseName=$databaseName")
-
-            def mongo = new GMongo(host, port)
+            def mongo = new GMongo(uri.host, uri.port)
 
             db = mongo.getDB(databaseName)
             db.authenticate(username, password.toCharArray())
