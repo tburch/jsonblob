@@ -51,6 +51,9 @@ grails.project.dependency.resolution = {
 
         compile ":jaxrs:0.6"
 
+        compile ':heroku:1.0.1'
+        compile ':cloud-support:1.0.8'
+
         build ":tomcat:$grailsVersion"
     }
 }

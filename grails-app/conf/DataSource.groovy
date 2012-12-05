@@ -19,13 +19,13 @@ environments {
         }
     }
     production {
-        mongo {
-            uri = new URI(System.env.MONGOHQ_URL)
-            host = uri.host
-            port = uri.port
-            username = uri.userInfo.split(":")[0]
-            password = uri.userInfo.split(":")[1]
-            databaseName = uri.path.substring(1)
-        }
+//        mongo {
+//            uri = new URI(System.env.MONGOHQ_URL)
+//            host = uri.host
+//            port = uri.port
+//            username = uri.userInfo.split(":")[0]
+//            password = uri.userInfo.split(":")[1]
+//            databaseName = uri.path.substring(1)
+//        }
     }
 }
