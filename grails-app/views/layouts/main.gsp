@@ -53,11 +53,8 @@
 </head>
 
 <body>
-
 <div id="header">
-    <g:link base="/" class="header">
-        <img alt="Share your JSON Blob" title="JSON Blob" src="/img/logo.png" id="logo">
-    </g:link>
+    <g:link base="/" alt="Share your JSON Blob" class="header">JSON Blob</g:link>
     <div id="menu">
         <ul>
             <li>
