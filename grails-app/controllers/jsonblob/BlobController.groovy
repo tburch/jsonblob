@@ -12,6 +12,7 @@ class BlobController {
         def json = ""
         try {
            def blob = jsonBlobResourceService.read(jsonBlobId);
+           blob.remove("_id")
            json = jsonService.objectMapper.writeValueAsString(blob)
         } catch (DomainObjectNotFoundException domainObjectNotFoundException) {
             redirect(uri: "/")

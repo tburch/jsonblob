@@ -32,6 +32,7 @@ class JsonBlobApiTest extends IntegrationTestCase {
         assertTrue(response.contentAsString.length() > 0)
         assertTrue(response.getHeader('Content-Type').startsWith('application/json'))
         assertTrue(relativePath.startsWith("$apiBase/"))
+        assertFalse(response.contentAsString.contains("_id"))
 
         // get the newly created blob
         sendRequest(relativePath, 'GET', headers)
@@ -39,6 +40,7 @@ class JsonBlobApiTest extends IntegrationTestCase {
         assertEquals(200, response.status)
         assertTrue(response.getHeader('Content-Type').startsWith('application/json'))
         assertTrue(response.contentAsString.length() > 0)
+        assertFalse(response.contentAsString.contains("_id"))
 
         jsonBuilder.pigs {
             wilbur {
@@ -53,6 +55,7 @@ class JsonBlobApiTest extends IntegrationTestCase {
         assertEquals(200, response.status)
         assertTrue(response.getHeader('Content-Type').startsWith('application/json'))
         assertTrue(response.contentAsString.contains("pigs"))
+        assertFalse(response.contentAsString.contains("_id"))
 
         // delete blob
         sendRequest(relativePath, 'DELETE', headers)
