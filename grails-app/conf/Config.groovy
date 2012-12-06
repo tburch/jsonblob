@@ -99,3 +99,9 @@ log4j = {
 grails.app.context = "/"
 
 org.grails.jaxrs.url.mappings=['/api']
+
+google.analytics.webPropertyID = "UA-36870706-1"
+google.analytics.customTrackingCode = [
+    [_setDomainName: 'jsonblob.com'],
+    "_trackPageview"
+]
