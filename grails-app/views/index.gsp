@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="main"/>
-    <title>Welcome to jsonblob</title>
+    <title>Welcome to JSON Blob</title>
 </head>
 
 <body>

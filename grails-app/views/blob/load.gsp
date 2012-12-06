@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="main"/>
-    <title>Welcome to jsonblob</title>
+    <title>JSON Blob ${blobId}</title>
 </head>
 <body>
 <script type="text/javascript">

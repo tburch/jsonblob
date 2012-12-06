@@ -18,7 +18,7 @@ class BlobController {
             log.error("Couldn't load object with id $jsonBlobId", exception)
             redirect(uri: "/")
         }
-        [blob: json]
+        [blob: json, blobId: jsonBlobId]
     }
 
 }

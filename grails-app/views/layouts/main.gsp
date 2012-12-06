@@ -4,13 +4,13 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 
-    <title><g:layoutTitle default="JSON Editor Online - view, edit and format JSON online"/></title>
+    <title><g:layoutTitle default="JSON Blob"/> | create, edit, view, format, and share JSON</title>
 
     <meta name="description"
-          content="JSON Editor Online is a web-based tool to view, edit, and format JSON. It shows your data side by side in a clear, editable treeview and in formatted plain text.">
+          content="JSON Blob is a web-based tool to create, edit, view, format, and share JSON. It shows your JSON side by side in a clear, editable tree-view and in formatted plain text. You can save your JSON and share it via URL with anyone">
     <meta name="keywords"
-          content="json, editor, formatter, online, format, parser, json editor, json editor online, online json editor, javascript, javascript object notation, tools, tool, json tools, treeview, open source, free, json parser, json parser online, json formatter, json formatter online, online json formatter, online json parser, format json online">
-    <meta name="author" content="Jos de Jong">
+          content="json, editor, formatter, online, format, parser, json editor, jsonblob, json blob, online json editor, javascript, javascript object notation, tools, tool, json tools, tree-view, open source, free, json parser, json parser online, json formatter, json formatter online, online json formatter, online json parser, format json online, jsbin">
+    <meta name="author" content="Tristan Burch">
 
     <r:require module="application"/>
 
@@ -65,7 +65,11 @@
     <div id="footer-inner">
         <g:link base="/" class="footer">JSON Blob</g:link>
     &bull;
-        <a href="https://github.com/tburch/jsonblob" target="_blank" class="footer">Sourcecode</a>
+        <g:link base="/api" class="footer">JSON Blob API</g:link>
+    &bull;
+        <g:link base="/about" class="footer">About</g:link>
+    &bull;
+        <a href="https://github.com/tburch/jsonblob" target="_blank" class="footer">Source</a>
     &bull;
         <a href="http://jsoneditoronline.org/" target="_blank" class="footer">Inspired by JSON Editor Online</a>
     </div>
