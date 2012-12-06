@@ -35,31 +35,36 @@ grails.project.dependency.resolution = {
         compile "org.mongodb:mongo-java-driver:2.9.1"
         runtime "com.gmongo:gmongo:1.0"
         compile "com.fasterxml.jackson.core:jackson-databind:2.1.0"
-        runtime 'postgresql:postgresql:9.1-901-1.jdbc4'
+        compile "commons-io:commons-io:2.4"
+        runtime "postgresql:postgresql:9.1-901-1.jdbc4"
+        compile "org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"
     }
 
     plugins {
         runtime ":hibernate:$grailsVersion"
 
         runtime ":jquery:1.8.3"
+        compile ":twitter-bootstrap:2.2.1"
         runtime ":resources:1.2.RC2"
         runtime ":zipped-resources:1.0"
         runtime ":cached-resources:1.0"
         runtime ":yui-minify-resources:0.1.5"
         runtime ":cache-headers:1.1.5"
 
+        compile ":google-analytics:2.0"
+
         compile (":mongodb:1.0.0.GA"){
-            excludes 'mongo-java-driver', 'gmongo'
+            excludes "mongo-java-driver', 'gmongo"
         }
 
         compile ":jaxrs:0.6"
 
-        compile ':shiro:1.1.4'
+        compile ":shiro:1.1.4"
 
         compile ":jetty:2.0.1"
 
         runtime ":database-migration:1.1"
 
-        compile ':cache:1.0.0'
+        compile ":cache:1.0.0"
     }
 }
