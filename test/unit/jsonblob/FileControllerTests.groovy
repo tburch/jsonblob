@@ -1,17 +1,14 @@
 package jsonblob
 
 import grails.test.ControllerUnitTestCase
-import org.springframework.mock.web.MockHttpServletRequest
+import grails.test.mixin.TestMixin
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.mock.web.MockMultipartHttpServletRequest
 
 import javax.servlet.http.HttpServletResponse
 
-import static org.junit.Assert.*
-
-import grails.test.mixin.*
-import grails.test.mixin.support.*
-import org.junit.*
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertTrue
 
 @TestMixin(FileController)
 class FileControllerTests extends ControllerUnitTestCase {

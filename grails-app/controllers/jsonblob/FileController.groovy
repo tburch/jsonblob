@@ -1,6 +1,5 @@
 package jsonblob
 
-import org.apache.commons.io.IOUtils
 import groovyx.net.http.*
 import static groovyx.net.http.ContentType.*
 import static groovyx.net.http.Method.*

@@ -35,7 +35,6 @@ grails.project.dependency.resolution = {
         compile "org.mongodb:mongo-java-driver:2.9.1"
         runtime "com.gmongo:gmongo:1.0"
         compile "com.fasterxml.jackson.core:jackson-databind:2.1.0"
-        compile "commons-io:commons-io:2.4"
         runtime "postgresql:postgresql:9.1-901-1.jdbc4"
         compile "org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"
     }
