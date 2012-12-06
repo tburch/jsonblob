@@ -9,7 +9,7 @@ class FileController {
     static allowedMethods = [upload: 'POST']
 
     def upload() {
-        def jsonFile = request.getFile('json')
+        def jsonFile = request.getFile('file')
         Reader reader = null
         String name = UUID.randomUUID().toString()
         if (!jsonFile.empty) {
@@ -19,7 +19,7 @@ class FileController {
 
         if (reader) {
             response.setContentType("application/json")
-            response.setHeader("Content-disposition", "attachment; filename=\"${name}.json\"")
+            response.setHeader("Content-disposition", "attachment; filename=\"$name\"")
             response.outputStream << reader
             response.outputStream.flush()
         }
