@@ -2,9 +2,9 @@
 <html>
 <head>
     <meta name="layout" content="bootstrap"/>
-    <title>Welcome to JSON Blob<g:if test="${blobId}"> - blob ${blobId}</g:if></title>
+    <title>Welcome to JSON Blob<g:if test="${blobId}"> ${blobId}</g:if></title>
 
-    <r:require modules="jsonEditor, jsonBlob" />
+    <r:require module="jsonEditor" />
 </head>
 
 <body type="editor">

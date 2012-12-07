@@ -1,7 +1,15 @@
 $(function () {
-    var jsonFormatterId = "json-formatter"
-    var jsonEditorId = "json-editor"
-    var apiBase = "/api/jsonBlob"
+    var jsonFormatterId = "json-formatter";
+    var jsonEditorId = "json-editor";
+    var newId = "new";
+    var openFileId = "open-file";
+    var openUrlId = "open-url";
+    var saveFileId = "save-file";
+    var saveUrlId = "save-url";
+    var cleanId = "clear";
+    var rawUrl = "raw-json";
+
+    var apiBase = "/api/jsonBlob";
     var blobId = window.location.pathname.substr(1);
 
     var defaultJson = {
@@ -50,9 +58,11 @@ $(function () {
         editor.set(defaultJson)
     } else {
         var blobApiUrl = [apiBase, blobId].join("/")
+        $("#" + rawUrl).attr("href", blobApiUrl);
         $.getJSON(blobApiUrl, function(data) {
             formatter.set(data);
             editor.set(data);
         });
     }
+
 });

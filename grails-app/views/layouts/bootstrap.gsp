@@ -12,9 +12,10 @@
     <meta name="keywords" content="jsonblob, jsobblob.com, json, editor, formatter, online, format, parser, json editor, jsonblob, json blob, online json editor, javascript, javascript object notation, tools, tool, json tools, tree-view, open source, free, json parser, json parser online, json formatter, json formatter online, online json formatter, online json parser, format json online, jsbin">
     <meta name="author" content="Tristan Burch">
 
-    <r:require modules="icons, jsonBlobTheme, fontAwesome, html5, jquery"/>
+    <r:require modules="icons, jsonBlob, fontAwesome, html5"/>
 
     <g:layoutHead/>
+
     <r:layoutResources/>
 
     <ga:trackPageview />
