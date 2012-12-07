@@ -9,11 +9,8 @@
     <meta charset="utf-8">
     <title><g:layoutTitle default="JSON Blob"/> | create, edit, view, format, and share JSON</title>
     <meta name="description" content="File Upload widget with multiple file selection, drag&amp;drop support, progress bar and preview images for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads.">
-    <meta name="viewport" content="width=device-width">
-    <meta name="description"
-          content="JSON Blob is a web-based tool to create, edit, view, format, and share JSON. It shows your JSON side by side in a clear, editable tree-view and in formatted plain text. You can save your JSON and share it via URL with anyone">
-    <meta name="keywords"
-          content="jsonblob, jsobblob.com, json, editor, formatter, online, format, parser, json editor, jsonblob, json blob, online json editor, javascript, javascript object notation, tools, tool, json tools, tree-view, open source, free, json parser, json parser online, json formatter, json formatter online, online json formatter, online json parser, format json online, jsbin">
+    <meta name="description" content="JSON Blob is a web-based tool to create, edit, view, format, and share JSON. It shows your JSON side by side in a clear, editable tree-view and in formatted plain text. You can save your JSON and share it via URL with anyone">
+    <meta name="keywords" content="jsonblob, jsobblob.com, json, editor, formatter, online, format, parser, json editor, jsonblob, json blob, online json editor, javascript, javascript object notation, tools, tool, json tools, tree-view, open source, free, json parser, json parser online, json formatter, json formatter online, online json formatter, online json parser, format json online, jsbin">
     <meta name="author" content="Tristan Burch">
 
     <r:require modules="icons, jsonBlobTheme, fontAwesome, html5, jquery"/>
@@ -105,6 +102,7 @@
         </div>
     </div>
 </div>
+
 <div class="container">
     <div class="row-fluid">
         <div class="span5 well">
@@ -122,7 +120,7 @@
             JSON Editor
         </div>
     </div>
-</div> <!-- /container -->
+</div>
 
 <div class="navbar navbar-fixed-bottom">
     <div class="navbar-inner">
