@@ -36,7 +36,7 @@
     <ga:trackPageview />
 </head>
 <body>
-<div class="navbar navbar-fixed-top">
+<div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
             <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -103,7 +103,12 @@
             Text Editor
         </div>
         <div class="span1">
-            Controls
+            <div class="row-fluid">
+                <div class="span12 well"><a href="#" id="to-text"><i class="control icon-large icon-caret-left"></i></a></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12 well"><a href="#" id="to-json"><i class="control icon-large icon-caret-right"></i></a></div>
+            </div>
         </div>
         <div class="span6 well">
             JSON Editor
