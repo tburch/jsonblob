@@ -5,13 +5,14 @@ modules = {
         resource url: 'css/jsoneditor.css', disposition: 'head'
         resource url: 'js/jsoneditor.js'
         resource url: 'js/lib/jsonlint/jsonlint.js'
+        resource url: 'js/jsonblob.js'
+        dependsOn 'jquery'
     }
 
     jsonBlob {
         defaultBundle 'app'
-        resource url: 'js/jsonblob.js'
         resource url: 'css/theme.css', disposition: 'head'
-        dependsOn ['jquery', 'bootstrap']
+        dependsOn 'bootstrap'
     }
 
     icons {

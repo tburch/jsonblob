@@ -9,7 +9,7 @@
 
 <body type="editor">
 <div class="row-fluid">
-    <div class="span5"></div>
+    <div id="alerts-formatter" class="span5"></div>
     <div class="span2">
         <div class="span12 pagination-centered">
             <p>
@@ -18,7 +18,7 @@
             </p>
         </div>
     </div>
-    <div class="span5"></div>
+    <div id="alerts-editor" class="span5"></div>
 </div>
 <div class="row-fluid">
     <div class="span6">

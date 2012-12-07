@@ -56,7 +56,7 @@
                         </li>
                         <li><a href="#" id="clear"><i class="icon-remove"></i> Clear</a></li>
                         <li class="divider-vertical"></li>
-                        <li><a href="#" id="raw-json"><i class="icon-external-link"></i> Raw JSON</a></li>
+                        <li><a href="#" id="raw-json" class="hidden"><i class="icon-external-link"></i> Raw JSON</a></li>
                     </ul>
                 </g:if>
                 <shiro:notUser>

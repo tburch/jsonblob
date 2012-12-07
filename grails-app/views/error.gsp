@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Grails Runtime Exception</title>
-		<meta name="layout" content="main">
-		<link rel="stylesheet" href="${resource(dir: 'css', file: 'errors.css')}" type="text/css">
-	</head>
-	<body>
-		<g:renderException exception="${exception}" />
-	</body>
+<head>
+    <meta name="layout" content="bootstrap"/>
+    <title>About JSON Blob</title>
+</head>
+
+<body>
+<div class="row-fluid">
+    <div class="span3 well">
+        side nav
+    </div>
+    <div class="span9">
+        infos
+    </div>
+</div>
+</body>
 </html>
