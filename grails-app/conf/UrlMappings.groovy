@@ -9,6 +9,7 @@ class UrlMappings {
             }
         }
 		"/"(view:"/index")
+        "/bootstrap"(view:"/index-bootstrap")
         "/about"(view: "about")
         "/$id?"(controller: 'blob', action: 'load')
 		"500"(view:'/error')

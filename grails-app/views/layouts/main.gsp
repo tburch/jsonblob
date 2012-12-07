@@ -12,7 +12,7 @@
           content="jsonblob, jsobblob.com, json, editor, formatter, online, format, parser, json editor, jsonblob, json blob, online json editor, javascript, javascript object notation, tools, tool, json tools, tree-view, open source, free, json parser, json parser online, json formatter, json formatter online, online json formatter, online json parser, format json online, jsbin">
     <meta name="author" content="Tristan Burch">
 
-    <r:require module="application"/>
+    <r:require module="jsonEditorOnline"/>
 
     <g:layoutHead/>
     <r:layoutResources/>
