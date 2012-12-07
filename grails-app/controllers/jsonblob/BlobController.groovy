@@ -12,7 +12,7 @@ class BlobController {
            def id = blob["_id"]
            blob.remove("_id")
            def json = jsonService.objectMapper.writeValueAsString(blob)
-           render(view: '../index', model: [blob: json, blobId: id])
+           render(view: '../editor', model: [blob: json, blobId: id])
         } catch (Exception exception) {
             log.error("Couldn't load object with id $jsonBlobId", exception)
             redirect(uri: "/")

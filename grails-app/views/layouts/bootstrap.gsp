@@ -30,32 +30,34 @@
             </a>
             <g:link absolute="true" url="/" class="brand">JSON Blob</g:link>
             <div class="nav-collapse">
-                <ul class="nav">
-                    <li><a href="#" id="new"><i class="icon-file"></i> New</a></li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Open
-                            <b class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#" id="open-file"><i class="icon-upload-alt"></i> File</a></li>
-                            <li><a href="#" id="open-url"><i class="icon-link"></i> JSON from URL</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Save
-                            <b class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#" id="save-file"><i class="icon-download-alt"></i> File</a></li>
-                            <li><a href="#" id="save-url"><i class="icon-share-alt"></i> Sharable URL</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#" id="clear"><i class="icon-remove"></i> Clear</a></li>
-                    <li class="divider-vertical"></li>
-                    <li><a href="#" id="raw-json"><i class="icon-external-link"></i> Raw JSON</a></li>
-                </ul>
+                <g:if test="${pageProperty(name:'body.type') ==~ 'editor'}">
+                    <ul class="nav">
+                        <li><a href="#" id="new"><i class="icon-file"></i> New</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Open
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" id="open-file"><i class="icon-upload-alt"></i> File</a></li>
+                                <li><a href="#" id="open-url"><i class="icon-link"></i> JSON from URL</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Save
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" id="save-file"><i class="icon-download-alt"></i> File</a></li>
+                                <li><a href="#" id="save-url"><i class="icon-share-alt"></i> Sharable URL</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#" id="clear"><i class="icon-remove"></i> Clear</a></li>
+                        <li class="divider-vertical"></li>
+                        <li><a href="#" id="raw-json"><i class="icon-external-link"></i> Raw JSON</a></li>
+                    </ul>
+                </g:if>
                 <shiro:notUser>
                     <ul class="nav pull-right">
                         <li class="dropdown">
