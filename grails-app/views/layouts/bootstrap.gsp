@@ -21,18 +21,6 @@
     <g:layoutHead/>
     <r:layoutResources/>
 
-    <style type="text/css">
-        /* fixes https://github.com/FortAwesome/Font-Awesome/issues/6*/
-    [class^="icon-"] {
-        background-image:none;
-    }
-
-    body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-    }
-    </style>
-
     <ga:trackPageview />
 </head>
 <body>
@@ -154,10 +142,6 @@
         </div>
     </div>
 </div>
-
-<!-- Le javascript
-    ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
 
 <r:layoutResources />
 
