@@ -47,15 +47,15 @@
             <g:link absolute="true" url="/" class="brand">JSON Blob</g:link>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li><a href="#"id="new"><i class="icon-file"></i> New</a></li>
+                    <li><a href="#" id="new"><i class="icon-file"></i> New</a></li>
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             Open
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li id="open-file"><a href="#"><i class="icon-file"></i> File</a></li>
-                            <li id="open-url"><a href="#"><i class="icon-link"></i> JSON from URL</a></li>
+                            <li><a href="#" id="open-file"><i class="icon-upload-alt"></i> File</a></li>
+                            <li><a href="#" id="open-url"><i class="icon-link"></i> JSON from URL</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -64,20 +64,40 @@
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li id="save-file"><a href="#"><i class="icon-download-alt"></i> File</a></li>
-                            <li id="save-url"><a href="#"><i class="icon-share-alt"></i> Sharable URL</a></li>
+                            <li><a href="#" id="save-file"><i class="icon-download-alt"></i> File</a></li>
+                            <li><a href="#" id="save-url"><i class="icon-share-alt"></i> Sharable URL</a></li>
                         </ul>
                     </li>
-                    <li><a href="#"><i class="icon-remove"></i> Clear</a></li>
+                    <li><a href="#" id="clear"><i class="icon-remove"></i> Clear</a></li>
                     <li class="divider-vertical"></li>
-                    <li><a href="#"><i class="icon-external-link"></i> Raw JSON</a></li>
+                    <li><a href="#" id="raw-json"><i class="icon-external-link"></i> Raw JSON</a></li>
                 </ul>
                 <shiro:notUser>
-                    <span class="nav pull-right">
-                        <g:link controller="signup" action="index" class="btn btn-warning">Sign up</g:link>
-                    </span>
                     <ul class="nav pull-right">
-                        <li class="${pageProperty(name:'body.section') ==~ 'login' ? 'active' : ""}"><g:link controller="auth" action="login"><i class="icon-signin"></i> Log in</g:link></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="icon-user"></i> Sign Up
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" id="sign-up-github"><i class="icon-github"></i> Github</a></li>
+                                <li><a href="#" id="sign-up-twitter"><i class="icon-twitter"></i> Twitter</a></li>
+                                <li><a href="#" id="sign-up-google"><i class="icon-google-plus"></i> Google</a></li>
+                                <li><a href="#" id="sign-up-facebook"><i class="icon-facebook"></i> Twitter</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="icon-signin"></i> Sign In
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" id="sign-in-github"><i class="icon-github"></i> Github</a></li>
+                                <li><a href="#" id="sign-in-twitter"><i class="icon-twitter"></i> Twitter</a></li>
+                                <li><a href="#" id="sign-in-google"><i class="icon-google-plus"></i> Google</a></li>
+                                <li><a href="#" id="sign-in-facebook"><i class="icon-facebook"></i> Twitter</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </shiro:notUser>
                 <shiro:user>
@@ -104,10 +124,10 @@
         </div>
         <div class="span1">
             <div class="row-fluid">
-                <div class="span12 well"><a href="#" id="to-text"><i class="control icon-large icon-caret-left"></i></a></div>
+                <div class="span12 well"><a href="#" id="to-text"><i class="control icon-caret-left icon-large"></i></a></div>
             </div>
             <div class="row-fluid">
-                <div class="span12 well"><a href="#" id="to-json"><i class="control icon-large icon-caret-right"></i></a></div>
+                <div class="span12 well"><a href="#" id="to-json"><i class="control icon-caret-right icon-large"></i></a></div>
             </div>
         </div>
         <div class="span6 well">
