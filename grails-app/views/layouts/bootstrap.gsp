@@ -118,7 +118,7 @@
                 <ul class="nav">
                     <li><g:link url="/api">API</g:link></li>
                     <li><g:link url="/about" absolute="true">About</g:link></li>
-                    <li><g:link url="http://tristanburch.com">&copy; 2012 Tristan Burch</g:link></li>
+                    <li><g:link url="http://tristanburch.com" target="_blank">&copy; 2012 Tristan Burch</g:link></li>
                 </ul>
             </div>
         </div>

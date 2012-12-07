@@ -22,18 +22,12 @@ body {
     background-color: #f5f5f5;
 }
 
-i.control {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 /* fixes https://github.com/FortAwesome/Font-Awesome/issues/6*/
 [class^="icon-"] {
     background-image:none;
 }
 
 body {
-    padding-top: 50px;
+    padding-top: 60px;
     padding-bottom: 50px;
 }

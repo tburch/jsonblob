@@ -1,33 +1,27 @@
 $(function () {
-    var jsonFormatter = $('#json-formatter')
-    var jsonEditor = $('#json-editor')
-    var apiBase = '/api/jsonBlob'
+    var jsonFormatterId = "json-formatter"
+    var jsonEditorId = "json-editor"
+    var apiBase = "/api/jsonBlob"
 
-
-
+    var lastChanged = null;
     var editor = null;
     var formatter = null;
 
-    var formatterToEditor = function() {
-        try {
-            editor.set(formatter.get());
-            var data = formatter.getText();
-            if (app.blobId) {
-                ajax.put(app.apiBase + "/" + app.blobId, data, {'Content-Type': 'application/json', 'Accept':'application/json'}, function() {
-                })
-            }
+    formatter = new JSONFormatter(document.getElementById(jsonFormatterId), {
+        change: function () {
+            lastChanged = formatter;
         }
-        catch (err) {
-            app.notify.showError(err);
-        }
+    });
+    formatter.set(jsonBlob);
+    formatter.onError = function (err) {
+        console.log(err);
     };
-
-    var editorToFormatter = function () {
-        try {
-            formatter.set(editor.get());
+//
+    // editor
+    editor = new JSONEditor(document.getElementById(jsonEditorId), {
+        change: function () {
+            lastChanged = editor;
         }
-        catch (err) {
-            app.notify.showError(err);
-        }
-    };
+    });
+    editor.set(jsonBlob);
 });

@@ -9,18 +9,20 @@
 
 <body>
 <div class="row-fluid">
-    <div class="span5 well">
+    <div class="span4"></div>
+    <div class="span4">
+        <p class="container">
+            <a href="#"><button id="to-text" class="btn"><i class="control icon-caret-left"></i></button></a>
+            <a href="#"><button id="to-json" class="btn"><i class="control icon-caret-right"></i></button></a>
+        </p>
+    </div>
+    <div class="span4"></div>
+</div>
+<div class="row-fluid">
+    <div class="span6">
         <div id="json-formatter"></div>
     </div>
-    <div class="span1">
-        <div class="row-fluid">
-            <div class="span12 well" id="to-text"><i class="control icon-caret-left icon-large"></i></div>
-        </div>
-        <div class="row-fluid">
-            <div class="span12 well" id="to-json"><i class="control icon-caret-right icon-large"></i></div>
-        </div>
-    </div>
-    <div class="span6 well">
+    <div class="span6">
         <div id="json-editor"></div>
     </div>
 </div>
