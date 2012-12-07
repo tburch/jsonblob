@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="bootstrap"/>
-    <title>The JSON Blob API</title>
+    <title>About JSON Blob</title>
 </head>
 
 <body>
@@ -11,7 +11,7 @@
         side nav
     </div>
     <div class="span9">
-        demo object id is ${demoObjectId}
+        infos
     </div>
 </div>
 </body>

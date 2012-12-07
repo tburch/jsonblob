@@ -1,8 +1,9 @@
+import jsonblob.ApiController
+import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
+
 class BootStrap {
 
     def jsonBlobResourceService
-
-    def demoObjectId
 
     def init = { servletContext ->
         def jsonBuilder = new groovy.json.JsonBuilder()
@@ -21,12 +22,14 @@ class BootStrap {
             }
         }
         def newBlob = jsonBlobResourceService.create(jsonBuilder.toString())
-        this.demoObjectId = newBlob["_id"].toString()
+        def demoObjectId = newBlob["_id"].toString()
         log.info("Created demo blob with demoObjectId=$demoObjectId")
+
+        jsonBlobResourceService.apiDemoObjectId = demoObjectId
     }
 
     def destroy = {
-        log.info("Removing demo blob with demoObjectId=$demoObjectId")
-        jsonBlobResourceService.delete(demoObjectId)
+        log.info("Removing demo blob with demoObjectId=$jsonBlobResourceService.apiDemoObjectId")
+        jsonBlobResourceService.delete(jsonBlobResourceService.apiDemoObjectId)
     }
 }

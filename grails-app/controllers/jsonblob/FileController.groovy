@@ -22,6 +22,8 @@ class FileController {
             response.setHeader("Content-disposition", "attachment; filename=\"$name\"")
             response.outputStream << reader
             response.outputStream.flush()
+        } else {
+            redirect(uri: "/")
         }
     }
 
@@ -40,6 +42,8 @@ class FileController {
             response.setHeader("Content-disposition", "attachment; filename=\"${name}.json\"")
             response.outputStream << jsonResponse
             response.outputStream.flush()
+        } else {
+            redirect(uri: "/")
         }
     }
 }

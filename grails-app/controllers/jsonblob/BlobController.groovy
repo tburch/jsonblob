@@ -1,7 +1,5 @@
 package jsonblob
 
-import org.grails.jaxrs.provider.DomainObjectNotFoundException
-
 class BlobController {
 
     def jsonBlobResourceService
@@ -9,16 +7,16 @@ class BlobController {
 
     def load() {
         def jsonBlobId = params.get("id")
-        def json = ""
         try {
            def blob = jsonBlobResourceService.read(jsonBlobId);
+           def id = blob["_id"]
            blob.remove("_id")
-           json = jsonService.objectMapper.writeValueAsString(blob)
+           def json = jsonService.objectMapper.writeValueAsString(blob)
+           render(view: '../index', model: [blob: json, blobId: id])
         } catch (Exception exception) {
             log.error("Couldn't load object with id $jsonBlobId", exception)
             redirect(uri: "/")
         }
-        [blob: json, blobId: jsonBlobId]
     }
 
 }

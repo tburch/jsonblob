@@ -103,22 +103,7 @@
 </div>
 
 <div class="container">
-    <div class="row-fluid">
-        <div class="span5 well">
-            Text Editor
-        </div>
-        <div class="span1">
-            <div class="row-fluid">
-                <div class="span12 well"><a href="#" id="to-text"><i class="control icon-caret-left icon-large"></i></a></div>
-            </div>
-            <div class="row-fluid">
-                <div class="span12 well"><a href="#" id="to-json"><i class="control icon-caret-right icon-large"></i></a></div>
-            </div>
-        </div>
-        <div class="span6 well">
-            JSON Editor
-        </div>
-    </div>
+    <g:layoutBody />
 </div>
 
 <div class="navbar navbar-fixed-bottom">
@@ -131,7 +116,7 @@
             </a>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li><g:link controller="api" action="index">API</g:link></li>
+                    <li><g:link url="/api">API</g:link></li>
                     <li><g:link url="/about" absolute="true">About</g:link></li>
                     <li><g:link url="http://tristanburch.com">&copy; 2012 Tristan Burch</g:link></li>
                 </ul>
