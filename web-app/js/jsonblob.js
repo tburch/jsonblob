@@ -65,6 +65,7 @@ $(function () {
             var request = {
                 type: "PUT",
                 url: blobApiUrl,
+                headers: {'Content-Type': 'application/json', 'Accept':'application/json'},
                 data: formatter.getText(),
                 success: function(data, textStatus, jqXHR) {},
                 cache: false
@@ -72,6 +73,14 @@ $(function () {
             $.ajax(request);
         }
     };
+
+    var reset = function() {
+        var json = {};
+        formatter.set(json);
+        editor.set(json);
+        blobId = ""
+        $('#' + rawUrl).addClass("hidden").show();
+    }
 
     // setup the formatter
     formatter = new JSONFormatter(document.getElementById(jsonFormatterId), {
@@ -102,11 +111,19 @@ $(function () {
     /* hook up the UI stuff */
     // raw JSON link
     $('#' + rawUrl).click(function() {
-        var blobApiUrl = [apiBase, blobId].join("/")
-        window.open(blobApiUrl, "jsonBlob_" + blobId);
+        if (blobId) {
+            var blobApiUrl = [apiBase, blobId].join("/")
+            window.open(blobApiUrl, "jsonBlob_" + blobId);
+        }
     });
 
     $('#' + saveUrlId).click(function() {
         save();
     });
+
+    // clear the editor and formatter with either the new or clear buttons
+    $("#" + cleanId + ", #" + newId).click(function() {
+       reset();
+    })
+
 });
