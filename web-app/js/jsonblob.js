@@ -3,6 +3,8 @@ $(function () {
     var jsonEditorId = "json-editor";
     var alertsEditorId = "alerts-editor";
     var alertsformatterId = "alerts-formatter";
+    var toFormatterId = "to-formatter";
+    var toEditorId = "to-editor";
     var newId = "new";
     var openFileId = "open-file";
     var openUrlId = "open-url";
@@ -44,7 +46,7 @@ $(function () {
     var formatter = null;
 
     // basic functions for the API
-    var save = function(callback) {
+    var save = function() {
         if (!blobId) {
             var request = {
                 type: "POST",
@@ -82,6 +84,33 @@ $(function () {
         $('#' + rawUrl).addClass("hidden").show();
     }
 
+    var formatterToEditor = function() {
+        try {
+            $("#" + alertsformatterId).empty();
+            editor.set(formatter.get());
+            if (blobId) {
+                save();
+            }
+        } catch (err) {
+            var msg = err.message.substr(0, err.message.indexOf("<a")) // remove json lint link
+            $("#" + alertsformatterId).append('<div class="alert alert-block alert-error fade in"><button type="button" class="close" data-dismiss="alert">&times;</button>' + msg + '</div>');
+            $("#" + alertsformatterId + ".alert").alert();
+        }
+    };
+
+    var editorToFormatter = function () {
+        try {
+            $("#" + alertsEditorId).empty();
+            formatter.set(editor.get());
+            if (blobId) {
+                save();
+            }
+        } catch (err) {
+            $("#" + alertsEditorId).append('<div class="alert alert-block alert-error fade in"><button type="button" class="close" data-dismiss="alert">×</button>' + err.message + '</div>');
+            $("#" + alertsEditorId + ".alert").alert();
+        }
+    };
+
     // setup the formatter
     formatter = new JSONFormatter(document.getElementById(jsonFormatterId), {
         change: function () {
@@ -104,7 +133,7 @@ $(function () {
         $.getJSON(blobApiUrl, function(data) {
             formatter.set(data);
             editor.set(data);
-            $('#' + rawUrl).show();
+            $('#' + rawUrl).removeClass("hidden").show();
         });
     }
 
@@ -125,5 +154,13 @@ $(function () {
     $("#" + cleanId + ", #" + newId).click(function() {
        reset();
     })
+
+   $("#" + toEditorId).click(function() {
+       formatterToEditor();
+   });
+
+    $("#" + toFormatterId).click(function() {
+        editorToFormatter();
+    });
 
 });

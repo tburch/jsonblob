@@ -1,5 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<!DOCTYPE HTML>
 
 <!DOCTYPE HTML>
 <html lang="en">
@@ -51,7 +50,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a href="#" id="save-file"><i class="icon-download-alt"></i> File</a></li>
-                                <li><a href="#" id="save-url"><i class="icon-share-alt"></i> Sharable URL</a></li>
+                                <li><a href="#" id="save-url"><i class="icon-share-alt"></i> Shareable URL</a></li>
                             </ul>
                         </li>
                         <li><a href="#" id="clear"><i class="icon-remove"></i> Clear</a></li>
@@ -119,9 +118,19 @@
             </a>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li><g:link url="/api">API</g:link></li>
-                    <li><g:link url="/about" absolute="true">About</g:link></li>
-                    <li><g:link url="http://tristanburch.com" target="_blank">&copy; 2012 Tristan Burch</g:link></li>
+                    <li>
+                        <g:link url="/api">API</g:link>
+                    </li>
+                    <li>
+                        <g:link url="/about" absolute="true">About</g:link>
+                    </li>
+                    <li>
+                        <g:link url="https://github.com/tburch/jsonblob" target="_blank">Source</g:link>
+                    </li>
+                    <li class="divider-vertical"></li>
+                    <li>
+                        <g:link url="http://tristanburch.com" target="_blank">&copy; <g:formatDate format="yyyy" date="${new java.util.Date()}"/> Tristan Burch</g:link>
+                    </li>
                 </ul>
             </div>
         </div>
