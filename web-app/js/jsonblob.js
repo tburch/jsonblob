@@ -46,9 +46,10 @@ $(function () {
     var formatter = null;
 
     // basic functions for the API
-    var save = function() {
+    var save = function(callback) {
+        var request;
         if (!blobId) {
-            var request = {
+            request = {
                 type: "POST",
                 url: apiBase,
                 headers: {'Content-Type': 'application/json', 'Accept':'application/json'},
@@ -58,20 +59,29 @@ $(function () {
                     var parts = locationHeader.split("/");
                     blobId = parts[parts.length - 1];
                     $('#' + rawUrl).removeClass("hidden").show("slow");
+                    if (callback && typeof(callback) == 'function') {
+                        callback(data, textStatus, jqXHR)
+                    }
                 },
                 cache: false
             };
-            $.ajax(request);
+
         } else {
             var blobApiUrl = [apiBase, blobId].join("/")
-            var request = {
+            request = {
                 type: "PUT",
                 url: blobApiUrl,
                 headers: {'Content-Type': 'application/json', 'Accept':'application/json'},
                 data: formatter.getText(),
-                success: function(data, textStatus, jqXHR) {},
+                success: function(data, textStatus, jqXHR) {
+                    if (callback && typeof(callback) == 'function') {
+                        callback(data, textStatus, jqXHR)
+                    }
+                },
                 cache: false
             };
+        }
+        if (request) {
             $.ajax(request);
         }
     };
@@ -85,6 +95,7 @@ $(function () {
     }
 
     var formatterToEditor = function() {
+        var error = false
         try {
             $("#" + alertsformatterId).empty();
             editor.set(formatter.get());
@@ -95,10 +106,12 @@ $(function () {
             var msg = err.message.substr(0, err.message.indexOf("<a")) // remove json lint link
             $("#" + alertsformatterId).append('<div class="alert alert-block alert-error fade in"><button type="button" class="close" data-dismiss="alert">&times;</button>' + msg + '</div>');
             $("#" + alertsformatterId + ".alert").alert();
+            error = true;
         }
+        return error;
     };
 
-    var editorToFormatter = function () {
+    var editorToFormatter = function() {
         try {
             $("#" + alertsEditorId).empty();
             formatter.set(editor.get());
@@ -111,30 +124,33 @@ $(function () {
         }
     };
 
-    // setup the formatter
-    formatter = new JSONFormatter(document.getElementById(jsonFormatterId), {
-        change: function () {
-            lastChanged = formatter;
-        }
-    });
 
-    // setup the editor
-    editor = new JSONEditor(document.getElementById(jsonEditorId), {
-        change: function () {
-            lastChanged = editor;
-        }
-    });
-
-    if (!blobId) {
-        formatter.set(defaultJson)
-        editor.set(defaultJson)
-    } else {
-        var blobApiUrl = [apiBase, blobId].join("/")
-        $.getJSON(blobApiUrl, function(data) {
-            formatter.set(data);
-            editor.set(data);
-            $('#' + rawUrl).removeClass("hidden").show();
+    var init = function() {
+        // setup the formatter
+        formatter = new JSONFormatter(document.getElementById(jsonFormatterId), {
+            change: function () {
+                lastChanged = formatter;
+            }
         });
+
+        // setup the editor
+        editor = new JSONEditor(document.getElementById(jsonEditorId), {
+            change: function () {
+                lastChanged = editor;
+            }
+        });
+
+        if (!blobId) {
+            formatter.set(defaultJson)
+            editor.set(defaultJson)
+        } else {
+            var blobApiUrl = [apiBase, blobId].join("/")
+            $.getJSON(blobApiUrl, function(data) {
+                formatter.set(data);
+                editor.set(data);
+                $('#' + rawUrl).removeClass("hidden").show();
+            });
+        }
     }
 
     /* hook up the UI stuff */
@@ -146,8 +162,39 @@ $(function () {
         }
     });
 
+    // create blob link
     $('#' + saveUrlId).click(function() {
-        save();
+        var callback = function() {
+
+        }
+        if (!lastChangeByEditor) {
+            if (!formatterToEditor()) {
+                save();
+            }
+        } else {
+            editorToFormatter();
+            save();
+        }
+
+    });
+
+    // download json file
+    $('#' + saveFileId).click(function() {
+        if (!lastChangeByEditor) {
+            formatterToEditor();
+        } else {
+            editorToFormatter();
+        }
+    });
+
+    // upload JSON
+    $('#' + openFileId).click(function() {
+        // TODO
+    });
+
+    // upload JSON
+    $('#' + openUrlId).click(function() {
+        // TODO
     });
 
     // clear the editor and formatter with either the new or clear buttons
@@ -155,12 +202,27 @@ $(function () {
        reset();
     })
 
+    // format pane to editor pane
    $("#" + toEditorId).click(function() {
        formatterToEditor();
    });
 
+    //editor pane to format pane
     $("#" + toFormatterId).click(function() {
         editorToFormatter();
+    });
+
+    var resize = function() {
+        $('.editor').height($(window).height() - 145);
+    }
+
+    $(document).ready(function(){
+        resize();
+        init();
+    });
+
+    $(window).resize(function() {
+        resize();
     });
 
 });

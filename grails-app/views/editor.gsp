@@ -22,10 +22,10 @@
 </div>
 <div class="row-fluid">
     <div class="span6">
-        <div id="json-formatter"></div>
+        <div id="json-formatter" class="editor"></div>
     </div>
     <div class="span6">
-        <div id="json-editor"></div>
+        <div id="json-editor" class="editor"></div>
     </div>
 </div>
 
