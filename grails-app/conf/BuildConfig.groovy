@@ -36,7 +36,9 @@ grails.project.dependency.resolution = {
         runtime "com.gmongo:gmongo:1.0"
         compile "com.fasterxml.jackson.core:jackson-databind:2.1.0"
         runtime "postgresql:postgresql:9.1-901-1.jdbc4"
-        compile "org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"
+        compile ("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2") {
+            excludes 'groovy', 'xml-apis'
+        }
     }
 
     plugins {
