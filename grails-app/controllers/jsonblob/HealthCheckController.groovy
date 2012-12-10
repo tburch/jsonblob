@@ -6,7 +6,8 @@ class HealthCheckController {
     def status() {
         render(contentType: 'text/json') {
             [status: "OK",
-            timestamp: new Date()]
+            timestamp: new Date(),
+            random: Math.random()]
         }
     }
 }
