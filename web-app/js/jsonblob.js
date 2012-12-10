@@ -12,9 +12,12 @@ $(function () {
     var saveUrlId = "save-url";
     var cleanId = "clear";
     var rawUrl = "raw-json";
+    var modalRawJsonUrlId = "jsonEditorUrl";
+    var modalJsonEditorUrlId = "rawJsonUrl";
 
     var apiBase = "/api/jsonBlob";
     var blobId = window.location.pathname.substr(1);
+    var seenSharedScreen = false;
 
     var defaultJson = {
         "name": "John Smith",
@@ -149,6 +152,7 @@ $(function () {
                 formatter.set(data);
                 editor.set(data);
                 $('#' + rawUrl).removeClass("hidden").show();
+                seenSharedScreen = true;
             });
         }
     }
@@ -165,15 +169,21 @@ $(function () {
     // create blob link
     $('#' + saveUrlId).click(function() {
         var callback = function() {
-
+            if (!seenSharedScreen) {
+                var location = document.location.origin;
+                $("#" + modalJsonEditorUrlId).append(location + "/" + blobId);
+                $("#" + modalRawJsonUrlId).append(location + apiBase + "/" + blobId);
+                $('#jsonSharedModal').modal();
+                seenSharedScreen = true;
+            }
         }
         if (!lastChangeByEditor) {
             if (!formatterToEditor()) {
-                save();
+                save(callback);
             }
         } else {
             editorToFormatter();
-            save();
+            save(callback);
         }
 
     });
