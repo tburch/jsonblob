@@ -8,7 +8,7 @@
 </head>
 
 <body type="editor">
-<div class="row-fluid">
+<div class="row-fluid controls-row">
     <div id="alerts-formatter" class="span5"></div>
     <div class="span2">
         <div class="span12 pagination-centered">

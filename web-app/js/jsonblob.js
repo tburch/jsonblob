@@ -213,7 +213,12 @@ $(function () {
     });
 
     var resize = function() {
-        $('.editor').height($(window).height() - 145);
+        var height = $(window).height();
+        height -=  $(".navbar-fixed-top").height();
+        height -=  $(".navbar-fixed-bottom").height();
+        height -=  $(".controls-row").height();
+        height -= 20;
+        $('.editor').height(height);
     }
 
     $(document).ready(function(){
