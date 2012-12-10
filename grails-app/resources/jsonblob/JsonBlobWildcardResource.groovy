@@ -1,6 +1,7 @@
 package jsonblob
 
 import org.bson.types.ObjectId
+import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
 import javax.ws.rs.*
 import javax.ws.rs.core.Response
@@ -23,6 +24,9 @@ class JsonBlobWildcardResource {
             if (ObjectId.isValid(part)) {
                id = part
             }
+        }
+        if (!id) {
+            throw new DomainObjectNotFoundException(ObjectId.class, path)
         }
         new JsonBlobResource(jsonBlobResourceService: jsonBlobResourceService, objectMapper: jsonService.objectMapper, id: id)
     }
