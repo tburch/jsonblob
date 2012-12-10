@@ -27,6 +27,7 @@ class JsonBlobApiTest extends IntegrationTestCase {
 
         def locationHeader = response.getHeader('Location')
         def relativePath = locationHeader.substring(locationHeader.indexOf(apiBase))
+        def blobId = relativePath.subString(relativePath.lastIndexOf("/") + 1)
 
         assertEquals(201, response.status)
         assertTrue(response.contentAsString.length() > 0)
@@ -41,6 +42,11 @@ class JsonBlobApiTest extends IntegrationTestCase {
         assertTrue(response.getHeader('Content-Type').startsWith('application/json'))
         assertTrue(response.contentAsString.length() > 0)
         assertFalse(response.contentAsString.contains("_id"))
+
+        //get the blob using a wildcard url
+        sendRequest("/api/testing/$blobId/wtf", 'GET', headers)
+
+        assertEquals(200, response.status)
 
         jsonBuilder.pigs {
             wilbur {
