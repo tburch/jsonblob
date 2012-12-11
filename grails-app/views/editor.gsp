@@ -61,8 +61,9 @@
             </fieldset>
         </form>
     </div>
+
     <div class="modal-footer">
-        <button id="uploadJsonButton" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Upload</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Nevermind</button>
     </div>
 </div>
 
@@ -74,8 +75,9 @@
     <div class="modal-body">
 
     </div>
+
     <div class="modal-footer">
-        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Got it</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Nevermind</button>
     </div>
 </div>
 
