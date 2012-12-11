@@ -9,6 +9,7 @@ class UrlMappings {
             }
         }
 		"/"(view:"/editor")
+        "/robots.txt" (view: "/robots")
         "/about"(view: "/about")
         "/api"(controller: 'api', action: 'index')
         "/$id?"(controller: 'blob', action: 'load')
