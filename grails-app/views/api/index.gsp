@@ -40,7 +40,7 @@ Transfer-Encoding: chunked
             The body of the response is the JSON that was stored in the blob.
         </p>
         <pre class="pre-scrollable">
-curl -i -H "Content-Type: application/json" -H "Accept: application/json" http://localhost:8080/api/jsonBlob/50c6c61530041e434acfdad5
+curl -i -H "Content-Type: application/json" -H "Accept: application/json" http://jsonblob.com/api/jsonBlob/50c6c61530041e434acfdad5
 HTTP/1.1 200 OK
 Content-Type: application/json
 Transfer-Encoding: chunked
@@ -55,7 +55,7 @@ Transfer-Encoding: chunked
             The body of the response is the JSON that was stored in the blob.
         </p>
         <pre class="pre-scrollable">
-curl -i -X "PUT" -d '{"people":["fred", "mark", "andrew"]}' -H "Content-Type: application/json" -H "Accept: application/json" http://localhost:8080/api/jsonBlob/50c6c61530041e434acfdad5
+curl -i -X "PUT" -d '{"people":["fred", "mark", "andrew"]}' -H "Content-Type: application/json" -H "Accept: application/json" http://jsonblob.com/api/jsonBlob/50c6c61530041e434acfdad5
 HTTP/1.1 200 OK
 Content-Type: application/json
 Transfer-Encoding: chunked
@@ -71,7 +71,7 @@ Transfer-Encoding: chunked
         </p>
         <p>As an example, if we were trying to mimic a RESTful url structure for getting the names of the employees in with a particular role, we may use want to use a url like <code>/api/company/50c6c61530041e434acfdad5/employees/engineers</code> where <code>50c6c61530041e434acfdad5</code> is the <code>blobId</code> that represents the data the client is expecting</p>
         <pre class="pre-scrollable">
-curl -i  -H "Content-Type: application/json" -H "Accept: application/json" http://localhost:8080/api/company/50c6c61530041e434acfdad5/employees/engineers
+curl -i  -H "Content-Type: application/json" -H "Accept: application/json" http://jsonblob.com/api/company/50c6c61530041e434acfdad5/employees/engineers
 HTTP/1.1 200 OK
 Content-Type: application/json
 Transfer-Encoding: chunked
