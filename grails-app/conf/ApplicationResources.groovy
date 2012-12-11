@@ -6,6 +6,9 @@ modules = {
         resource url: 'js/jsoneditor.js'
         resource url: 'js/lib/jsonlint/jsonlint.js'
         resource url: 'js/jsonblob.js'
+        resource url: 'js/jquery.ui.widget.js'
+        resource url: 'js/jquery.iframe-transport.js'
+        resource url: 'js/jquery.fileupload.js'
         dependsOn 'jquery'
     }
 

@@ -213,7 +213,25 @@ $(function () {
 
     // upload JSON
     $('#' + openFileId).click(function() {
-        // TODO
+        var modal = $('#uploadFileModal');
+        $('#jsonFile').fileupload({
+            dataType: 'json',
+            add: function (e, data) {
+                data.context = $('<button class="btn btn-primary" type="submit"/>').text('Upload')
+                    .appendTo($("#jsonFile").parent())
+                    .click(function () {
+                        $(this).replaceWith($('<p/>').text('Uploading...'));
+                        data.submit();
+                    });
+            },
+            done: function (e, data) {
+                var json = data.result;
+                formatter.set(json);
+                formatterToEditor();
+                modal.modal('hide');
+            }
+        });
+        modal.modal();
     });
 
     // upload JSON
