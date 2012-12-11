@@ -285,6 +285,7 @@ $(function () {
 
     // clear the editor and formatter with either the new button
     newJson.click(function() {
+        sawShareModal = false;
         reset();
     });
 
