@@ -25,10 +25,10 @@ class JsonBlobResource {
         Response.ok(objectMapper.writeValueAsString(updatedBlob)).build()
     }
 
-    @DELETE
-    void delete() {
-        jsonBlobResourceService.delete(id)
-    }
+//    @DELETE
+//    void delete() {
+//        jsonBlobResourceService.delete(id)
+//    }
     
 }
 
