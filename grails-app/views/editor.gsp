@@ -13,8 +13,8 @@
     <div class="span2">
         <div class="span12 pagination-centered">
             <p>
-                <a href="#"><button id="to-formatter" class="btn"><i class="control icon-caret-left"></i></button></a>
-                <a href="#"><button id="to-editor" class="btn"><i class="control icon-caret-right"></i></button></a>
+                <a ><button id="to-formatter" class="btn"><i class="control icon-caret-left"></i></button></a>
+                <a ><button id="to-editor" class="btn"><i class="control icon-caret-right"></i></button></a>
             </p>
         </div>
     </div>

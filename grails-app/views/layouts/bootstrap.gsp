@@ -32,59 +32,57 @@
             <div class="nav-collapse">
                 <g:if test="${pageProperty(name:'body.type') ==~ 'editor'}">
                     <ul class="nav">
-                        <li><a href="#" id="new"><i class="icon-file"></i> New</a></li>
-                        %{--
+                        <li><a id="new"><i class="icon-file"></i> New</a></li>
                         <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <a class="dropdown-toggle" data-toggle="dropdown" >
                                 Open
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="#" id="open-file"><i class="icon-upload-alt"></i> File</a></li>
-                                <li><a href="#" id="open-url"><i class="icon-link"></i> JSON from URL</a></li>
+                                <li><a  id="open-file"><i class="icon-upload-alt"></i> File</a></li>
+                                <li><a  id="open-url"><i class="icon-link"></i> JSON from URL</a></li>
                             </ul>
                         </li>
-                        --}%
                         <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <a class="dropdown-toggle" data-toggle="dropdown" >
                                 Save
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="#" id="save-file"><i class="icon-download-alt"></i> File</a></li>
-                                <li><a href="#" id="save-url"><i class="icon-share-alt"></i> Shareable URL</a></li>
+                                <li><a  id="save-file"><i class="icon-download-alt"></i> File</a></li>
+                                <li><a  id="save-url"><i class="icon-share-alt"></i> Shareable URL</a></li>
                             </ul>
                         </li>
-                        <li><a href="#" id="clear"><i class="icon-remove"></i> Clear</a></li>
+                        <li><a  id="clear"><i class="icon-remove"></i> Clear</a></li>
                         <li class="divider-vertical"></li>
-                        <li><a href="#" id="raw-json" class="hidden"><i class="icon-external-link"></i> Raw JSON</a></li>
+                        <li><a  id="raw-json" class="hidden"><i class="icon-external-link"></i> Raw JSON</a></li>
                     </ul>
                 </g:if>
                 %{--
                 <shiro:notUser>
                     <ul class="nav pull-right">
                         <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <a class="dropdown-toggle" data-toggle="dropdown" >
                                 <i class="icon-user"></i> Sign Up
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="#" id="sign-up-github"><i class="icon-github"></i> Github</a></li>
-                                <li><a href="#" id="sign-up-twitter"><i class="icon-twitter"></i> Twitter</a></li>
-                                <li><a href="#" id="sign-up-google"><i class="icon-google-plus"></i> Google</a></li>
-                                <li><a href="#" id="sign-up-facebook"><i class="icon-facebook"></i> Twitter</a></li>
+                                <li><a  id="sign-up-github"><i class="icon-github"></i> Github</a></li>
+                                <li><a  id="sign-up-twitter"><i class="icon-twitter"></i> Twitter</a></li>
+                                <li><a  id="sign-up-google"><i class="icon-google-plus"></i> Google</a></li>
+                                <li><a  id="sign-up-facebook"><i class="icon-facebook"></i> Twitter</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <a class="dropdown-toggle" data-toggle="dropdown" >
                                 <i class="icon-signin"></i> Sign In
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="#" id="sign-in-github"><i class="icon-github"></i> Github</a></li>
-                                <li><a href="#" id="sign-in-twitter"><i class="icon-twitter"></i> Twitter</a></li>
-                                <li><a href="#" id="sign-in-google"><i class="icon-google-plus"></i> Google</a></li>
-                                <li><a href="#" id="sign-in-facebook"><i class="icon-facebook"></i> Twitter</a></li>
+                                <li><a  id="sign-in-github"><i class="icon-github"></i> Github</a></li>
+                                <li><a  id="sign-in-twitter"><i class="icon-twitter"></i> Twitter</a></li>
+                                <li><a  id="sign-in-google"><i class="icon-google-plus"></i> Google</a></li>
+                                <li><a  id="sign-in-facebook"><i class="icon-facebook"></i> Twitter</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -92,7 +90,7 @@
                 <shiro:user>
                     <ul class="nav pull-right">
                         <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#"><shiro:principal/><b class="caret"></b></a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" ><shiro:principal/><b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><g:link controller="profile" action="index"><i class="icon-cloud"></i> My blobs</g:link></li>
                                 <li class="divider"></li>
