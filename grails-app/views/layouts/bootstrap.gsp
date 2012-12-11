@@ -33,6 +33,7 @@
                 <g:if test="${pageProperty(name:'body.type') ==~ 'editor'}">
                     <ul class="nav">
                         <li><a href="#" id="new"><i class="icon-file"></i> New</a></li>
+                        %{--
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                 Open
@@ -43,6 +44,7 @@
                                 <li><a href="#" id="open-url"><i class="icon-link"></i> JSON from URL</a></li>
                             </ul>
                         </li>
+                        --}%
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                 Save
@@ -58,6 +60,7 @@
                         <li><a href="#" id="raw-json" class="hidden"><i class="icon-external-link"></i> Raw JSON</a></li>
                     </ul>
                 </g:if>
+                %{--
                 <shiro:notUser>
                     <ul class="nav pull-right">
                         <li class="dropdown">
@@ -99,6 +102,7 @@
                         </li>
                     </ul>
                 </shiro:user>
+                --}%
             </div>
         </div>
     </div>

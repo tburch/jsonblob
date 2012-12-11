@@ -68,7 +68,6 @@ $(function () {
                 },
                 cache: false
             };
-
         } else {
             var blobApiUrl = [apiBase, blobId].join("/")
             request = {
