@@ -11,6 +11,7 @@
     </div>
     <div class="span6 well">
         <p>JSON Blob was created to help parallelize client/server development. Mock JSON responses can be defined using the online editor and then clients can use the <g:link controller="api" action="index">JSON Blob API</g:link> to retrieve and update the mock JSON.</p>
+        <p>Credits for the JavaScript editor and formatter go to <g:link url="jsoneditoronline.org">JSON Editor Online</g:link></p>
     </div>
     <div class="span3">
     </div>
