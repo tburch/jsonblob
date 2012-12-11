@@ -28,6 +28,14 @@ class FileController {
     }
 
     def fetch() {
+        log.info(request.getRequestURL())
+        log.info(request.getHeader("referer"))
+        def referrerUri = new java.net.URI(request.getHeader("referer"))
+        def requestUri = new java.net.URI(request.getRequestURL().toString())
+        if (!referrerUri.getHost().equals(requestUri.getHost())) {
+            redirect(uri: "/")
+        }
+
         def jsonUrl = new URI(params.get("url"))
         if (jsonUrl) {
             def jsonResponse
