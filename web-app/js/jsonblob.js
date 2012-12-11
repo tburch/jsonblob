@@ -17,7 +17,7 @@ $(function () {
 
     var apiBase = "/api/jsonBlob";
     var blobId = window.location.pathname.substr(1);
-    var seenSharedScreen = false;
+    var sawShareModal = false;
 
     var defaultJson = {
         "name": "John Smith",
@@ -152,9 +152,18 @@ $(function () {
                 formatter.set(data);
                 editor.set(data);
                 $('#' + rawUrl).removeClass("hidden").show();
-                seenSharedScreen = true;
+                sawShareModal = true;
             });
         }
+    }
+
+    var saveToDisk = function() {
+        var data = formatter.getText();
+        var ts = (new Date()).getTime();
+        $('#' + saveFileId).attr({
+            "href" : "data:application/json;charset=utf-8," + encodeURIComponent(data),
+            "download" : (blobId ? blobId : ts) + ".json"
+        });
     }
 
     /* hook up the UI stuff */
@@ -169,12 +178,12 @@ $(function () {
     // create blob link
     $('#' + saveUrlId).click(function() {
         var callback = function() {
-            if (!seenSharedScreen) {
+            if (!sawShareModal) {
                 var location = document.location.origin;
                 $("#" + modalJsonEditorUrlId).append(location + "/" + blobId);
                 $("#" + modalRawJsonUrlId).append(location + apiBase + "/" + blobId);
                 $('#jsonSharedModal').modal();
-                seenSharedScreen = true;
+                sawShareModal = true;
             }
         }
         if (!lastChangeByEditor) {
@@ -191,9 +200,12 @@ $(function () {
     // download json file
     $('#' + saveFileId).click(function() {
         if (!lastChangeByEditor) {
-            formatterToEditor();
+            if (!formatterToEditor()) {
+                saveToDisk();
+            }
         } else {
             editorToFormatter();
+            saveToDisk();
         }
     });
 
