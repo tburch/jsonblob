@@ -63,7 +63,7 @@
     </div>
 
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Nevermind</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Never mind</button>
     </div>
 </div>
 
@@ -73,11 +73,33 @@
         <h3 id="fetchModalLabel">So you want to us to get JSON for you?</h3>
     </div>
     <div class="modal-body">
-
+        <form>
+            <fieldset>
+                <label>JSON URL</label>
+                <input id="jsonUrl" type="text" data-url="/file/upload" name="url" placeholder="JSON URL">
+                <span class="help-block">Enter a URL that returns JSON</span>
+                <button class="btn btn-primary" type="submit" id="fetchJSONButton">I'm Lazy, fetch the JSON</button>
+            </fieldset>
+        </form>
     </div>
 
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Nevermind</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Never mind</button>
+    </div>
+</div>
+
+<div id="fetchUrlErrorModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="fetchErrorModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="fetchErrorModalLabel">There was an error getting the JSON!</h3>
+    </div>
+    <div class="modal-body">
+       <p>Sorry, we weren't able to get JSON from the following url:</p>
+        <pre></pre>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Lame</button>
     </div>
 </div>
 

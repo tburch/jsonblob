@@ -1,19 +1,25 @@
 $(function () {
     var jsonFormatterId = "json-formatter";
     var jsonEditorId = "json-editor";
-    var alertsEditorId = "alerts-editor";
-    var alertsformatterId = "alerts-formatter";
-    var toFormatterId = "to-formatter";
-    var toEditorId = "to-editor";
-    var newId = "new";
-    var openFileId = "open-file";
-    var openUrlId = "open-url";
-    var saveFileId = "save-file";
-    var saveUrlId = "save-url";
-    var cleanId = "clear";
-    var rawUrl = "raw-json";
-    var modalRawJsonUrlId = "rawJsonUrl";
-    var modalJsonEditorUrlId = "jsonEditorUrl";
+    var editorErrors = $("#alerts-editor");
+    var formatterErrors = $("#alerts-formatter");
+    var toFormatterButton = $("#to-formatter");
+    var toEditorButton = $("#to-editor")
+    var newJson = $("#new");
+    var openFile = $("#open-file");
+    var openUrl = $("#open-url");
+    var saveFile = $("#save-file");
+    var saveUrl = $("#save-url");
+    var clearJson = $("#clear");
+    var rawUrl = $("#raw-json");
+    var modalRawJsonUrl = $("#rawJsonUrl");
+    var modalJsonEditorUrl = $("#jsonEditorUrl");
+    var jsonSharedModal = $("#jsonSharedModal");
+    var fetchUrlModal = $('#fetchUrlModal');
+
+    fetchUrlModal.find('form').submit(function(e){
+        e.preventDefault();
+    });
 
     var apiBase = "/api/jsonBlob";
     var blobId = window.location.pathname.substr(1);
@@ -61,7 +67,7 @@ $(function () {
                     var locationHeader = jqXHR.getResponseHeader("Location");
                     var parts = locationHeader.split("/");
                     blobId = parts[parts.length - 1];
-                    $('#' + rawUrl).removeClass("hidden").show("slow");
+                    rawUrl.removeClass("hidden").show("slow");
                     // TODO pushstate url with blob id
                     if (callback && typeof(callback) == 'function') {
                         callback(data, textStatus, jqXHR)
@@ -95,21 +101,21 @@ $(function () {
         formatter.set(json);
         editor.set(json);
         blobId = ""
-        $('#' + rawUrl).addClass("hidden").show();
+        rawUrl.addClass("hidden").show();
     }
 
     var formatterToEditor = function() {
         var error = false
         try {
-            $("#" + alertsformatterId).empty();
+            formatterErrors.empty();
             editor.set(formatter.get());
             if (blobId) {
                 save();
             }
         } catch (err) {
             var msg = err.message.substr(0, err.message.indexOf("<a")) // remove json lint link
-            $("#" + alertsformatterId).append('<div class="alert alert-block alert-error fade in"><button type="button" class="close" data-dismiss="alert">&times;</button>' + msg + '</div>');
-            $("#" + alertsformatterId + ".alert").alert();
+            formatterErrors.append('<div class="alert alert-block alert-error fade in"><button type="button" class="close" data-dismiss="alert">&times;</button>' + msg + '</div>');
+            formatterErrors.find(".alert").alert();
             error = true;
         }
         return error;
@@ -117,14 +123,14 @@ $(function () {
 
     var editorToFormatter = function() {
         try {
-            $("#" + alertsEditorId).empty();
+            editorErrors.empty();
             formatter.set(editor.get());
             if (blobId) {
                 save();
             }
         } catch (err) {
-            $("#" + alertsEditorId).append('<div class="alert alert-block alert-error fade in"><button type="button" class="close" data-dismiss="alert">×</button>' + err.message + '</div>');
-            $("#" + alertsEditorId + ".alert").alert();
+            editorErrors.append('<div class="alert alert-block alert-error fade in"><button type="button" class="close" data-dismiss="alert">×</button>' + err.message + '</div>');
+            editorErrors.find(".alert").alert();
         }
     };
 
@@ -152,7 +158,7 @@ $(function () {
             $.getJSON(blobApiUrl, function(data) {
                 formatter.set(data);
                 editor.set(data);
-                $('#' + rawUrl).removeClass("hidden").show();
+                rawUrl.removeClass("hidden").show();
                 sawShareModal = true;
                 // TODO pushstate url with blob id
             });
@@ -162,7 +168,7 @@ $(function () {
     var saveToDisk = function() {
         var data = formatter.getText();
         var ts = (new Date()).getTime();
-        $('#' + saveFileId).attr({
+        saveFile.attr({
             "href" : "data:application/json;charset=utf-8," + encodeURIComponent(data),
             "download" : (blobId ? blobId : ts) + ".json"
         });
@@ -170,7 +176,7 @@ $(function () {
 
     /* hook up the UI stuff */
     // raw JSON link
-    $('#' + rawUrl).click(function() {
+    rawUrl.click(function() {
         if (blobId) {
             var blobApiUrl = [apiBase, blobId].join("/")
             window.open(blobApiUrl, "jsonBlob_" + blobId);
@@ -178,13 +184,13 @@ $(function () {
     });
 
     // create blob link
-    $('#' + saveUrlId).click(function() {
+    saveUrl.click(function() {
         var callback = function() {
             if (!sawShareModal) {
                 var location = document.location.origin;
-                $("#" + modalJsonEditorUrlId).append(location + "/" + blobId);
-                $("#" + modalRawJsonUrlId).append(location + apiBase + "/" + blobId);
-                $('#jsonSharedModal').modal();
+                modalJsonEditorUrl.append(location + "/" + blobId);
+                modalRawJsonUrl.append(location + apiBase + "/" + blobId);
+                jsonSharedModal.modal();
                 sawShareModal = true;
             }
         }
@@ -200,7 +206,7 @@ $(function () {
     });
 
     // download json file
-    $('#' + saveFileId).click(function() {
+    saveFile.click(function() {
         if (!lastChangeByEditor) {
             if (!formatterToEditor()) {
                 saveToDisk();
@@ -212,7 +218,7 @@ $(function () {
     });
 
     // upload JSON
-    $('#' + openFileId).click(function() {
+    openFile.click(function() {
         var modal = $('#uploadFileModal');
         $('#jsonFile').fileupload({
             dataType: 'json',
@@ -225,8 +231,7 @@ $(function () {
                     });
             },
             done: function (e, data) {
-                var json = data.result;
-                formatter.set(json);
+                formatter.set(data.result);
                 formatterToEditor();
                 modal.modal('hide');
             }
@@ -234,23 +239,62 @@ $(function () {
         modal.modal();
     });
 
-    // upload JSON
-    $('#' + openUrlId).click(function() {
-        // TODO
+    $("#fetchJSONButton").click(function() {
+        var url = $("#jsonUrl").val();
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                formatter.set(data);
+                formatterToEditor();
+                fetchUrlModal.modal('hide');
+            },
+            error: function() {
+                $.ajax({
+                    type: "POST",
+                    url: '/file/fetch',
+                    dataType: 'json',
+                    data: {"url": url},
+                    cache: false,
+                    success: function(data) {
+                        formatter.set(data);
+                        formatterToEditor();
+                        fetchUrlModal.modal('hide');
+                    },
+                    error: function() {
+                        fetchUrlModal.modal('hide');
+                        $("#fetchUrlErrorModal").find("pre").text(url);
+                        $("#fetchUrlErrorModal").modal();
+                    }
+                });
+            }
+        });
     });
 
-    // clear the editor and formatter with either the new or clear buttons
-    $("#" + cleanId + ", #" + newId).click(function() {
+    // upload JSON
+    openUrl.click(function() {
+        fetchUrlModal.modal();
+    });
+
+    // clear the editor and formatter with either the clear button
+    clearJson.click(function() {
        reset();
-    })
+    });
+
+    // clear the editor and formatter with either the new button
+    newJson.click(function() {
+        reset();
+    });
 
     // format pane to editor pane
-   $("#" + toEditorId).click(function() {
+   toEditorButton.click(function() {
        formatterToEditor();
    });
 
     //editor pane to format pane
-    $("#" + toFormatterId).click(function() {
+    toFormatterButton.click(function() {
         editorToFormatter();
     });
 
