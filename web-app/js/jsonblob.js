@@ -50,6 +50,7 @@ $(function () {
         ]
     };
 
+    var saved = false;
     var lastChangeByEditor = null;
     var editor = null;
     var formatter = null;
@@ -64,6 +65,7 @@ $(function () {
                 headers: {'Content-Type': 'application/json', 'Accept':'application/json'},
                 data: formatter.getText(),
                 success: function(data, textStatus, jqXHR) {
+                    saved = true;
                     var locationHeader = jqXHR.getResponseHeader("Location");
                     var parts = locationHeader.split("/");
                     blobId = parts[parts.length - 1];
@@ -83,6 +85,7 @@ $(function () {
                 headers: {'Content-Type': 'application/json', 'Accept':'application/json'},
                 data: formatter.getText(),
                 success: function(data, textStatus, jqXHR) {
+                    saved = true;
                     // TODO pushstate url with blob id
                     if (callback && typeof(callback) == 'function') {
                         callback(data, textStatus, jqXHR)
@@ -97,6 +100,8 @@ $(function () {
     };
 
     var reset = function() {
+        saved = false;
+        sawShareModal = false;
         var json = {};
         formatter.set(json);
         editor.set(json);
@@ -134,12 +139,12 @@ $(function () {
         }
     };
 
-
     var init = function() {
         // setup the formatter
         formatter = new JSONFormatter(document.getElementById(jsonFormatterId), {
             change: function () {
                 lastChanged = formatter;
+                saved = false;
             }
         });
 
@@ -147,6 +152,7 @@ $(function () {
         editor = new JSONEditor(document.getElementById(jsonEditorId), {
             change: function () {
                 lastChanged = editor;
+                saved = false;
             }
         });
 
@@ -156,6 +162,7 @@ $(function () {
         } else {
             var blobApiUrl = [apiBase, blobId].join("/")
             $.getJSON(blobApiUrl, function(data) {
+                saved = true;
                 formatter.set(data);
                 editor.set(data);
                 rawUrl.removeClass("hidden").show();
@@ -234,6 +241,7 @@ $(function () {
                 formatter.set(data.result);
                 formatterToEditor();
                 modal.modal('hide');
+                saved = false;
             }
         });
         modal.modal();
@@ -250,6 +258,7 @@ $(function () {
                 formatter.set(data);
                 formatterToEditor();
                 fetchUrlModal.modal('hide');
+                saved = false;
             },
             error: function() {
                 $.ajax({
@@ -262,6 +271,7 @@ $(function () {
                         formatter.set(data);
                         formatterToEditor();
                         fetchUrlModal.modal('hide');
+                        saved = false;
                     },
                     error: function() {
                         fetchUrlModal.modal('hide');
@@ -285,7 +295,6 @@ $(function () {
 
     // clear the editor and formatter with either the new button
     newJson.click(function() {
-        sawShareModal = false;
         reset();
     });
 
@@ -315,6 +324,12 @@ $(function () {
 
     $(window).resize(function() {
         resize();
+    });
+
+    $(window).bind('beforeunload', function() {
+        if (!saved) {
+            return "You have unsaved work, it will be lost if you leave the page.";
+        }
     });
 
 });
