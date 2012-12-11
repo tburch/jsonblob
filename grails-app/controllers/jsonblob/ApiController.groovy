@@ -2,10 +2,10 @@ package jsonblob
 
 class ApiController {
 
-    def bootStrap
+    def jsonBlobResourceService
 
     def index() {
-        [demoObjectId: bootStrap.demoObjectId]
+        [demoObjectId: jsonBlobResourceService.apiDemoObjectId]
     }
 
 

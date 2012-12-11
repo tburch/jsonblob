@@ -9,6 +9,8 @@ import org.springframework.beans.factory.InitializingBean
 
 class JsonBlobResourceService implements InitializingBean {
 
+    def apiDemoObjectId //HACK
+
     GMongo mongo
 
     def blobCollection

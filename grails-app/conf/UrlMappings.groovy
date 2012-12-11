@@ -8,8 +8,9 @@ class UrlMappings {
                 // apply constraints here
             }
         }
-		"/"(view:"/index")
-        "/about"(view: "about")
+		"/"(view:"/editor")
+        "/about"(view: "/about")
+        "/api"(controller: 'api', action: 'index')
         "/$id?"(controller: 'blob', action: 'load')
 		"500"(view:'/error')
 	}
