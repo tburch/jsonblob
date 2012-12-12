@@ -50,7 +50,7 @@ $(function () {
         ]
     };
 
-    var saved = false;
+    var saved = true;
     var lastChangeByEditor = null;
     var editor = null;
     var formatter = null;
