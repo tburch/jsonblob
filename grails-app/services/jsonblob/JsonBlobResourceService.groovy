@@ -3,6 +3,7 @@ package jsonblob
 import com.gmongo.GMongo
 import com.mongodb.BasicDBObject
 import com.mongodb.util.JSON
+import groovy.json.JsonBuilder
 import org.bson.types.ObjectId
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 import org.springframework.beans.factory.InitializingBean
@@ -20,9 +21,9 @@ class JsonBlobResourceService implements InitializingBean {
     }
 
     private def createJson(String json) {
-        def builder = new groovy.json.JsonBuilder()
-        builder.blob JSON.parse(json)
-        JSON.parse(builder.toString())
+        def jsonBuilder = new JsonBuilder()
+        jsonBuilder.blob JSON.parse(json)
+        JSON.parse(jsonBuilder.toString())
     }
 
     def create(String json) {
