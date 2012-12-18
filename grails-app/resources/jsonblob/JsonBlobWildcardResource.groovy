@@ -17,12 +17,14 @@ class JsonBlobWildcardResource {
     def jsonService
 
     @Path('/{path: .*}')
-    JsonBlobResource getResource(@PathParam('path') String path) {
+    JsonBlobResource getResource(@PathParam('path') String path, @HeaderParam("X-jsonblob") String jsonBlobId) {
         def pathParts = path.split("/")
-        def id = null
-        pathParts.each { part ->
-            if (ObjectId.isValid(part)) {
-               id = part
+        def id = jsonBlobId?:null
+        if (!id) {
+            pathParts.each { part ->
+                if (ObjectId.isValid(part)) {
+                   id = part
+                }
             }
         }
         if (!id) {

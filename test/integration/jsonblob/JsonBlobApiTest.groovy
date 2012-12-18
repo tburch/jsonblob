@@ -1,5 +1,6 @@
 package jsonblob
 
+import groovy.json.JsonSlurper
 import org.grails.jaxrs.itest.IntegrationTestCase
 import org.junit.Test
 
@@ -26,8 +27,9 @@ class JsonBlobApiTest extends IntegrationTestCase {
         sendRequest(apiBase, 'POST', headers, jsonBuilder.toString().bytes)
 
         def locationHeader = response.getHeader('Location')
+        assertNotNull(locationHeader)
         def relativePath = locationHeader.substring(locationHeader.indexOf(apiBase))
-        def blobId = relativePath.subString(relativePath.lastIndexOf("/") + 1)
+        def blobId = relativePath.split("/").last()
 
         assertEquals(201, response.status)
         assertTrue(response.contentAsString.length() > 0)
@@ -42,6 +44,15 @@ class JsonBlobApiTest extends IntegrationTestCase {
         assertTrue(response.getHeader('Content-Type').startsWith('application/json'))
         assertTrue(response.contentAsString.length() > 0)
         assertFalse(response.contentAsString.contains("_id"))
+
+        JsonSlurper slurper = new JsonSlurper()
+        def result = slurper.parseText(response.contentAsString)
+        assertTrue(result.dogs.size() == 1)
+
+        //get the blob using a wildcard url with only a header
+        sendRequest("/api/testing/wtf", 'GET', headers + ['X-jsonblob':blobId])
+
+        assertEquals(200, response.status)
 
         //get the blob using a wildcard url
         sendRequest("/api/testing/$blobId/wtf", 'GET', headers)
@@ -63,17 +74,17 @@ class JsonBlobApiTest extends IntegrationTestCase {
         assertTrue(response.contentAsString.contains("pigs"))
         assertFalse(response.contentAsString.contains("_id"))
 
-        // delete blob
-        sendRequest(relativePath, 'DELETE', headers)
-
-        assertEquals(204, response.status)
-        assertTrue(response.getHeader('Content-Type').startsWith('application/json'))
-        assertTrue(response.contentAsString == null || response.contentAsString == "")
-
-        // get deleted blob
-        sendRequest(relativePath, 'GET', headers)
-
-        assertEquals(404, response.status)
+//        // delete blob
+//        sendRequest(relativePath, 'DELETE', headers)
+//
+//        assertEquals(204, response.status)
+//        assertTrue(response.getHeader('Content-Type').startsWith('application/json'))
+//        assertTrue(response.contentAsString == null || response.contentAsString == "")
+//
+//        // get deleted blob
+//        sendRequest(relativePath, 'GET', headers)
+//
+//        assertEquals(404, response.status)
     }
 
 }

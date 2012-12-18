@@ -20,7 +20,9 @@ class JsonBlobResourceService implements InitializingBean {
     }
 
     def create(String json) {
-        def parsed = JSON.parse(json)
+        def builder = new groovy.json.JsonBuilder()
+        builder.blob JSON.parse(json)
+        def parsed = JSON.parse(builder.toString())
         blobCollection.insert(parsed)
         parsed
     }
@@ -38,7 +40,9 @@ class JsonBlobResourceService implements InitializingBean {
         if (!obj) {
             throw new DomainObjectNotFoundException(ObjectId.class, id)
         }
-        def parsed = com.mongodb.util.JSON.parse(json)
+        def builder = new groovy.json.JsonBuilder()
+        builder.blob JSON.parse(json)
+        def parsed = JSON.parse(builder.toString())
         blobCollection.update(getDBObject(id), parsed)
         parsed
     }
