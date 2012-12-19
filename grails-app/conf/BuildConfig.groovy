@@ -54,8 +54,8 @@ grails.project.dependency.resolution = {
 
         compile ":google-analytics:2.0"
 
-        compile (":mongodb:1.0.0.GA"){
-            excludes "mongo-java-driver', 'gmongo"
+        compile (":mongodb:1.1.0.GA") {
+            excludes "mongo-java-driver", "gmongo"
         }
 
         compile ":jaxrs:0.6"
