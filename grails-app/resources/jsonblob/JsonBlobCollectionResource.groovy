@@ -19,7 +19,7 @@ class JsonBlobCollectionResource  {
         def objectId = newBlob["_id"]
         if (objectId) {
             URI uri = UriBuilder.fromPath(objectId.toString()).build()
-            Response.created(uri).entity(jsonService.objectMapper.writeValueAsString(newBlob["blob"])).build()
+            Response.created(uri).entity(jsonService.objectMapper.writeValueAsString(newBlob?.blob)).build()
         } else {
             Response.serverError().build()
         }
