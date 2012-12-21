@@ -62,7 +62,7 @@ grails.project.dependency.resolution = {
 
         compile ":shiro:1.1.4"
 
-        compile ":jetty:2.0.1"
+        build ":tomcat:$grailsVersion"
 
         runtime ":database-migration:1.1"
 
