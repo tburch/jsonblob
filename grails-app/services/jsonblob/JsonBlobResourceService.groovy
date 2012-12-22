@@ -17,7 +17,11 @@ class JsonBlobResourceService implements InitializingBean {
     def blobCollection
 
     private def getDBObject(String objectId) {
-        new BasicDBObject("_id", new ObjectId(objectId))
+        if (ObjectId.isValid(objectId)) {
+            return new BasicDBObject("_id", new ObjectId(objectId))
+        } else {
+            return null
+        }
     }
 
     private def createJson(String json) {
@@ -33,7 +37,11 @@ class JsonBlobResourceService implements InitializingBean {
     }
 
     def read(String id) {
-        def obj = blobCollection.findOne(getDBObject(id))
+        def objectId = getDBObject(id)
+        if (!objectId) {
+            throw new DomainObjectNotFoundException(ObjectId.class, id)
+        }
+        def obj = blobCollection.findOne(objectId)
         if (!obj) {
             throw new DomainObjectNotFoundException(ObjectId.class, id)
         }
@@ -41,19 +49,27 @@ class JsonBlobResourceService implements InitializingBean {
     }
     
     def update(String id, String json) {
-        def obj = blobCollection.findOne(getDBObject(id))
+        def objectId = getDBObject(id)
+        if (!objectId) {
+            throw new DomainObjectNotFoundException(ObjectId.class, id)
+        }
+        def obj = blobCollection.findOne(objectId)
         if (!obj) {
             throw new DomainObjectNotFoundException(ObjectId.class, id)
         }
         def parsed = createJson(json)
-        blobCollection.update(getDBObject(id), parsed)
+        blobCollection.update(objectId, parsed)
         parsed
     }
     
     void delete(String id) {
-        def obj = blobCollection.findOne(getDBObject(id))
+        def objectId = getDBObject(id)
+        if (!objectId) {
+            throw new DomainObjectNotFoundException(ObjectId.class, id)
+        }
+        def obj = blobCollection.findOne(objectId)
         if (obj) {
-            blobCollection.remove(getDBObject(id))
+            blobCollection.remove(objectId)
         }
     }
 
