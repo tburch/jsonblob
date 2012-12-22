@@ -37,12 +37,12 @@ grails.project.dependency.resolution = {
         compile "com.fasterxml.jackson.core:jackson-databind:2.1.0"
         runtime "postgresql:postgresql:9.1-901-1.jdbc4"
         compile ("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2") {
-            excludes 'groovy', 'xml-apis'
+            excludes "groovy", "xml-apis"
         }
     }
 
     plugins {
-        runtime ":hibernate:$grailsVersion"
+        build ":tomcat:$grailsVersion"
 
         runtime ":jquery:1.8.3"
         compile ":twitter-bootstrap:2.2.1"
@@ -61,11 +61,5 @@ grails.project.dependency.resolution = {
         compile ":jaxrs:0.6"
 
         compile ":shiro:1.1.4"
-
-        build ":tomcat:$grailsVersion"
-
-        runtime ":database-migration:1.1"
-
-        compile ":cache:1.0.0"
     }
 }
