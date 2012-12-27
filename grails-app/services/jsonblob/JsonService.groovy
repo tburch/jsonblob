@@ -12,7 +12,11 @@ import org.springframework.beans.factory.InitializingBean
 
 class JsonService implements InitializingBean {
 
-    def objectMapper
+    ObjectMapper objectMapper
+
+    String writeValueAsString(Object o) {
+        return objectMapper.writeValueAsString(o)
+    }
 
     void afterPropertiesSet() throws Exception {
         def om = new ObjectMapper()
@@ -26,6 +30,6 @@ class JsonService implements InitializingBean {
         })
         om.registerModule(jacksonMongoModule)
 
-        this.objectMapper = om
+        objectMapper = om
     }
 }

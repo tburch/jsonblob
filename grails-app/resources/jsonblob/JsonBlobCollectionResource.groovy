@@ -23,7 +23,7 @@ class JsonBlobCollectionResource  {
         def objectId = newBlob["_id"]
         if (objectId) {
             URI uri = UriBuilder.fromPath(objectId.toString()).build()
-            Response.created(uri).entity(jsonService.objectMapper.writeValueAsString(newBlob?.blob)).build()
+            Response.created(uri).entity(jsonService.writeValueAsString(newBlob?.blob)).build()
         } else {
             Response.serverError().build()
         }
@@ -31,7 +31,7 @@ class JsonBlobCollectionResource  {
 
     @Path('/jsonBlob/{id}')
     JsonBlobResource getResource(@PathParam('id') String id) {
-        new JsonBlobResource(jsonBlobResourceService: jsonBlobResourceService, objectMapper: jsonService.objectMapper, id: id)
+        new JsonBlobResource(jsonBlobResourceService: jsonBlobResourceService, jsonService: jsonService, id: id)
     }
 
     @Path('/{path: .*}')
@@ -47,7 +47,7 @@ class JsonBlobCollectionResource  {
         if (!id) {
             throw new DomainObjectNotFoundException(ObjectId.class, path)
         }
-        new JsonBlobResource(jsonBlobResourceService: jsonBlobResourceService, objectMapper: jsonService.objectMapper, id: id)
+        new JsonBlobResource(jsonBlobResourceService: jsonBlobResourceService, jsonService: jsonService, id: id)
     }
 
 }
