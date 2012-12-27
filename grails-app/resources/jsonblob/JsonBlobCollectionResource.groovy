@@ -31,12 +31,15 @@ class JsonBlobCollectionResource  {
 
     @Path('/jsonBlob/{id}')
     JsonBlobResource getResource(@PathParam('id') String id) {
-        new JsonBlobResource(jsonBlobResourceService: jsonBlobResourceService, jsonService: jsonService, id: id)
+        if (!ObjectId.isValid(id)) {
+            throw new DomainObjectNotFoundException(ObjectId.class, id)
+        }
+        createJsonBlobResource(id)
     }
 
     @Path('/{path: .*}')
     JsonBlobResource getResource(@PathParam('path') String path, @HeaderParam("X-jsonblob") String jsonBlobId) {
-        def id = jsonBlobId?:null
+        String id = jsonBlobId?:null
         if (!id) {
             path.split("/").each { part ->
                 if (ObjectId.isValid(part)) {
@@ -45,8 +48,12 @@ class JsonBlobCollectionResource  {
             }
         }
         if (!id) {
-            throw new DomainObjectNotFoundException(ObjectId.class, path)
+            throw new DomainObjectNotFoundException(ObjectId.class, jsonBlobId?:path)
         }
+        createJsonBlobResource(id)
+    }
+
+    private JsonBlobResource createJsonBlobResource(String id) {
         new JsonBlobResource(jsonBlobResourceService: jsonBlobResourceService, jsonService: jsonService, id: id)
     }
 
