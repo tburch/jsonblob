@@ -6,6 +6,7 @@ import com.mongodb.util.JSON
 import groovy.json.JsonBuilder
 import org.bson.types.ObjectId
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
+import org.joda.time.DateTime
 import org.springframework.beans.factory.InitializingBean
 
 class JsonBlobResourceService implements InitializingBean {
@@ -25,8 +26,14 @@ class JsonBlobResourceService implements InitializingBean {
     }
 
     private def createJson(String json) {
+        def now = new DateTime()
         def jsonBuilder = new JsonBuilder()
-        jsonBuilder.blob JSON.parse(json)
+        jsonBuilder {
+            blob JSON.parse(json)
+            updated {
+                '$date' now.getMillis()
+            }
+        }
         JSON.parse(jsonBuilder.toString())
     }
 

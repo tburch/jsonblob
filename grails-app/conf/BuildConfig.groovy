@@ -39,6 +39,8 @@ grails.project.dependency.resolution = {
         compile ("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2") {
             excludes "groovy", "xml-apis"
         }
+
+        compile 'joda-time:joda-time:2.1'
     }
 
     plugins {
