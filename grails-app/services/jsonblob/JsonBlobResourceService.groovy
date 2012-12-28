@@ -13,7 +13,7 @@ class JsonBlobResourceService implements InitializingBean {
 
     def apiDemoObjectId //HACK
 
-    GMongo mongo
+    private GMongo mongo
 
     def blobCollection
 
@@ -88,7 +88,7 @@ class JsonBlobResourceService implements InitializingBean {
             def password = uri.userInfo.split(":")[1]
             def databaseName = uri.path.substring(1)
 
-            def mongo = new GMongo(uri.host, uri.port)
+            this.mongo = new GMongo(uri.host, uri.port)
 
             db = mongo.getDB(databaseName)
             db.authenticate(username, password.toCharArray())
