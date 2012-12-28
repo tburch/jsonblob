@@ -1,5 +1,8 @@
 package jsonblob
 
+import grails.converters.JSON
+import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
+
 import javax.ws.rs.*
 import javax.ws.rs.core.Response
 
@@ -19,8 +22,13 @@ class JsonBlobResource {
 
     @PUT
     Response update(String json) {
-        def updatedBlob = jsonBlobResourceService.update(id, json)
-        Response.ok(jsonService.writeValueAsString(updatedBlob?.blob)).build()
+        try {
+            JSON.parse(json)
+            def updatedBlob = jsonBlobResourceService.update(id, json)
+            Response.ok(jsonService.writeValueAsString(updatedBlob?.blob)).build()
+        } catch (ConverterException ce) {
+            Response.serverError().build()
+        }
     }
 
 //    @DELETE

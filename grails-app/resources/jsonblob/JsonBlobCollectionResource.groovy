@@ -1,6 +1,8 @@
 package jsonblob
 
+import grails.converters.JSON
 import org.bson.types.ObjectId
+import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 import org.grails.jaxrs.provider.DomainObjectNotFoundException
 
 import javax.ws.rs.*
@@ -19,12 +21,12 @@ class JsonBlobCollectionResource  {
     @POST
     @Path('/jsonBlob')
     Response create(String json) {
-        def newBlob = jsonBlobResourceService.create(json)
-        def objectId = newBlob["_id"]
-        if (objectId) {
-            URI uri = UriBuilder.fromPath(objectId.toString()).build()
+        try {
+            JSON.parse(json)
+            def newBlob = jsonBlobResourceService.create(json)
+            URI uri = UriBuilder.fromPath(newBlob["_id"].toString()).build()
             Response.created(uri).entity(jsonService.writeValueAsString(newBlob?.blob)).build()
-        } else {
+        } catch (ConverterException ce) {
             Response.serverError().build()
         }
     }
