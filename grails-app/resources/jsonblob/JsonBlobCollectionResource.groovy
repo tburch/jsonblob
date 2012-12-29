@@ -24,8 +24,12 @@ class JsonBlobCollectionResource  {
         try {
             JSON.parse(json)
             def newBlob = jsonBlobResourceService.create(json)
-            URI uri = UriBuilder.fromPath(newBlob["_id"].toString()).build()
-            Response.created(uri).entity(jsonService.writeValueAsString(newBlob?.blob)).build()
+            if (!newBlob["_id"]) {
+                Response.serverError().build()
+            } else {
+                URI uri = UriBuilder.fromPath(newBlob["_id"].toString()).build()
+                Response.created(uri).entity(jsonService.writeValueAsString(newBlob?.blob)).build()
+            }
         } catch (ConverterException ce) {
             Response.serverError().build()
         }
