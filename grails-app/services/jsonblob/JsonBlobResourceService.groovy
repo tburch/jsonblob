@@ -13,7 +13,7 @@ class JsonBlobResourceService implements InitializingBean {
 
     def apiDemoObjectId //HACK
 
-    private GMongo mongo
+    GMongo mongo
 
     def blobCollection
 
