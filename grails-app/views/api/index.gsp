@@ -65,13 +65,22 @@ Transfer-Encoding: chunked
         <p id="wildcard" class="lead">Custom Urls</p>
         <p>
             <a href="#get"><code>GET</code></a> and <a href="#put"><code>PUT</code></a> requests can be customized to support any url path scheme.
-            The only requirements are that the first path part is <code>/api</code> and that the <code>blobId</code> is present somewhere as a URL path part following <code>/api</code>.
+            The only requirements are that the first path part is <code>/api</code> and that the <code>blobId</code> is present somewhere as a URL path part following <code>/api</code> or that the <code>blobId</code> is set in the <code>X-jsonblob</code> header.
             Upon successfully Retrieving the JSON blob, a <code>200</code> response will be returned.
             The body of the response is the JSON that was stored in the blob.
         </p>
         <p>As an example, if we were trying to mimic a RESTful url structure for getting the names of the employees in with a particular role, we may use want to use a url like <a href="/api/company/${demoObjectId}/employees/engineers"><code>/api/company/${demoObjectId}/employees/engineers</code></a> where <code>${demoObjectId}</code> is the <code>blobId</code> that represents the data the client is expecting.</p>
         <pre class="pre-scrollable">
 curl -i  -H "Content-Type: application/json" -H "Accept: application/json" http://jsonblob.com/api/company/${demoObjectId}/employees/engineers
+HTTP/1.1 200 OK
+Content-Type: application/json
+Transfer-Encoding: chunked
+
+{"people":["bill","steve","bob"]}
+        </pre>
+        <p>Additionally, you could make the request using the <code>X-jsonblob</code> header:</p>
+        <pre class="pre-scrollable">
+curl -i  -H "Content-Type: application/json" -H "Accept: application/json" -H "X-jsonblob: ${demoObjectId}" http://jsonblob.com/api/company/employees/engineers
 HTTP/1.1 200 OK
 Content-Type: application/json
 Transfer-Encoding: chunked
