@@ -10,8 +10,9 @@
     <meta name="description" content="JSON Blob is a web-based tool to create, edit, view, format, and share JSON. It shows your JSON side by side in a clear, editable tree-view and in formatted plain text. You can save your JSON and share it via URL with anyone">
     <meta name="keywords" content="jsonblob, jsobblob.com, json, editor, formatter, online, format, parser, json editor, jsonblob, json blob, online json editor, javascript, javascript object notation, tools, tool, json tools, tree-view, open source, free, json parser, json parser online, json formatter, json formatter online, online json formatter, online json parser, format json online, jsbin">
     <meta name="author" content="Tristan Burch">
+    <link rel="shortcut icon" href="/favicon.ico">
 
-    <r:require modules="icons, jsonBlob, fontAwesome, html5"/>
+    <r:require modules="jsonBlob, fontAwesome, html5"/>
 
     <g:layoutHead/>
 

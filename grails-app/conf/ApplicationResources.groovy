@@ -18,11 +18,6 @@ modules = {
         dependsOn 'bootstrap'
     }
 
-    icons {
-        defaultBundle 'app'
-        resource url:'img/favicon.ico', atrs:[rel:"shortcut icon", type:"image/x-icon"], disposition:'head'
-    }
-
     fontAwesome {
         defaultBundle 'app'
         dependsOn 'bootstrap'
