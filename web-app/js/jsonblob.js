@@ -70,7 +70,9 @@ $(function () {
                     var parts = locationHeader.split("/");
                     blobId = parts[parts.length - 1];
                     rawUrl.removeClass("hidden").show("slow");
-                    // TODO pushstate url with blob id
+
+                    history.pushState(null, "JSON Blob " + blobId, "/" + blobId);
+
                     if (callback && typeof(callback) == 'function') {
                         callback(data, textStatus, jqXHR)
                     }
@@ -107,6 +109,8 @@ $(function () {
         editor.set(json);
         blobId = ""
         rawUrl.addClass("hidden").show();
+
+        history.pushState(null, "JSON Blob", "/");
     }
 
     var formatterToEditor = function() {
