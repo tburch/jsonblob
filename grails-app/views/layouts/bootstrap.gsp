@@ -33,6 +33,7 @@
             <div class="nav-collapse">
                 <g:if test="${pageProperty(name:'body.type') ==~ 'editor'}">
                     <ul class="nav">
+                        <li class="divider-vertical"></li>
                         <li><a id="new"><i class="icon-file"></i> New</a></li>
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" >
@@ -59,6 +60,11 @@
                         <li><a  id="raw-json" class="hidden"><i class="icon-external-link"></i> Raw JSON</a></li>
                     </ul>
                 </g:if>
+                <ul class="nav pull-right">
+                    <li>
+                        <g:link url="/api">API</g:link>
+                    </li>
+                </ul>
                 %{--
                 <shiro:notUser>
                     <ul class="nav pull-right">
@@ -121,9 +127,6 @@
             </a>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li>
-                        <g:link url="/api">API</g:link>
-                    </li>
                     <li>
                         <g:link url="/about" absolute="true">About</g:link>
                     </li>
