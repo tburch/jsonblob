@@ -41,8 +41,8 @@
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a  id="open-file"><i class="icon-upload-alt"></i> File</a></li>
-                                <li><a  id="open-url"><i class="icon-link"></i> JSON from URL</a></li>
+                                <li><a id="open-file"><i class="icon-upload-alt"></i> File</a></li>
+                                <li><a id="open-url"><i class="icon-link"></i> JSON from URL</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -51,23 +51,22 @@
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a  id="save-file"><i class="icon-download-alt"></i> File</a></li>
-                                <li><a  id="save-url"><i class="icon-share-alt"></i> Shareable URL</a></li>
+                                <li><a id="save-file"><i class="icon-download-alt"></i> File</a></li>
+                                <li><a id="save-url"><i class="icon-share-alt"></i> Shareable URL</a></li>
                             </ul>
                         </li>
-                        <li><a  id="clear"><i class="icon-remove"></i> Clear</a></li>
+                        <li><a id="clear"><i class="icon-remove"></i> Clear</a></li>
                         <li class="divider-vertical"></li>
-                        <li><a  id="raw-json" class="hidden"><i class="icon-external-link"></i> Raw JSON</a></li>
+                        <li><a id="raw-json" class="hidden"><i class="icon-external-link"></i> Raw JSON</a></li>
                     </ul>
                 </g:if>
                 <ul class="nav pull-right">
                     <li>
-                        <g:link url="/api">API</g:link>
+                        <g:link url="/api"><i class="icon-exchange"></i> API</g:link>
                     </li>
-                </ul>
-                %{--
-                <shiro:notUser>
-                    <ul class="nav pull-right">
+                    <li class="divider-vertical"></li>
+                    %{--
+                    <shiro:notUser>
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" >
                                 <i class="icon-user"></i> Sign Up
@@ -92,10 +91,8 @@
                                 <li><a  id="sign-in-facebook"><i class="icon-facebook"></i> Twitter</a></li>
                             </ul>
                         </li>
-                    </ul>
-                </shiro:notUser>
-                <shiro:user>
-                    <ul class="nav pull-right">
+                    </shiro:notUser>
+                    <shiro:user>
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" ><shiro:principal/><b class="caret"></b></a>
                             <ul class="dropdown-menu">
@@ -105,9 +102,9 @@
                                 <li><g:link controller="auth" action="signOut"><i class="icon-signout"></i> Log out</g:link></li>
                             </ul>
                         </li>
-                    </ul>
-                </shiro:user>
-                --}%
+                    </shiro:user>
+                    --}%
+                </ul>
             </div>
         </div>
     </div>
