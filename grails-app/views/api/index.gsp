@@ -11,7 +11,7 @@
         <ul id="apiNav" class="nav nav-list affix">
             <li><a href="#post"><i class="icon-chevron-right"></i> POST</a></li>
             <li><a href="#get"><i class="icon-chevron-right"></i> GET</a></li>
-            <li><a href="#put"><i class="icon-chevron-right"></i> GET</a></li>
+            <li><a href="#put"><i class="icon-chevron-right"></i> PUT</a></li>
             <li><a href="#wildcard"><i class="icon-chevron-right"></i> Custom URLs</a></li>
         </ul>
     </div>
