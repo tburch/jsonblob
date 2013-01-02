@@ -198,7 +198,7 @@ $(function () {
     saveUrl.click(function() {
         var callback = function() {
             if (!sawShareModal) {
-                var location = document.location.origin;
+                var location = "http://" + document.location.href.split("/")[2];
                 modalJsonEditorUrl.append(location + "/" + blobId);
                 modalRawJsonUrl.append(location + apiBase + "/" + blobId);
                 jsonSharedModal.modal();
