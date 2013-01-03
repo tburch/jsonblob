@@ -33,7 +33,6 @@
             <div class="nav-collapse">
                 <g:if test="${pageProperty(name:'body.type') ==~ 'editor'}">
                     <ul class="nav">
-                        <li class="divider-vertical"></li>
                         <li><a id="new"><i class="icon-file"></i> New</a></li>
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" >
@@ -64,8 +63,8 @@
                     <li>
                         <g:link url="/api"><i class="icon-exchange"></i> API</g:link>
                     </li>
-                    <li class="divider-vertical"></li>
                     %{--
+                    <li class="divider-vertical"></li>
                     <shiro:notUser>
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" >
