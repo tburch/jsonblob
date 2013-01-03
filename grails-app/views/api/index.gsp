@@ -69,7 +69,7 @@ Transfer-Encoding: chunked
             Upon successfully Retrieving the JSON blob, a <code>200</code> response will be returned.
             The body of the response is the JSON that was stored in the blob.
         </p>
-        <p>As an example, if we were trying to mimic a RESTful url structure for getting the names of the employees in with a particular role, we may use want to use a url like <a href="/api/company/${demoObjectId}/employees/engineers"><code>/api/company/${demoObjectId}/employees/engineers</code></a> where <code>${demoObjectId}</code> is the <code>blobId</code> that represents the data the client is expecting.</p>
+        <p>As an example, if we were trying to mimic a RESTful url structure for getting the names of the employees in with a particular role, we may use want to use a url like <a href="/api/company/${demoObjectId}/employees/engineers"><code>/api/company/${demoObjectId}/employees/engineers</code></a> where <g:link controller="blob" action="load" id="${demoObjectId}"><code>${demoObjectId}</code></g:link> is the <code>blobId</code> that represents the data the client is expecting.</p>
         <pre class="pre-scrollable">
 curl -i  -H "Content-Type: application/json" -H "Accept: application/json" http://jsonblob.com/api/company/${demoObjectId}/employees/engineers
 HTTP/1.1 200 OK
