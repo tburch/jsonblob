@@ -9,6 +9,11 @@
 
 <body type="editor">
 
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <p>Did you know we have an <g:link controller="api">API</g:link>? Collaboratively share/edit your JSON and then access it with our <g:link controller="api">API</g:link>.</p>
+</div>
+
 <div class="row-fluid controls-row">
     <div id="alerts-formatter" class="span4"></div>
     <div class="span4">
