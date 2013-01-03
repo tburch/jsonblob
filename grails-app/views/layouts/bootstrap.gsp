@@ -41,8 +41,8 @@
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a id="open-file"><i class="icon-upload-alt"></i> File</a></li>
                                 <li><a id="open-url"><i class="icon-link"></i> JSON from URL</a></li>
+                                <li><a id="open-file"><i class="icon-upload-alt"></i> File</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -51,8 +51,8 @@
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a id="save-file"><i class="icon-download-alt"></i> File</a></li>
                                 <li><a id="save-url"><i class="icon-share-alt"></i> Shareable URL</a></li>
+                                <li><a id="save-file"><i class="icon-download-alt"></i> File</a></li>
                             </ul>
                         </li>
                         <li><a id="clear"><i class="icon-remove"></i> Clear</a></li>
