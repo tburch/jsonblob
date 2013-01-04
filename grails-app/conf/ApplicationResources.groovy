@@ -6,16 +6,29 @@ modules = {
         resource url: 'js/jsoneditor.js'
         resource url: 'js/lib/jsonlint/jsonlint.js'
         resource url: 'js/jsonblob.js'
-        resource url: 'js/jquery.ui.widget.js'
-        resource url: 'js/jquery.iframe-transport.js'
-        resource url: 'js/jquery.fileupload.js'
-        dependsOn 'jquery'
+        resource url: 'js/lib/jquery/jquery.ui.widget.js'
+        resource url: 'js/lib/jquery/jquery.iframe-transport.js'
+        resource url: 'js/lib/jquery/jquery.fileupload.js'
     }
 
     jsonBlob {
         defaultBundle 'app'
+        dependsOn('jquery', 'bootstrap')
         resource url: 'css/theme.css', disposition: 'head'
-        dependsOn 'bootstrap'
+    }
+
+    jquery {
+        defaultBundle 'app'
+        resource url: 'js/lib/jquery/jquery-1.8.3.js'
+    }
+
+    bootstrap {
+        defaultBundle 'app'
+        dependsOn('jquery', 'html5')
+        resource url: 'js/lib/bootstrap/bootstrap.js'
+
+        resource url: 'css/bootstrap.css', disposition: 'head'
+        resource url: 'css/bootstrap-responsive.css', disposition: 'head'
     }
 
     fontAwesome {
@@ -29,4 +42,6 @@ modules = {
         defaultBundle false
         resource url:'js/html5.js', disposition: 'head', wrapper: {s -> "<!--[if lt IE 9]>$s<![endif]-->"}
     }
+
+
 }
