@@ -51,6 +51,23 @@
         </div>
     </div>
 
+    <div id="errorSavingJson" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Invalid JSON!" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">There was an error saving your JSON Blob</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Please try again in a few minutes</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="blobCreated" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="JSON Blob saved!" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -105,24 +122,25 @@
     <script type="text/javascript" src="/assets/js/jsonlint/jsonlint.js"></script>
     <script type="text/javascript" src="/assets/js/jwerty/jwerty.js"></script>
     <script type="text/javascript">
-        var treeEditor = null;
-        var codeEditor = null;
-        var isEditorSyncChange = false;
-        var unsavedChanges = false;
-        var apiBase = "/api/jsonBlob";
         var app = {};
+        app.treeEditor = null;
+        app.codeEditor = null;
+        app.isEditorSyncChange = false;
+        app.unsavedChanges = false;
+        app.apiBase = "/api/jsonBlob";
+
 
         function sizing() {
             var bodyHeight = $(window).height();
             var navBarHeight = $("#navbar").height();
             var editorHeight = bodyHeight - navBarHeight - 100; //why 100? I don't know...
             $("#codeEditor, #treeEditor").height(editorHeight+"px");
-            codeEditor.resize();
+            app.codeEditor.resize();
         }
         $(document).ready(sizing);
         $(window).resize(sizing);
         $(window).bind('beforeunload', function() {
-            if (unsavedChanges === false) {
+            if (app.unsavedChanges === false) {
                 return "You have unsaved work, it will be lost if you leave this page.";
             }
         });
@@ -130,10 +148,10 @@
         $(".editorActions").css("display", "block");
 
         $("#clear").click(function() {
-            codeEditor.set({});
-            treeEditor.set({});
+            app.codeEditor.set({});
+            app.treeEditor.set({});
             blobId = null;
-            unsavedChanges = null;
+            app.unsavedChanges = null;
             history.pushState(null, "JSON Blob", "/");
         });
 
@@ -142,7 +160,7 @@
         });
 
         $("#save").click(function() {
-            var jsonString = codeEditor = app.lastChanged ? codeEditor.getText() : treeEditor.getText();
+            var jsonString = app.codeEditor = app.lastChanged ? app.codeEditor.getText() : app.treeEditor.getText();
             if (!isValidJson(jsonString)) {
                 $('#invalidJson').modal('show');
                 return;
@@ -152,7 +170,7 @@
             if (blobId == null) {
                 request = {
                     type: "POST",
-                    url: apiBase,
+                    url: app.apiBase,
                     headers: {'Content-Type': 'application/json', 'Accept':'application/json'},
                     data: jsonString,
                     success: function(data, textStatus, jqXHR) {
@@ -162,21 +180,29 @@
                         history.pushState(null, "JSON Blob " + blobId, "/" + blobId);
                         $("#jsonBlobUrl").text(locationHeader);
                         $('#blobCreated').modal('show');
-                        unsavedChanges = false;
+                        app.unsavedChanges = false;
                         return;
+                    },
+                    error: function() {
+                        app.unsavedChanges = false;
+                        $('#errorSavingJson').modal('show');
                     },
                     cache: false
                 };
             } else {
-                var blobApiUrl = [apiBase, blobId].join("/")
+                var blobApiUrl = [app.apiBase, blobId].join("/")
                 request = {
                     type: "PUT",
                     url: blobApiUrl,
                     headers: {'Content-Type': 'application/json', 'Accept':'application/json'},
                     data: jsonString,
                     success: function(data, textStatus, jqXHR) {
-                        unsavedChanges = false;
+                        app.unsavedChanges = false;
                         return;
+                    },
+                    error: function() {
+                        app.unsavedChanges = false;
+                        $('#errorSavingJson').modal('show');
                     },
                     cache: false
                 };
@@ -189,14 +215,14 @@
 
         // code editor
         var container = document.getElementById("codeEditor");
-        codeEditor = new jsoneditor.JSONEditor(container, {
+        app.codeEditor = new jsoneditor.JSONEditor(container, {
             mode: 'code',
             change: function () {
-                if (!isEditorSyncChange) {
-                    app.lastChanged = codeEditor;
+                if (!app.isEditorSyncChange) {
+                    app.lastChanged = app.codeEditor;
                     codeToTree();
-                    if (unsavedChanges != null) {
-                        unsavedChanges = true;
+                    if (app.unsavedChanges != null) {
+                        app.unsavedChanges = true;
                     }
                 }
             },
@@ -207,14 +233,14 @@
 
         // tree editor
         container = document.getElementById("treeEditor");
-        treeEditor = new jsoneditor.JSONEditor(container, {
+        app.treeEditor = new jsoneditor.JSONEditor(container, {
             mode: 'tree',
             change: function () {
-                if (!isEditorSyncChange) {
-                    app.lastChanged = treeEditor;
+                if (!app.isEditorSyncChange) {
+                    app.lastChanged = app.treeEditor;
                     treeToCode();
-                    if (unsavedChanges != null) {
-                        unsavedChanges = true;
+                    if (app.unsavedChanges != null) {
+                        app.unsavedChanges = true;
                     }
                 }
             },
@@ -235,14 +261,14 @@
         function codeToTree() {
             setTimeout(
                 function() {
-                    var jsonString = codeEditor.getText();
-                    if (jsonString != undefined && app.lastChanged == codeEditor && isValidJson(jsonString)) {
-                        isEditorSyncChange = true;
-                        var json = codeEditor.get();
+                    var jsonString = app.codeEditor.getText();
+                    if (jsonString != undefined && app.lastChanged == app.codeEditor && isValidJson(jsonString)) {
+                        app.isEditorSyncChange = true;
+                        var json = app.codeEditor.get();
                         if (json != undefined) {
-                            treeEditor.set(json);
+                            app.treeEditor.set(json);
                         }
-                        isEditorSyncChange = false;
+                        app.isEditorSyncChange = false;
                     }
                 }
             , 10);
@@ -251,14 +277,14 @@
         function treeToCode() {
             setTimeout(
                 function() {
-                    var jsonString = treeEditor.getText();
-                    if (jsonString != undefined && app.lastChanged == treeEditor && isValidJson(jsonString)) {
-                        isEditorSyncChange = true;
-                        var json = treeEditor.get();
+                    var jsonString = app.treeEditor.getText();
+                    if (jsonString != undefined && app.lastChanged == app.treeEditor && isValidJson(jsonString)) {
+                        app.isEditorSyncChange = true;
+                        var json = app.treeEditor.get();
                         if (json != undefined) {
-                            codeEditor.set(json);
+                            app.codeEditor.set(json);
                         }
-                        isEditorSyncChange = false;
+                        app.isEditorSyncChange = false;
                     }
                 }
             , 10);
