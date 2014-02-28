@@ -103,6 +103,7 @@
     <script type="text/javascript" src="/assets/js/ace/theme-textmate.js"></script>
     <script type="text/javascript" src="/assets/js/ace/theme-jsoneditor.js"></script>
     <script type="text/javascript" src="/assets/js/jsonlint/jsonlint.js"></script>
+    <script type="text/javascript" src="/assets/js/jwerty/jwerty.js"></script>
     <script type="text/javascript">
         var treeEditor = null;
         var codeEditor = null;
@@ -134,6 +135,10 @@
             blobId = null;
             unsavedChanges = null;
             history.pushState(null, "JSON Blob", "/");
+        });
+
+        jwerty.key('ctrl+s', function() {
+            $("#save").click();
         });
 
         $("#save").click(function() {
