@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="description" content="JSON Blob is a web-based tool to create, edit, view, format, and share JSON. It shows your JSON side by side in a clear, editable tree-view and in formatted plain text. You can save your JSON and share it via URL with anyone">
+    <meta name="keywords" content="jsonblob, jsobblob.com, json, editor, formatter, online, format, parser, json editor, jsonblob, json blob, online json editor, javascript, javascript object notation, tools, tool, json tools, tree-view, open source, free, json parser, json parser online, json formatter, json formatter online, online json formatter, online json parser, format json online, jsbin">
+    <meta name="author" content="Tristan Burch">
+    <link rel="shortcut icon" href="/assets/favicon.ico">
+
+    {{#block "title" }}
+        <title>JSON Blob | create, edit, view, format, and share JSON</title>
+    {{/block}}
+
+    <link rel="stylesheet" href="/assets/css/bootstrap/bootstrap.min.css">
+
+    <link href="/assets/css/base.css" rel="stylesheet">
+
+    <!-- Additional style sheets files -->
+    {{#block "css" }}
+
+    {{/block}}
+
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    {{> ga.hbs}}
+
+    {{#block "head" }}
+
+    {{/block}}
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">JSON Blob</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="new" id="new"><span class="glyphicon glyphicon-file"></span> New</a></li>
+                <li><a id="save" class="editorActions"><span class="glyphicon glyphicon-floppy-disk"></span> Save</a></li>
+                <li><a id="clear" class="editorActions"><span class="glyphicon glyphicon-remove"></span> Clear</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/about">About</a></li>
+                <li><a href="/api"><span class="glyphicon glyphicon-retweet"></span> API</a></li>
+                <li><a href="https://github.com/tburch/jsonblob" target="_blank">Source</a></li>
+                <li><a href="http://tristanburch.com" target="_blank">&copy; {{dateFormat now "yyyy"}}</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{{#block "content" }}
+
+{{/block}}
+
+<script src="/assets/js/jquery/1.11.0.min.js"></script>
+<script src="/assets/js/bootstrap/bootstrap.min.js"></script>
+
+<!-- Additional JavaScript files -->
+{{#block "js" }}
+
+{{/block}}
+</body>
+</html>

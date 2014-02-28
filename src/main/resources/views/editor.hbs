@@ -1,0 +1,264 @@
+{{#if blobId}}
+    {{#partial "title" }}
+        <title>JSON Blob | {{blobId}}</title>
+    {{/partial}}
+{{/if}}
+
+{{#partial "content" }}
+    <!-- Begin page content -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div id="codeEditor"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="treeEditor"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="row">
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-6168248064103889"
+                         data-ad-slot="5739407042"
+                         data-ad-format="auto"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="invalidJson" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Invalid JSON!" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Looks like you have some invalid JSON</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Please fix it before saving!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="blobCreated" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="JSON Blob saved!" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Your JSON Blob is saved!</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You can access the blob directly at <code id="jsonBlobUrl"></code>.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{{/partial}}
+
+{{#partial "head"}}
+    <script type="text/javascript">
+        {{#if blobId}}
+            var blobId = "{{{blobId}}}";
+        {{else}}
+            var blobId = null;
+        {{/if}}
+
+       {{#if jsonBlob}}
+            var json = {{{jsonBlob}}};
+       {{else}}
+            var json = {
+                "array": [1, 2, 3],
+                "boolean": true,
+                "null": null,
+                "number": 123,
+                "object": {"a": "b", "c": "d", "e": "f"},
+                "string": "Hello World"
+            };
+       {{/if}}
+    </script>
+{{/partial}}
+
+{{#partial "css"}}
+    <link rel="stylesheet" type="text/css" href="/assets/css/jsoneditor/jsoneditor-min.css">
+{{/partial}}
+
+{{#partial "js"}}
+    <script type="text/javascript" src="/assets/js/jsoneditor/jsoneditor-min.js"></script>
+    <script type="text/javascript" src="/assets/js/ace/ace-min.js"></script>
+    <script type="text/javascript" src="/assets/js/ace/mode-json.js"></script>
+    <script type="text/javascript" src="/assets/js/ace/theme-textmate.js"></script>
+    <script type="text/javascript" src="/assets/js/ace/theme-jsoneditor.js"></script>
+    <script type="text/javascript" src="/assets/js/jsonlint/jsonlint.js"></script>
+    <script type="text/javascript">
+        var treeEditor = null;
+        var codeEditor = null;
+        var isEditorSyncChange = false;
+        var unsavedChanges = false;
+        var apiBase = "/api/jsonBlob";
+        var app = {};
+
+        function sizing() {
+            var bodyHeight = $(window).height();
+            var navBarHeight = $("#navbar").height();
+            var editorHeight = bodyHeight - navBarHeight - 100; //why 100? I don't know...
+            $("#codeEditor, #treeEditor").height(editorHeight+"px");
+            codeEditor.resize();
+        }
+        $(document).ready(sizing);
+        $(window).resize(sizing);
+        $(window).bind('beforeunload', function() {
+            if (unsavedChanges === false) {
+                return "You have unsaved work, it will be lost if you leave this page.";
+            }
+        });
+
+        $(".editorActions").css("display", "block");
+
+        $("#clear").click(function() {
+            codeEditor.set({});
+            treeEditor.set({});
+            blobId = null;
+            unsavedChanges = null;
+            history.pushState(null, "JSON Blob", "/");
+        });
+
+        $("#save").click(function() {
+            var jsonString = codeEditor = app.lastChanged ? codeEditor.getText() : treeEditor.getText();
+            if (!isValidJson(jsonString)) {
+                $('#invalidJson').modal('show');
+                return;
+            }
+
+            var request;
+            if (blobId == null) {
+                request = {
+                    type: "POST",
+                    url: apiBase,
+                    headers: {'Content-Type': 'application/json', 'Accept':'application/json'},
+                    data: jsonString,
+                    success: function(data, textStatus, jqXHR) {
+                        var locationHeader = jqXHR.getResponseHeader("Location");
+                        var parts = locationHeader.split("/");
+                        blobId = parts[parts.length - 1];
+                        history.pushState(null, "JSON Blob " + blobId, "/" + blobId);
+                        $("#jsonBlobUrl").text(locationHeader);
+                        $('#blobCreated').modal('show');
+                        unsavedChanges = false;
+                        return;
+                    },
+                    cache: false
+                };
+            } else {
+                var blobApiUrl = [apiBase, blobId].join("/")
+                request = {
+                    type: "PUT",
+                    url: blobApiUrl,
+                    headers: {'Content-Type': 'application/json', 'Accept':'application/json'},
+                    data: jsonString,
+                    success: function(data, textStatus, jqXHR) {
+                        unsavedChanges = false;
+                        return;
+                    },
+                    cache: false
+                };
+            }
+            $.ajax(request);
+        });
+
+        // Store whether tree editor or code editor is last changed
+        app.lastChanged = undefined;
+
+        // code editor
+        var container = document.getElementById("codeEditor");
+        codeEditor = new jsoneditor.JSONEditor(container, {
+            mode: 'code',
+            change: function () {
+                if (!isEditorSyncChange) {
+                    app.lastChanged = codeEditor;
+                    codeToTree();
+                    if (unsavedChanges != null) {
+                        unsavedChanges = true;
+                    }
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        }, json);
+
+        // tree editor
+        container = document.getElementById("treeEditor");
+        treeEditor = new jsoneditor.JSONEditor(container, {
+            mode: 'tree',
+            change: function () {
+                if (!isEditorSyncChange) {
+                    app.lastChanged = treeEditor;
+                    treeToCode();
+                    if (unsavedChanges != null) {
+                        unsavedChanges = true;
+                    }
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        }, json);
+
+        function isValidJson(jsonString) {
+            try {
+                jsonlint.parse(jsonString);
+                return true;
+            } catch (err) {
+                return false;
+            }
+        }
+
+        function codeToTree() {
+            setTimeout(
+                function() {
+                    var jsonString = codeEditor.getText();
+                    if (jsonString != undefined && app.lastChanged == codeEditor && isValidJson(jsonString)) {
+                        isEditorSyncChange = true;
+                        var json = codeEditor.get();
+                        if (json != undefined) {
+                            treeEditor.set(json);
+                        }
+                        isEditorSyncChange = false;
+                    }
+                }
+            , 10);
+        }
+
+        function treeToCode() {
+            setTimeout(
+                function() {
+                    var jsonString = treeEditor.getText();
+                    if (jsonString != undefined && app.lastChanged == treeEditor && isValidJson(jsonString)) {
+                        isEditorSyncChange = true;
+                        var json = treeEditor.get();
+                        if (json != undefined) {
+                            codeEditor.set(json);
+                        }
+                        isEditorSyncChange = false;
+                    }
+                }
+            , 10);
+        }
+    </script>
+{{/partial}}
+
+{{> base.hbs}}

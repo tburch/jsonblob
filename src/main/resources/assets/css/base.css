@@ -1,0 +1,7 @@
+.navbar-static-top {
+    margin-bottom: 19px;
+}
+
+.nav li a.editorActions {
+    display:none;
+}
