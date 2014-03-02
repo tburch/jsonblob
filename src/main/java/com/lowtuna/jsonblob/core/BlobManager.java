@@ -61,7 +61,7 @@ public class BlobManager implements Managed {
         this.updateMeter = metrics.meter(MetricRegistry.name(getClass(), "update", "calls"));
         this.deleteMeter = metrics.meter(MetricRegistry.name(getClass(), "delete", "calls"));
 
-        metrics.register("blobCount", new CachedGauge<Long>(1, TimeUnit.HOURS) {
+        metrics.register(MetricRegistry.name(getClass(), "blobCount"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
             @Override
             protected Long loadValue() {
                 return collection.count();
