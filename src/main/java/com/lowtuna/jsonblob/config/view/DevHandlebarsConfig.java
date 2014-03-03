@@ -1,4 +1,4 @@
-package com.lowtuna.jsonblob.config;
+package com.lowtuna.jsonblob.config.view;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
