@@ -9,7 +9,7 @@
     <version>2.0.0-SNAPSHOT</version>
 
     <properties>
-        <io.dropwizard.version>0.7.0-rc1</io.dropwizard.version>
+        <io.dropwizard.version>0.7.0-rc2</io.dropwizard.version>
     </properties>
 
     <repositories>
