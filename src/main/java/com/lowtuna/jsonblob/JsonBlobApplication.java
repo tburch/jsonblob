@@ -3,7 +3,7 @@ package com.lowtuna.jsonblob;
 import com.codahale.metrics.MetricRegistry;
 import com.github.jknack.handlebars.Handlebars;
 import com.lowtuna.dropwizard.extras.heroku.RequestIdFilter;
-import com.lowtuna.dropwizard.extras.view.handlebars.ConfiguredHandlebarsViewRenderBundle;
+import com.lowtuna.dropwizard.extras.view.handlebars.ConfiguredHandlebarsViewBundle;
 import com.lowtuna.jsonblob.config.JsonBlobConfiguration;
 import com.lowtuna.jsonblob.core.BlobManager;
 import com.lowtuna.jsonblob.healthcheck.MongoHealthCheck;
@@ -50,7 +50,7 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
     public void initialize(Bootstrap<JsonBlobConfiguration> bootstrap) {
         bootstrap.addBundle(new AssetsBundle());
 
-        bootstrap.addBundle(new ConfiguredHandlebarsViewRenderBundle<JsonBlobConfiguration>() {
+        bootstrap.addBundle(new ConfiguredHandlebarsViewBundle<JsonBlobConfiguration>() {
             @Override
             public Handlebars getInstance(JsonBlobConfiguration configuration) {
                 log.info("Using Handlebars configuration of {}", configuration.getHandlebarsConfig().getClass().getCanonicalName());
