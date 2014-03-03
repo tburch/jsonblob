@@ -1,5 +1,6 @@
 package com.lowtuna.jsonblob;
 
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.github.jknack.handlebars.Handlebars;
 import com.lowtuna.dropwizard.extras.heroku.RequestIdFilter;
@@ -16,6 +17,7 @@ import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
@@ -61,10 +63,10 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
 
     @Override
     public void run(JsonBlobConfiguration configuration, Environment environment) throws ClassNotFoundException {
-        environment.metrics().register(MetricRegistry.name(getClass(), "uptime"), new com.codahale.metrics.Gauge<String>() {
+        environment.metrics().register(MetricRegistry.name(getClass(), "uptime"), new Gauge<String>() {
             @Override
             public String getValue() {
-                return uptimePeriodFormatter.print(new org.joda.time.Duration(System.currentTimeMillis() - startTIme).toPeriod());
+                return uptimePeriodFormatter.print(new Duration(System.currentTimeMillis() - startTIme).toPeriod());
             }
         });
 
