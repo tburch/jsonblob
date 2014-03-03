@@ -2,12 +2,8 @@ package com.lowtuna.jsonblob;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.cache.HighConcurrencyTemplateCache;
-import com.github.jknack.handlebars.helper.StringHelpers;
-import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
-import com.google.common.collect.ImmutableList;
 import com.lowtuna.dropwizard.extras.heroku.RequestIdFilter;
-import com.lowtuna.dropwizard.extras.view.handlebars.HandlebarsViewRenderer;
+import com.lowtuna.dropwizard.extras.view.handlebars.ConfiguredHandlebarsViewRenderBundle;
 import com.lowtuna.jsonblob.config.JsonBlobConfiguration;
 import com.lowtuna.jsonblob.core.BlobManager;
 import com.lowtuna.jsonblob.healthcheck.MongoHealthCheck;
@@ -19,10 +15,7 @@ import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.dropwizard.views.ViewBundle;
-import io.dropwizard.views.ViewRenderer;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
@@ -57,14 +50,13 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
     public void initialize(Bootstrap<JsonBlobConfiguration> bootstrap) {
         bootstrap.addBundle(new AssetsBundle());
 
-        Handlebars hbs = new Handlebars()
-                .with(new ClassPathTemplateLoader("/views", StringUtils.EMPTY))
-                .with(new HighConcurrencyTemplateCache());
-
-        StringHelpers.register(hbs);
-
-        HandlebarsViewRenderer hsbRenderer = new HandlebarsViewRenderer(hbs);
-        bootstrap.addBundle(new ViewBundle(ImmutableList.<ViewRenderer>of(hsbRenderer)));
+        bootstrap.addBundle(new ConfiguredHandlebarsViewRenderBundle<JsonBlobConfiguration>() {
+            @Override
+            public Handlebars getInstance(JsonBlobConfiguration configuration) {
+                log.info("Using Handlebars configuration of {}", configuration.getHandlebarsConfig().getClass().getCanonicalName());
+                return configuration.getHandlebarsConfig().getInstance();
+            }
+        });
     }
 
     @Override

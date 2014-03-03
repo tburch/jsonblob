@@ -30,4 +30,8 @@ public class JsonBlobConfiguration extends Configuration {
     @JsonProperty("ga")
     private GoogleAnalyticsConfig googleAnalyticsConfig = new GoogleAnalyticsConfig();
 
+    @Valid
+    @JsonProperty("handlebars")
+    private HandlebarsConfig handlebarsConfig = new ProdHandlebarsConfig();
+
 }
