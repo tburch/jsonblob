@@ -2,8 +2,8 @@ package com.lowtuna.jsonblob.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lowtuna.dropwizard.extras.config.GoogleAnalyticsConfig;
-import com.lowtuna.dropwizard.extras.config.MongoDbConfig;
-import com.lowtuna.dropwizard.extras.config.MongoDbPropertiesConfig;
+import com.lowtuna.dropwizard.extras.config.mongo.MongoDbConfig;
+import com.lowtuna.dropwizard.extras.config.mongo.MongoDbPropertiesConfig;
 import com.lowtuna.jsonblob.config.view.HandlebarsConfig;
 import com.lowtuna.jsonblob.config.view.ProdHandlebarsConfig;
 import io.dropwizard.Configuration;

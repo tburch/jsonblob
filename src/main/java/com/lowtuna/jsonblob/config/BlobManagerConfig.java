@@ -1,7 +1,7 @@
 package com.lowtuna.jsonblob.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.lowtuna.dropwizard.extras.config.ScheduledExecutorServiceConfig;
+import com.lowtuna.dropwizard.extras.config.executors.ScheduledExecutorServiceConfig;
 import io.dropwizard.util.Duration;
 import lombok.Data;
 import lombok.NoArgsConstructor;
