@@ -43,16 +43,7 @@ public class ApiResource {
     }
 
     @POST
-    @Path("/{path: .*}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Timed
-    public Response create(String json) {
-       return createJsonBlob(json);
-    }
-
-    @POST
-    @Path("/jsonBlob")
+    @Path("jsonBlob")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Timed
@@ -70,12 +61,7 @@ public class ApiResource {
         return Response.created(UriBuilder.fromResource(JsonBlobResource.class).build(id)).entity(newBlob.get("blob")).build();
     }
 
-    @Path("/jsonBlob/{blobId}")
-    public JsonBlobResource getJsonBlobResource(@PathParam("blobId") ObjectId blobId) {
-        return createJsonBlobResource(blobId);
-    }
-
-    @Path("/{path: .*}")
+    @Path("{path: .*}")
     @Timed
     public JsonBlobResource getJsonBlobResource(@PathParam("path") String path, @HeaderParam("X-jsonblob") String jsonBlobId) {
         ObjectId blobId = null;
