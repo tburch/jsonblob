@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -25,57 +26,22 @@ public class BlobCleanupJob implements Runnable {
         this.blobAccessTtl = blobAccessTtl;
 
         String[] attributes = new String[] { BlobManager.ACCESSED_ATTR_NAME, BlobManager.CREATED_ATTR_NAME, BlobManager.UPDATED_ATTR_NAME};
+        DecimalFormat periodFormat = new DecimalFormat("00");
 
         for (final String attribute: attributes) {
-            metricRegistry.register(MetricRegistry.name(getClass(), attribute, "01Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
-                @Override
-                protected Long loadValue() {
-                    DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(1);
-                    BasicDBObject query = new BasicDBObject();
-                    query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
-                    return collection.getCount(query);
-                }
-            });
-
-            metricRegistry.register(MetricRegistry.name(getClass(), attribute, "07Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
-                @Override
-                protected Long loadValue() {
-                    DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(7);
-                    BasicDBObject query = new BasicDBObject();
-                    query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
-                    return collection.getCount(query);
-                }
-            });
-
-            metricRegistry.register(MetricRegistry.name(getClass(), attribute, "30Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
-                @Override
-                protected Long loadValue() {
-                    DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(30);
-                    BasicDBObject query = new BasicDBObject();
-                    query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
-                    return collection.getCount(query);
-                }
-            });
-
-            metricRegistry.register(MetricRegistry.name(getClass(), attribute, "60Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
-                @Override
-                protected Long loadValue() {
-                    DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(60);
-                    BasicDBObject query = new BasicDBObject();
-                    query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
-                    return collection.getCount(query);
-                }
-            });
-
-            metricRegistry.register(MetricRegistry.name(getClass(), attribute, "90Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
-                @Override
-                protected Long loadValue() {
-                    DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(90);
-                    BasicDBObject query = new BasicDBObject();
-                    query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
-                    return collection.getCount(query);
-                }
-            });
+            for (int period = 1; period <= 90; period += period == 1 ? 6 : 7) {
+                final int p = period;
+                String formattedPeriod = periodFormat.format(period);
+                metricRegistry.register(MetricRegistry.name(getClass(), attribute, formattedPeriod + "Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
+                    @Override
+                    protected Long loadValue() {
+                        DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(p);
+                        BasicDBObject query = new BasicDBObject();
+                        query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
+                        return collection.getCount(query);
+                    }
+                });
+            }
         }
     }
 
