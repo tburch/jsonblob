@@ -1,7 +1,6 @@
 package com.lowtuna.jsonblob.core;
 
 import com.codahale.metrics.CachedGauge;
-import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
@@ -28,8 +27,10 @@ public class BlobCleanupJob implements Runnable {
         String[] attributes = new String[] { BlobManager.ACCESSED_ATTR_NAME, BlobManager.CREATED_ATTR_NAME, BlobManager.UPDATED_ATTR_NAME};
         DecimalFormat periodFormat = new DecimalFormat("00");
 
+        int maxDays = blobAccessTtl.getUnit().equals(TimeUnit.DAYS) ? (int) blobAccessTtl.getQuantity() : 90;
+
         for (final String attribute: attributes) {
-            for (int period = 1; period <= 90; period += period == 1 ? 6 : 7) {
+            for (int period = 1; period < maxDays; period += period == 1 ? 6 : 7) {
                 final int p = period;
                 String formattedPeriod = periodFormat.format(period);
                 metricRegistry.register(MetricRegistry.name(getClass(), attribute, formattedPeriod + "Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
