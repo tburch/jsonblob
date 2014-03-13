@@ -34,6 +34,7 @@ public class BlobManager implements Managed {
     private final Duration blobCleanupFrequency;
     @Getter
     private final Duration blobAccessTtl;
+    private final MetricRegistry metricRegistry;
 
     private final DBCollection collection;
     private final Timer createTimer;
@@ -45,11 +46,11 @@ public class BlobManager implements Managed {
     private final Meter updateMeter;
     private final Meter deleteMeter;
 
-
     public BlobManager(DB mongoDb, String blobCollectionName, ScheduledExecutorService scheduledExecutorService, Duration blobCleanupFrequency, Duration blobAccessTtl, MetricRegistry metrics) {
         this.scheduledExecutorService = scheduledExecutorService;
         this.blobCleanupFrequency = blobCleanupFrequency;
         this.blobAccessTtl = blobAccessTtl;
+        this.metricRegistry = metrics;
 
         this.collection = mongoDb.getCollection(blobCollectionName);
         this.createTimer = metrics.timer(MetricRegistry.name(getClass(), "create"));
@@ -181,7 +182,7 @@ public class BlobManager implements Managed {
 
     @Override
     public void start() throws Exception {
-        BlobCleanupJob blobCleanupJob = new BlobCleanupJob(collection, blobAccessTtl);
+        BlobCleanupJob blobCleanupJob = new BlobCleanupJob(collection, blobAccessTtl, metricRegistry);
         scheduledExecutorService.scheduleWithFixedDelay(
                 blobCleanupJob,
                 0,
