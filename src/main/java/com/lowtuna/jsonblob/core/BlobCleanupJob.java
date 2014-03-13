@@ -24,55 +24,59 @@ public class BlobCleanupJob implements Runnable {
         this.collection = collection;
         this.blobAccessTtl = blobAccessTtl;
 
-        metricRegistry.register(MetricRegistry.name(getClass(), "accessed", "24Hours"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
-            @Override
-            protected Long loadValue() {
-                DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(1);
-                BasicDBObject query = new BasicDBObject();
-                query.put(BlobManager.ACCESSED_ATTR_NAME, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
-                return collection.getCount(query);
-            }
-        });
+        String[] attributes = new String[] { BlobManager.ACCESSED_ATTR_NAME, BlobManager.CREATED_ATTR_NAME, BlobManager.UPDATED_ATTR_NAME};
 
-        metricRegistry.register(MetricRegistry.name(getClass(), "accessed", "7Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
-            @Override
-            protected Long loadValue() {
-                DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(7);
-                BasicDBObject query = new BasicDBObject();
-                query.put(BlobManager.ACCESSED_ATTR_NAME, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
-                return collection.getCount(query);
-            }
-        });
+        for (final String attribute: attributes) {
+            metricRegistry.register(MetricRegistry.name(getClass(), attribute, "01Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
+                @Override
+                protected Long loadValue() {
+                    DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(1);
+                    BasicDBObject query = new BasicDBObject();
+                    query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
+                    return collection.getCount(query);
+                }
+            });
 
-        metricRegistry.register(MetricRegistry.name(getClass(), "accessed", "30Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
-            @Override
-            protected Long loadValue() {
-                DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(30);
-                BasicDBObject query = new BasicDBObject();
-                query.put(BlobManager.ACCESSED_ATTR_NAME, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
-                return collection.getCount(query);
-            }
-        });
+            metricRegistry.register(MetricRegistry.name(getClass(), attribute, "07Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
+                @Override
+                protected Long loadValue() {
+                    DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(7);
+                    BasicDBObject query = new BasicDBObject();
+                    query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
+                    return collection.getCount(query);
+                }
+            });
 
-        metricRegistry.register(MetricRegistry.name(getClass(), "accessed", "60Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
-            @Override
-            protected Long loadValue() {
-                DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(60);
-                BasicDBObject query = new BasicDBObject();
-                query.put(BlobManager.ACCESSED_ATTR_NAME, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
-                return collection.getCount(query);
-            }
-        });
+            metricRegistry.register(MetricRegistry.name(getClass(), attribute, "30Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
+                @Override
+                protected Long loadValue() {
+                    DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(30);
+                    BasicDBObject query = new BasicDBObject();
+                    query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
+                    return collection.getCount(query);
+                }
+            });
 
-        metricRegistry.register(MetricRegistry.name(getClass(), "accessed", "90Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
-            @Override
-            protected Long loadValue() {
-                DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(90);
-                BasicDBObject query = new BasicDBObject();
-                query.put(BlobManager.ACCESSED_ATTR_NAME, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
-                return collection.getCount(query);
-            }
-        });
+            metricRegistry.register(MetricRegistry.name(getClass(), attribute, "60Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
+                @Override
+                protected Long loadValue() {
+                    DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(60);
+                    BasicDBObject query = new BasicDBObject();
+                    query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
+                    return collection.getCount(query);
+                }
+            });
+
+            metricRegistry.register(MetricRegistry.name(getClass(), attribute, "90Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
+                @Override
+                protected Long loadValue() {
+                    DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(90);
+                    BasicDBObject query = new BasicDBObject();
+                    query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
+                    return collection.getCount(query);
+                }
+            });
+        }
     }
 
     @Override
