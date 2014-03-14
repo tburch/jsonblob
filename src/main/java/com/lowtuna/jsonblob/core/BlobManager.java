@@ -1,7 +1,6 @@
 package com.lowtuna.jsonblob.core;
 
 import com.codahale.metrics.CachedGauge;
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.mongodb.BasicDBObject;
@@ -41,10 +40,6 @@ public class BlobManager implements Managed {
     private final Timer readTimer;
     private final Timer updateTimer;
     private final Timer deleteTimer;
-    private final Meter createMeter;
-    private final Meter readMeter;
-    private final Meter updateMeter;
-    private final Meter deleteMeter;
 
     public BlobManager(DB mongoDb, String blobCollectionName, ScheduledExecutorService scheduledExecutorService, Duration blobCleanupFrequency, Duration blobAccessTtl, MetricRegistry metrics) {
         this.scheduledExecutorService = scheduledExecutorService;
@@ -57,10 +52,6 @@ public class BlobManager implements Managed {
         this.readTimer = metrics.timer(MetricRegistry.name(getClass(), "read"));
         this.updateTimer = metrics.timer(MetricRegistry.name(getClass(), "update"));
         this.deleteTimer = metrics.timer(MetricRegistry.name(getClass(), "delete"));
-        this.createMeter = metrics.meter(MetricRegistry.name(getClass(), "create", "calls"));
-        this.readMeter = metrics.meter(MetricRegistry.name(getClass(), "read", "calls"));
-        this.updateMeter = metrics.meter(MetricRegistry.name(getClass(), "update", "calls"));
-        this.deleteMeter = metrics.meter(MetricRegistry.name(getClass(), "delete", "calls"));
 
         metrics.register(MetricRegistry.name(getClass(), "blobCount"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
             @Override
@@ -98,7 +89,6 @@ public class BlobManager implements Managed {
     }
 
     public DBObject create(String json) {
-        createMeter.mark();
         try (Timer.Context timerContext = createTimer.time()) {
             log.debug("inserting blob with json='{}'", json);
             DBObject parsed = createDBObject(json, true);
@@ -109,7 +99,6 @@ public class BlobManager implements Managed {
     }
 
     public DBObject read(final ObjectId id) throws BlobNotFoundException {
-        readMeter.mark();
         try (Timer.Context timerContext = readTimer.time()) {
             log.debug("attempting to retrieve blob with id='{}'", id);
             DBObject objectId = getDBObject(id);
@@ -137,7 +126,6 @@ public class BlobManager implements Managed {
     }
 
     public DBObject update(ObjectId id, String json) throws BlobNotFoundException {
-        updateMeter.mark();
         try (Timer.Context timerContext = updateTimer.time()) {
             log.debug("attempting to update blob with id='{}' and json='{}'", id, json);
             DBObject objectId = getDBObject(id);
@@ -157,7 +145,6 @@ public class BlobManager implements Managed {
     }
 
     public boolean delete(ObjectId id) throws BlobNotFoundException {
-        deleteMeter.mark();
         try (Timer.Context timerContext = deleteTimer.time();) {
             log.debug("attempting to delete blob with id='{}'", id);
             DBObject objectId = getDBObject(id);
