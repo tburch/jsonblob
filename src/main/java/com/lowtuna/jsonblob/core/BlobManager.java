@@ -169,12 +169,12 @@ public class BlobManager implements Managed {
 
     @Override
     public void start() throws Exception {
-        BlobCleanupJob blobCleanupJob = new BlobCleanupJob(collection, blobAccessTtl, metricRegistry);
         scheduledExecutorService.scheduleWithFixedDelay(
-                blobCleanupJob,
+                new BlobCleanupJob(collection, blobAccessTtl, metricRegistry),
                 0,
                 blobCleanupFrequency.getQuantity(),
-                blobCleanupFrequency.getUnit());
+                blobCleanupFrequency.getUnit()
+        );
     }
 
     @Override
