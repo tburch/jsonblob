@@ -160,7 +160,7 @@
         });
 
         $("#save").click(function() {
-            var jsonString = app.codeEditor = app.lastChanged ? app.codeEditor.getText() : app.treeEditor.getText();
+            var jsonString = app.codeEditor == app.lastChanged ? app.codeEditor.getText() : app.treeEditor.getText();
             if (!isValidJson(jsonString)) {
                 $('#invalidJson').modal('show');
                 return;
