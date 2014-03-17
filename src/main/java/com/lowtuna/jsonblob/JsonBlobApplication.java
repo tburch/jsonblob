@@ -11,7 +11,6 @@ import com.lowtuna.jsonblob.healthcheck.MongoHealthCheck;
 import com.lowtuna.jsonblob.resource.ApiResource;
 import com.lowtuna.jsonblob.resource.JsonBlobEditorResource;
 import com.lowtuna.jsonblob.util.jersey.GitTipHeaderFilter;
-import com.lowtuna.jsonblob.util.jersey.IpBasedRateLimitingRequestFilter;
 import com.lowtuna.jsonblob.util.mongo.JacksonMongoDbModule;
 import com.mongodb.DB;
 import io.dropwizard.Application;
@@ -89,16 +88,8 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
 
         environment.jersey().register(new ApiResource(blobManager, configuration.getBlobManagerConfig().isDeleteEnabled(), configuration.getGoogleAnalyticsConfig()));
         environment.jersey().register(new JsonBlobEditorResource(blobManager, configuration.getGoogleAnalyticsConfig()));
-
         environment.jersey().getResourceConfig().getContainerResponseFilters().add(new GitTipHeaderFilter());
-
         environment.jersey().getResourceConfig().getContainerRequestFilters().add(new RequestIdFilter());
-        environment.jersey().getResourceConfig().getContainerRequestFilters().add(
-                new IpBasedRateLimitingRequestFilter(
-                        configuration.getRateLimiterConfig().getRateLimit(),
-                        configuration.getRateLimiterConfig().getRateLimitTimeout(),
-                        environment.metrics())
-        );
     }
 
 }

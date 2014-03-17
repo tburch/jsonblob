@@ -36,8 +36,4 @@ public class JsonBlobConfiguration extends Configuration {
     @JsonProperty("handlebars")
     private HandlebarsConfig handlebarsConfig = new ProdHandlebarsConfig();
 
-    @Valid
-    @JsonProperty("rateLimiter")
-    private RateLimiterConfig rateLimiterConfig = new RateLimiterConfig();
-
 }
