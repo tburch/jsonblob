@@ -178,7 +178,7 @@
                         var parts = locationHeader.split("/");
                         blobId = parts[parts.length - 1];
                         history.pushState(null, "JSON Blob " + blobId, "/" + blobId);
-                        $("#jsonBlobUrl").text(locationHeader);
+                        $("#jsonBlobUrl").text(locationHeader.replace(app.apiBase, ""));
                         $('#blobCreated').modal('show');
                         app.unsavedChanges = false;
                         return;
