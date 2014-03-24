@@ -86,31 +86,6 @@
     </div>
 {{/partial}}
 
-{{#partial "head"}}
-    <script type="text/javascript" src="/assets/js/base64.js"></script>
-    <script type="text/javascript" src="/assets/js/jsonlint/jsonlint.js"></script>
-    <script type="text/javascript">
-        {{#if blobId}}
-            var blobId = "{{blobId}}";
-        {{else}}
-            var blobId = null;
-        {{/if}}
-
-       {{#if jsonBlob}}
-            var json = jsonlint.parse(decodeBase64("{{#base64Encode jsonBlob}}{{/base64Encode}}"));
-       {{else}}
-            var json = {
-                "array": [1, 2, 3],
-                "boolean": true,
-                "null": null,
-                "number": 123,
-                "object": {"a": "b", "c": "d", "e": "f"},
-                "string": "Hello World"
-            };
-       {{/if}}
-    </script>
-{{/partial}}
-
 {{#partial "css"}}
     <link rel="stylesheet" type="text/css" href="/assets/css/jsoneditor/jsoneditor-min.css">
 {{/partial}}
@@ -121,8 +96,29 @@
     <script type="text/javascript" src="/assets/js/ace/mode-json.js"></script>
     <script type="text/javascript" src="/assets/js/ace/theme-textmate.js"></script>
     <script type="text/javascript" src="/assets/js/ace/theme-jsoneditor.js"></script>
+    <script type="text/javascript" src="/assets/js/base64.js"></script>
+    <script type="text/javascript" src="/assets/js/jsonlint/jsonlint.js"></script>
     <script type="text/javascript" src="/assets/js/jwerty/jwerty.js"></script>
     <script type="text/javascript">
+    {{#if blobId}}
+        var blobId = "{{blobId}}";
+    {{else}}
+        var blobId = null;
+    {{/if}}
+
+    {{#if jsonBlob}}
+        var json = jsonlint.parse(decodeBase64("{{#base64Encode jsonBlob}}{{/base64Encode}}"));
+    {{else}}
+        var json = {
+            "array": [1, 2, 3],
+            "boolean": true,
+            "null": null,
+            "number": 123,
+            "object": {"a": "b", "c": "d", "e": "f"},
+            "string": "Hello World"
+        };
+    {{/if}}
+
         var app = {};
         app.treeEditor = null;
         app.codeEditor = null;
