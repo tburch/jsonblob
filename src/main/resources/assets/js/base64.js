@@ -1,4 +1,4 @@
-// Thansk! - http://ostermiller.org/calc/encode.html
+// Thanks - http://ostermiller.org/calc/encode.html
 function urlDecode(str){
     str=str.replace(new RegExp('\\+','g'),' ');
     return unescape(str);
