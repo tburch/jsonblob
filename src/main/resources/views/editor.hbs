@@ -87,15 +87,17 @@
 {{/partial}}
 
 {{#partial "head"}}
+    <script type="text/javascript" src="/assets/js/base64.js"></script>
+    <script type="text/javascript" src="/assets/js/jsonlint/jsonlint.js"></script>
     <script type="text/javascript">
         {{#if blobId}}
-            var blobId = "{{{blobId}}}";
+            var blobId = "{{blobId}}";
         {{else}}
             var blobId = null;
         {{/if}}
 
        {{#if jsonBlob}}
-            var json = {{{jsonBlob}}};
+            var json = jsonlint.parse(decodeBase64("{{#base64Encode jsonBlob}}{{/base64Encode}}"));
        {{else}}
             var json = {
                 "array": [1, 2, 3],
@@ -119,7 +121,6 @@
     <script type="text/javascript" src="/assets/js/ace/mode-json.js"></script>
     <script type="text/javascript" src="/assets/js/ace/theme-textmate.js"></script>
     <script type="text/javascript" src="/assets/js/ace/theme-jsoneditor.js"></script>
-    <script type="text/javascript" src="/assets/js/jsonlint/jsonlint.js"></script>
     <script type="text/javascript" src="/assets/js/jwerty/jwerty.js"></script>
     <script type="text/javascript">
         var app = {};

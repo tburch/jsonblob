@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.helper.StringHelpers;
+import com.lowtuna.jsonblob.util.Base64StringHelpers;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = false, include = JsonTypeInfo.As.EXTERNAL_PROPERTY)
 @JsonSubTypes({
@@ -20,6 +21,7 @@ public abstract class HandlebarsConfig {
     public Handlebars getInstance() {
         Handlebars handlebars = createInstance();
         StringHelpers.register(handlebars);
+        Base64StringHelpers.register(handlebars);
         return handlebars;
     }
 
