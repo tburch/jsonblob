@@ -13,8 +13,8 @@ public enum Base64StringHelpers implements Helper<String> {
     base64Encode {
         @Override
         protected CharSequence safeApply(final String value, final Options options) {
-            String urlSafeOption = options.get("urlSafe");
-            return Boolean.valueOf(urlSafeOption) ? Base64.encodeBase64URLSafeString(value.getBytes()) : Base64.encodeBase64String(value.getBytes());
+            boolean urlSafe = options.param(0, false);
+            return urlSafe ? Base64.encodeBase64URLSafeString(value.getBytes()) : Base64.encodeBase64String(value.getBytes());
         }
 
     },
@@ -22,8 +22,8 @@ public enum Base64StringHelpers implements Helper<String> {
     base64Decode {
         @Override
         protected CharSequence safeApply(final String value, final Options options) {
-            String urlSafeOption = options.get("urlSafe");
-            return new String(Boolean.valueOf(urlSafeOption) ? Base64.encodeBase64URLSafe(value.getBytes()) : Base64.decodeBase64(value.getBytes()));
+            boolean urlSafe = options.param(0, false);
+            return new String(urlSafe ? Base64.encodeBase64URLSafe(value.getBytes()) : Base64.decodeBase64(value.getBytes()));
         }
     };
 
