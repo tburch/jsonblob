@@ -15,6 +15,7 @@ import com.mongodb.util.JSONParseException;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.util.Duration;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Slf4j
@@ -115,14 +117,9 @@ public class BlobManager implements Managed, Runnable {
                 log.debug("finding blob with objectId='{}'", objectId);
                 final DBObject obj = collection.findOne(objectId);
                 if (obj != null) {
-                    DateTime accessed = DateTime.now(DateTimeZone.UTC);
-
-                    ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-                    writeLock.lock();
-                    try {
-                        pendingLastAccessedWrites.put(id, accessed);
-                    } finally {
-                        writeLock.unlock();
+                    try(ClosableLock closableLock = new ClosableLock(lock.writeLock())) {
+                        closableLock.lock();
+                        pendingLastAccessedWrites.put(id, DateTime.now(DateTimeZone.UTC));
                     }
 
                     return obj;
@@ -196,14 +193,12 @@ public class BlobManager implements Managed, Runnable {
     public void run() {
         HashMap<ObjectId, DateTime> updates = Maps.newHashMap();
 
-        ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-        readLock.lock();
-        try {
+        try(ClosableLock closableLock = new ClosableLock(lock.writeLock())) {
+            closableLock.lock();
             updates.putAll(pendingLastAccessedWrites);
             pendingLastAccessedWrites.clear();
-        } finally {
-            readLock.unlock();
         }
+
         log.debug("updating last accessed time for {} blobs", updates.size());
         for (Map.Entry<ObjectId, DateTime> lastAccessedEntry: updates.entrySet()) {
             final DBObject obj = collection.findOne(lastAccessedEntry.getKey());
@@ -217,6 +212,19 @@ public class BlobManager implements Managed, Runnable {
                 collection.update(obj, updatedAccessedDbObject, false, false);
                 log.debug("updated last accessed time for blob with objectId='{}' to {}", lastAccessedEntry.getKey(), accessed);
             }
+        }
+    }
+
+    @RequiredArgsConstructor
+    private static class ClosableLock implements AutoCloseable {
+        private final Lock lock;
+
+        public void lock() {
+            lock.lock();
+        }
+
+        public void close() {
+            lock.unlock();
         }
     }
 }
