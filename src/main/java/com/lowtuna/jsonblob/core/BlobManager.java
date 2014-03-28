@@ -3,6 +3,7 @@ package com.lowtuna.jsonblob.core;
 import com.codahale.metrics.CachedGauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.collect.Maps;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
@@ -20,14 +21,21 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Slf4j
-public class BlobManager implements Managed {
+public class BlobManager implements Managed, Runnable {
     public static final String UPDATED_ATTR_NAME = "updated";
     public static final String CREATED_ATTR_NAME = "created";
     public static final String ACCESSED_ATTR_NAME = "accessed";
+
+    private final ConcurrentMap<ObjectId, DateTime> pendingLastAccessedWrites = Maps.newConcurrentMap();
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final ScheduledExecutorService scheduledExecutorService;
     private final Duration blobCleanupFrequency;
@@ -107,17 +115,16 @@ public class BlobManager implements Managed {
                 log.debug("finding blob with objectId='{}'", objectId);
                 final DBObject obj = collection.findOne(objectId);
                 if (obj != null) {
-                    final DateTime accessed = DateTime.now(DateTimeZone.UTC);
-                    scheduledExecutorService.submit(new Runnable() {
-                        @Override
-                        public void run() {
-                            log.debug("updating last accessed time for block with objectId='{}' to {}", id, accessed);
-                            BasicDBObject updatedAccessedDbObject = new BasicDBObject();
-                            updatedAccessedDbObject.append("$set", new BasicDBObject().append(ACCESSED_ATTR_NAME, new Date(accessed.getMillis())));
-                            collection.update(obj, updatedAccessedDbObject, false, false);
-                            log.debug("updated last accessed time for block with objectId='{}' to {}", id, accessed);
-                        }
-                    });
+                    DateTime accessed = DateTime.now(DateTimeZone.UTC);
+
+                    ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+                    writeLock.lock();
+                    try {
+                        pendingLastAccessedWrites.put(id, accessed);
+                    } finally {
+                        writeLock.unlock();
+                    }
+
                     return obj;
                 }
             }
@@ -147,7 +154,7 @@ public class BlobManager implements Managed {
     }
 
     public boolean delete(ObjectId id) throws BlobNotFoundException {
-        try (Timer.Context timerContext = deleteTimer.time();) {
+        try (Timer.Context timerContext = deleteTimer.time()) {
             log.debug("attempting to delete blob with id='{}'", id);
             DBObject objectId = getDBObject(id);
             if (objectId != null) {
@@ -177,10 +184,39 @@ public class BlobManager implements Managed {
                 blobCleanupFrequency.getQuantity(),
                 blobCleanupFrequency.getUnit()
         );
+        scheduledExecutorService.scheduleWithFixedDelay(this, 1, 1, TimeUnit.MINUTES);
     }
 
     @Override
     public void stop() throws Exception {
-        // nothing to do
+        run();
+    }
+
+    @Override
+    public void run() {
+        HashMap<ObjectId, DateTime> updates = Maps.newHashMap();
+
+        ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+        readLock.lock();
+        try {
+            updates.putAll(pendingLastAccessedWrites);
+            pendingLastAccessedWrites.clear();
+        } finally {
+            readLock.unlock();
+        }
+        log.debug("updating last accessed time for {} blobs", updates.size());
+        for (Map.Entry<ObjectId, DateTime> lastAccessedEntry: updates.entrySet()) {
+            final DBObject obj = collection.findOne(lastAccessedEntry.getKey());
+            if (obj != null) {
+                DateTime accessed = lastAccessedEntry.getValue();
+
+                BasicDBObject updatedAccessedDbObject = new BasicDBObject();
+                updatedAccessedDbObject.append("$set", new BasicDBObject().append(ACCESSED_ATTR_NAME, new Date(accessed.getMillis())));
+
+                log.debug("updating last accessed time for blob with objectId='{}' to {}", lastAccessedEntry.getKey(), accessed);
+                collection.update(obj, updatedAccessedDbObject, false, false);
+                log.debug("updated last accessed time for blob with objectId='{}' to {}", lastAccessedEntry.getKey(), accessed);
+            }
+        }
     }
 }
