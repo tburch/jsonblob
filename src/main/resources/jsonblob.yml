@@ -16,6 +16,8 @@ server:
 # Logging settings.
 logging:
   level: INFO
+  loggers:
+    "com.lowtuna": DEBUG
   appenders:
   - type: "console"
     logFormat: "%-5p [%d{ISO8601}] [%thread] [%X{requestId}] %c{5}: %m%n%xEx"
