@@ -13,7 +13,7 @@ public enum Base64StringHelpers implements Helper<String> {
     base64Encode {
         @Override
         protected CharSequence safeApply(final String value, final Options options) {
-            boolean urlSafe = options.param(0, false);
+            Boolean urlSafe = options.hash("urlSafe", Boolean.FALSE);
             return urlSafe ? Base64.encodeBase64URLSafeString(value.getBytes()) : Base64.encodeBase64String(value.getBytes());
         }
 
@@ -22,7 +22,7 @@ public enum Base64StringHelpers implements Helper<String> {
     base64Decode {
         @Override
         protected CharSequence safeApply(final String value, final Options options) {
-            boolean urlSafe = options.param(0, false);
+            Boolean urlSafe = options.hash("urlSafe", Boolean.FALSE);
             return new String(urlSafe ? Base64.encodeBase64URLSafe(value.getBytes()) : Base64.decodeBase64(value.getBytes()));
         }
     };
