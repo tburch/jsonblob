@@ -1,6 +1,6 @@
 {{#if blobId}}
     {{#partial "title" }}
-        <title>JSON Blob | {{blobId}}</title>
+        <title xmlns="http://www.w3.org/1999/html">JSON Blob | {{blobId}}</title>
     {{/partial}}
 {{/if}}
 
@@ -87,6 +87,78 @@
             </div>
         </div>
     </div>
+
+    <div id="makeRequestModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Make Request" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Make a request using your JSON Blob</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                    <div class="input-group">
+                        <span class="input-group-addon">URL</span>
+                        <input type="text" class="form-control" placeholder="http://jsonblob.com/api/jsonBlob" id="requestUrl" />
+                    </div>
+                    </p>
+
+                    <div class="well">
+                        <label for="exampleInputEmail1">Headers</label>
+                        <table id="requestHeaders">
+                            <tr class="requestHeader">
+                                <td>
+                                    <div class="input-group">
+                                        <span class="input-group-addon">Header</span>
+                                        <input type="text" class="form-control headerName" value="Content-Type">
+                                        <input type="text" class="form-control headerValue" value="application/json">
+                                        <span class="input-group-addon removeHeaderButton"><a href="#">&times;</a></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="headerSpacer"><td>&NonBreakingSpace;</td></tr>
+                            <tr class="requestHeader">
+                                <td>
+                                    <div class="input-group">
+                                        <span class="input-group-addon">Header</span>
+                                        <input type="text" class="form-control headerName" value="Accept">
+                                        <input type="text" class="form-control headerValue" value="application/json">
+                                        <span class="input-group-addon removeHeaderButton"><a href="#">&times;</a></span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="headerSpacer"><td>&NonBreakingSpace;</td></tr>
+                        </table>
+
+                        <div class="btn-group">
+                            <button class="btn btn-default" id="addHeaderButton">Add another header</button>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-primary makeRequestButton">GET</button>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-primary makeRequestButton">POST</button>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-primary makeRequestButton">PUT</button>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-primary makeRequestButton">DELETE</button>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-primary makeRequestButton">HEAD</button>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-primary makeRequestButton">PATCH</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {{/partial}}
 
 {{#partial "css"}}
@@ -96,6 +168,7 @@
 {{#partial "customNav"}}
     <li><a id="save"><span class="glyphicon glyphicon-floppy-disk"></span> Save</a></li>
     <li><a id="clear"><span class="glyphicon glyphicon-remove"></span> Clear</a></li>
+    <li><a id="makeRequest"><span class="glyphicon glyphicon-play"></span> Make Request</a></li>
 {{/partial}}
 
 {{#partial "js"}}
@@ -157,6 +230,25 @@
             app.unsavedChanges = null;
             history.pushState(null, "JSON Blob", "/");
         });
+
+        $(".removeHeaderButton").click(function() {
+            var tr = $(this).parents("tr.requestHeader");
+            var trSpacer = tr.next();
+            tr.remove();
+            trSpacer.remove();
+        });
+
+        $("#addHeaderButton").click(function() {
+            var headerSpacer = $("#requestHeaders tr.headerSpacer:first").clone();
+            var headerBlock = $("#requestHeaders tr:first").clone();
+            $(headerBlock).find("input.headerName").val("").attr("placeholder", "Header Name");
+            $(headerBlock).find("input.headerValue").val("").attr("placeholder", "Header Name");
+            $(".requestHeader:first").parent().append(headerBlock, headerSpacer);
+        });
+
+        $("#makeRequest").click(function() {
+            $('#makeRequestModal').modal('show');
+        })
 
         jwerty.key('ctrl+s', function() {
             $("#save").click();
