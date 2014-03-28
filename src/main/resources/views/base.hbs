@@ -51,8 +51,9 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="new" id="new"><span class="glyphicon glyphicon-file"></span> New</a></li>
-                <li><a id="save" class="editorActions"><span class="glyphicon glyphicon-floppy-disk"></span> Save</a></li>
-                <li><a id="clear" class="editorActions"><span class="glyphicon glyphicon-remove"></span> Clear</a></li>
+                {{#block "customNav" }}
+
+                {{/block}}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/about"><i class="fa fa-question"></i> About</a></li>

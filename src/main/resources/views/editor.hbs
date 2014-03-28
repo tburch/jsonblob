@@ -93,6 +93,11 @@
     <link rel="stylesheet" type="text/css" href="/assets/css/jsoneditor/jsoneditor-min.css">
 {{/partial}}
 
+{{#partial "customNav"}}
+    <li><a id="save"><span class="glyphicon glyphicon-floppy-disk"></span> Save</a></li>
+    <li><a id="clear"><span class="glyphicon glyphicon-remove"></span> Clear</a></li>
+{{/partial}}
+
 {{#partial "js"}}
     <script type="text/javascript" src="/assets/js/jsoneditor/jsoneditor-min.js"></script>
     <script type="text/javascript" src="/assets/js/ace/ace-min.js"></script>
@@ -144,8 +149,6 @@
                 return "You have unsaved work, it will be lost if you leave this page.";
             }
         });
-
-        $(".editorActions").css("display", "block");
 
         $("#clear").click(function() {
             app.codeEditor.set({});
