@@ -89,7 +89,7 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
         environment.jersey().register(new ApiResource(blobManager, configuration.getBlobManagerConfig().isDeleteEnabled(), configuration.getGoogleAnalyticsConfig()));
         environment.jersey().register(new JsonBlobEditorResource(blobManager, configuration.getGoogleAnalyticsConfig()));
         environment.jersey().getResourceConfig().getContainerResponseFilters().add(new GitTipHeaderFilter());
-        environment.jersey().getResourceConfig().getContainerRequestFilters().add(new RequestIdFilter());
+        environment.jersey().getResourceConfig().getContainerRequestFilters().add(new RequestIdFilter("X-Request-ID"));
     }
 
 }
