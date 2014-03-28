@@ -21,10 +21,10 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import javax.annotation.concurrent.GuardedBy;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -36,8 +36,9 @@ public class BlobManager implements Managed, Runnable {
     public static final String CREATED_ATTR_NAME = "created";
     public static final String ACCESSED_ATTR_NAME = "accessed";
 
-    private final ConcurrentMap<ObjectId, DateTime> pendingLastAccessedWrites = Maps.newConcurrentMap();
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    @GuardedBy("pendingLastAccessedWritesLock")
+    private final Map<ObjectId, DateTime> pendingLastAccessedWrites = Maps.newHashMap();
+    private final ReentrantReadWriteLock pendingLastAccessedWritesLock = new ReentrantReadWriteLock();
 
     private final ScheduledExecutorService scheduledExecutorService;
     private final Duration blobCleanupFrequency;
@@ -117,7 +118,7 @@ public class BlobManager implements Managed, Runnable {
                 log.debug("finding blob with objectId='{}'", objectId);
                 final DBObject obj = collection.findOne(objectId);
                 if (obj != null) {
-                    try(ClosableLock closableLock = new ClosableLock(lock.writeLock())) {
+                    try(ClosableLock closableLock = new ClosableLock(pendingLastAccessedWritesLock.writeLock())) {
                         closableLock.lock();
                         pendingLastAccessedWrites.put(id, DateTime.now(DateTimeZone.UTC));
                     }
@@ -193,7 +194,7 @@ public class BlobManager implements Managed, Runnable {
     public void run() {
         HashMap<ObjectId, DateTime> updates = Maps.newHashMap();
 
-        try(ClosableLock closableLock = new ClosableLock(lock.writeLock())) {
+        try(ClosableLock closableLock = new ClosableLock(pendingLastAccessedWritesLock.writeLock())) {
             closableLock.lock();
             updates.putAll(pendingLastAccessedWrites);
             pendingLastAccessedWrites.clear();
