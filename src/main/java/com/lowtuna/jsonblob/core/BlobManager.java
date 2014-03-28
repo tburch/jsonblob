@@ -90,7 +90,8 @@ public class BlobManager implements Managed {
 
     public DBObject create(String json) {
         try (Timer.Context timerContext = createTimer.time()) {
-            log.debug("inserting blob with json='{}'", json);
+            log.debug("inserting blob");
+            log.trace("new blob json='{}'", json);
             DBObject parsed = createDBObject(json, true);
             collection.insert(parsed);
             log.debug("successfully inserted blob of json as objectId='{}'", parsed.get("_id"));
@@ -127,7 +128,8 @@ public class BlobManager implements Managed {
 
     public DBObject update(ObjectId id, String json) throws BlobNotFoundException {
         try (Timer.Context timerContext = updateTimer.time()) {
-            log.debug("attempting to update blob with id='{}' and json='{}'", id, json);
+            log.debug("attempting to update blob with id='{}'", id);
+            log.trace("blob json='{}'", json);
             DBObject objectId = getDBObject(id);
             if (objectId != null) {
                 log.debug("finding blob to update with objectId='{}'", objectId);
