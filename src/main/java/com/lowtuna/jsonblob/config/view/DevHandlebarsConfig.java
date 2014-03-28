@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Data
 @NoArgsConstructor
 public class DevHandlebarsConfig extends HandlebarsConfig {
+
     @JsonProperty
     @NotEmpty
     private String templateBaseDir;
@@ -25,4 +26,5 @@ public class DevHandlebarsConfig extends HandlebarsConfig {
                 .with(NullTemplateCache.INSTANCE);
         return hbs;
     }
+
 }

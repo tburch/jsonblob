@@ -1,4 +1,4 @@
-package com.lowtuna.jsonblob.util;
+package com.lowtuna.jsonblob.util.mustache;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;

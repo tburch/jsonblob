@@ -26,4 +26,5 @@ public class ProdHandlebarsConfig extends HandlebarsConfig {
                 .with(new HighConcurrencyTemplateCache());
         return hbs;
     }
+
 }

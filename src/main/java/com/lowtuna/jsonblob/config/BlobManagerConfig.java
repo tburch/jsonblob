@@ -31,4 +31,5 @@ public class BlobManagerConfig {
     @JsonProperty
     @NotNull
     private Duration blobAccessTtl = Duration.days(90);
+
 }
