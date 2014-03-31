@@ -298,6 +298,13 @@
         $("span.removeHeaderButton").on("click", removeHeader);
 
         $(".makeRequestButton").click(function() {
+            var url = $("#requestUrl").val();
+
+            if (!url) {
+                alert("Please enter a URL for the request to be sent to!");
+                return false;
+            }
+
             var method = $(this).text();
             var headers = {};
 
@@ -313,7 +320,7 @@
 
             var request = {
                 type: method,
-                url: $("#requestUrl").val(),
+                url: url,
                 headers: headers,
                 data: jsonString,
                 success: function(data, textStatus, jqXHR) {
