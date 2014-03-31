@@ -88,6 +88,49 @@
         </div>
     </div>
 
+    <div id="makeRequestFailure" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="JSON Blob saved!" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">We couldn't make your request!</h4>
+                </div>
+                <div class="modal-body">
+                    <p>We weren't able to successfully make a request to <code class="requestedUrl"></code>. <span id="reason" style="display: none">The HTTP error returned was <code id="errorReason"></code>.</span></p>
+                    <p style="display: none" class="crossSiteExplaination">This is likely because of a <a target="_blank" href="https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS">Cross-site HTTP</a> request and your server not having the appropriate <code>Access-Control-Allow-Origin</code> and <code>Access-Control-Allow-Methods</code> headers.</p>
+                    <p style="display: none" class="crossSiteExplaination">Adding the following response headers to <code>OPTION</code> requests sent to <code class="requestedUrl"></code> should solve the problem:</p>
+                    <ul style="display: none" class="crossSiteExplaination">
+                        <li><code>Access-Control-Allow-Origin: <span id="Access-Control-Allow-Origin"></span></code></li>
+                        <li><code>Access-Control-Allow-Methods: POST, PUT, DELETE, HEAD, PATCH, OPTIONS</code></li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="makeRequestSuccess" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="JSON Blob saved!" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">We made your request!</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Your request to <code class="requestedUrl"></code> returned a status code of <code id="statusCode"></code>.</p>
+                    <p>The headers returned in the response were:</p>
+                    <ul id="responseHeaders"></ul>
+                    <p>The response body was: <pre id="responseBody"></pre></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="makeRequestModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Make Request" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -138,9 +181,6 @@
                     <hr>
 
                     <div class="btn-group">
-                        <button class="btn btn-default btn-primary makeRequestButton">GET</button>
-                    </div>
-                    <div class="btn-group">
                         <button class="btn btn-default btn-primary makeRequestButton">POST</button>
                     </div>
                     <div class="btn-group">
@@ -178,8 +218,24 @@
     <script type="text/javascript" src="/assets/js/ace/theme-textmate.js"></script>
     <script type="text/javascript" src="/assets/js/ace/theme-jsoneditor.js"></script>
     <script type="text/javascript" src="/assets/js/base64.js"></script>
+    <script type="text/javascript" src="/assets/js/json2.js.js"></script>
     <script type="text/javascript" src="/assets/js/jsonlint/jsonlint.js"></script>
     <script type="text/javascript" src="/assets/js/jwerty/jwerty.js"></script>
+
+    <script id="headerTemplate" type="text/x-jquery-tmpl">
+        <tr class="requestHeader">
+            <td>
+                <div class="input-group">
+                    <span class="input-group-addon">Header</span>
+                    <input type="text" class="form-control headerName" placeholder="Header Name">
+                    <input type="text" class="form-control headerValue" placeholder="Header Value">
+                    <span class="input-group-addon removeHeaderButton"><a href="#">&times;</a></span>
+                </div>
+            </td>
+        </tr>
+        <tr class="headerSpacer"><td>&NonBreakingSpace;</td></tr>
+    </script>
+
     <script type="text/javascript">
     {{#if blobId}}
         var blobId = "{{blobId}}";
@@ -231,19 +287,78 @@
             history.pushState(null, "JSON Blob", "/");
         });
 
-        $(".removeHeaderButton").click(function() {
+        var removeHeader = function() {
             var tr = $(this).parents("tr.requestHeader");
             var trSpacer = tr.next();
             tr.remove();
             trSpacer.remove();
+            return false;
+        };
+
+        $("span.removeHeaderButton").on("click", removeHeader);
+
+        $(".makeRequestButton").click(function() {
+            var method = $(this).text();
+            var headers = {};
+
+            $(".requestHeader").each(function() {
+                var headerName = $(this).find("input.headerName").val();
+                var headerValue = $(this).find("input.headerValue").val();
+                if (headerName) {
+                    headers[headerName] = headerValue;
+                }
+            });
+
+            var jsonString = app.codeEditor == app.lastChanged ? app.codeEditor.getText() : app.treeEditor.getText();
+
+            var request = {
+                type: method,
+                url: $("#requestUrl").val(),
+                headers: headers,
+                data: jsonString,
+                success: function(data, textStatus, jqXHR) {
+                    $("#statusCode").text(jqXHR.status);
+                    $(".requestedUrl").text($("#requestUrl").val());
+                    $("#responseBody").text(JSON.stringify(data, undefined, 4));
+
+                    var headers = jqXHR.getAllResponseHeaders().split(/\n/);
+                    if (headers.length == 0) {
+                       $("#responseHeaders").remove();
+                    } else {
+                        for (var i = 0; i < headers.length; i++) {
+                            if (headers[i]) {
+                                $("<li><code>" + headers[i] + "</code></li>").appendTo("#responseHeaders");
+                            }
+                        }
+                    }
+
+                    $('#makeRequestModal').modal('hide');
+                    $('#makeRequestSuccess').modal('show');
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    if (errorThrown) {
+                        $(".crossSiteExplaination").hide();
+                        $("#errorReason").text(errorThrown + (jqXHR.status ? (" (" + jqXHR.status + ")") : ""));
+                        $("#reason").show();
+                    } else {
+                        $("#reason").hide();
+                        $(".crossSiteExplaination").show();
+                        $("#Access-Control-Allow-Origin").text(window.location.protocol + "://" +window.location.host);
+                    }
+                    $(".requestedUrl").text($("#requestUrl").val());
+
+                    $("#makeRequestModal").modal('hide');
+                    $("#makeRequestFailure").modal('show');
+                },
+                cache: false
+            };
+            $.ajax(request);
         });
 
         $("#addHeaderButton").click(function() {
-            var headerSpacer = $("#requestHeaders tr.headerSpacer:first").clone();
-            var headerBlock = $("#requestHeaders tr:first").clone();
-            $(headerBlock).find("input.headerName").val("").attr("placeholder", "Header Name");
-            $(headerBlock).find("input.headerValue").val("").attr("placeholder", "Header Name");
-            $(".requestHeader:first").parent().append(headerBlock, headerSpacer);
+            var newHeader = $($("script#headerTemplate").html());
+            newHeader.find("span.removeHeaderButton").on("click", removeHeader);
+            $("#requestHeaders").append(newHeader);
         });
 
         $("#makeRequest").click(function() {
