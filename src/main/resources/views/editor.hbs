@@ -435,6 +435,7 @@
         app.lastChanged = undefined;
 
         // code editor
+        app.isEditorSyncChange = true;
         var container = document.getElementById("codeEditor");
         app.codeEditor = new jsoneditor.JSONEditor(container, {
             mode: 'code',
@@ -469,6 +470,7 @@
                 console.log(err);
             }
         }, json);
+        app.isEditorSyncChange = false;
 
         function isValidJson(jsonString) {
             try {
