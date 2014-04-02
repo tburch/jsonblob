@@ -274,7 +274,7 @@
         $(document).ready(sizing);
         $(window).resize(sizing);
         $(window).bind('beforeunload', function() {
-            if (app.unsavedChanges === false) {
+            if (app.unsavedChanges === true) {
                 return "You have unsaved work, it will be lost if you leave this page.";
             }
         });
