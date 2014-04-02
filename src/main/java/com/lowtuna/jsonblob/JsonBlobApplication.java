@@ -81,12 +81,14 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
                 configuration.getBlobManagerConfig().getScheduledExecutorService().instance(environment),
                 configuration.getBlobManagerConfig().getBlobCleanupFrequency(),
                 configuration.getBlobManagerConfig().getBlobAccessTtl(),
-                environment.metrics());
+                environment.metrics(),
+                configuration.getBlobManagerConfig().isDeleteEnabled()
+        );
         environment.lifecycle().manage(blobManager);
 
         environment.healthChecks().register("MongoDB", new MongoHealthCheck(mongoDBInstance));
 
-        environment.jersey().register(new ApiResource(blobManager, configuration.getBlobManagerConfig().isDeleteEnabled(), configuration.getGoogleAnalyticsConfig()));
+        environment.jersey().register(new ApiResource(blobManager, configuration.getGoogleAnalyticsConfig()));
         environment.jersey().register(new JsonBlobEditorResource(blobManager, configuration.getGoogleAnalyticsConfig()));
         environment.jersey().getResourceConfig().getContainerResponseFilters().add(new GitTipHeaderFilter());
         environment.jersey().getResourceConfig().getContainerRequestFilters().add(new RequestIdFilter("X-Request-ID"));

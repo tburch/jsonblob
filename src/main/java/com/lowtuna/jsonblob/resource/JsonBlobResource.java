@@ -24,12 +24,10 @@ import javax.ws.rs.core.Response;
 public class JsonBlobResource {
     private final ObjectId blobId;
     private final BlobManager blobManager;
-    private final boolean deleteEnabled;
 
-    public JsonBlobResource(ObjectId blobId, BlobManager blobManager, boolean deleteEnabled) {
+    public JsonBlobResource(ObjectId blobId, BlobManager blobManager) {
         this.blobId = blobId;
         this.blobManager = blobManager;
-        this.deleteEnabled = deleteEnabled;
     }
 
     @GET
@@ -64,7 +62,7 @@ public class JsonBlobResource {
     @DELETE
     @Timed
     public Response delete() {
-        if (deleteEnabled) {
+        if (blobManager.isDeleteEnabled()) {
             try {
                 blobManager.delete(blobId);
                 return Response.ok().build();

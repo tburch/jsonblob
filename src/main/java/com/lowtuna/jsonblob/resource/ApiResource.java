@@ -25,15 +25,11 @@ import javax.ws.rs.core.UriBuilder;
 @Slf4j
 public class ApiResource {
     private final BlobManager blobManager;
-    private final boolean deleteEnabled;
     private final GoogleAnalyticsConfig gaConfig;
 
-    public ApiResource(BlobManager blobManager, boolean deleteEnabled, GoogleAnalyticsConfig gaConfig) {
-        this.blobManager = blobManager;
-        this.deleteEnabled = deleteEnabled;
+    public ApiResource(BlobManager blobManager, GoogleAnalyticsConfig gaConfig) {
         this.gaConfig = gaConfig;
-
-        log.info("Blob deletion is {}", deleteEnabled ? "enabled" : "disabled");
+        this.blobManager = blobManager;
     }
 
     @GET
@@ -85,7 +81,7 @@ public class ApiResource {
     }
 
     private JsonBlobResource createJsonBlobResource(ObjectId id) {
-        return new JsonBlobResource(id, blobManager, deleteEnabled);
+        return new JsonBlobResource(id, blobManager);
     }
 
 }

@@ -45,6 +45,8 @@ public class BlobManager implements Managed, Runnable {
     @Getter
     private final Duration blobAccessTtl;
     private final MetricRegistry metricRegistry;
+    @Getter
+    private final boolean deleteEnabled;
 
     private final DBCollection collection;
     private final Timer createTimer;
@@ -52,11 +54,12 @@ public class BlobManager implements Managed, Runnable {
     private final Timer updateTimer;
     private final Timer deleteTimer;
 
-    public BlobManager(DB mongoDb, String blobCollectionName, ScheduledExecutorService scheduledExecutorService, Duration blobCleanupFrequency, Duration blobAccessTtl, MetricRegistry metrics) {
+    public BlobManager(DB mongoDb, String blobCollectionName, ScheduledExecutorService scheduledExecutorService, Duration blobCleanupFrequency, Duration blobAccessTtl, MetricRegistry metrics, boolean deleteEnabled) {
         this.scheduledExecutorService = scheduledExecutorService;
         this.blobCleanupFrequency = blobCleanupFrequency;
         this.blobAccessTtl = blobAccessTtl;
         this.metricRegistry = metrics;
+        this.deleteEnabled = deleteEnabled;
 
         this.collection = mongoDb.getCollection(blobCollectionName);
         this.createTimer = metrics.timer(MetricRegistry.name(getClass(), "create"));
@@ -70,6 +73,8 @@ public class BlobManager implements Managed, Runnable {
                 return collection.count();
             }
         });
+
+        log.info("Blob deletion is {}", deleteEnabled ? "enabled" : "disabled");
     }
 
     private BasicDBObject getDBObject(ObjectId objectId) {
@@ -176,12 +181,14 @@ public class BlobManager implements Managed, Runnable {
 
     @Override
     public void start() throws Exception {
-        scheduledExecutorService.scheduleWithFixedDelay(
-                new BlobCleanupJob(collection, blobAccessTtl, metricRegistry),
-                0,
-                blobCleanupFrequency.getQuantity(),
-                blobCleanupFrequency.getUnit()
-        );
+        if (deleteEnabled) {
+            scheduledExecutorService.scheduleWithFixedDelay(
+                    new BlobCleanupJob(collection, blobAccessTtl, metricRegistry),
+                    0,
+                    blobCleanupFrequency.getQuantity(),
+                    blobCleanupFrequency.getUnit()
+            );
+        }
         scheduledExecutorService.scheduleWithFixedDelay(this, 1, 1, TimeUnit.MINUTES);
     }
 
