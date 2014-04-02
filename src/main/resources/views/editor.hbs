@@ -405,7 +405,7 @@
                         return;
                     },
                     error: function() {
-                        app.unsavedChanges = false;
+                        app.unsavedChanges = true;
                         $('#errorSavingJson').modal('show');
                     },
                     cache: false
@@ -422,7 +422,7 @@
                         return;
                     },
                     error: function() {
-                        app.unsavedChanges = false;
+                        app.unsavedChanges = true;
                         $('#errorSavingJson').modal('show');
                     },
                     cache: false
