@@ -89,6 +89,11 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.jknack</groupId>
+            <artifactId>handlebars-guava-cache</artifactId>
+            <version>1.1.2</version>
+        </dependency>
     </dependencies>
 
     <build>

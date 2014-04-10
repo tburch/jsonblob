@@ -1,5 +1,6 @@
 package com.lowtuna.jsonblob.config.view;
 
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jknack.handlebars.Handlebars;
@@ -21,10 +22,11 @@ public class DevHandlebarsConfig extends HandlebarsConfig {
     @Override
     @JsonIgnore
     public Handlebars createInstance() {
-        Handlebars hbs = new Handlebars()
-                .with(new FileTemplateLoader(templateBaseDir, StringUtils.EMPTY))
-                .with(NullTemplateCache.INSTANCE);
-        return hbs;
+        return new Handlebars().with(new FileTemplateLoader(templateBaseDir, StringUtils.EMPTY));
     }
 
+    @Override
+    protected Handlebars setupTemplateCache(Handlebars handlebars, MetricRegistry metricRegistry) {
+        return handlebars.with(NullTemplateCache.INSTANCE);
+    }
 }

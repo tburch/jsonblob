@@ -50,14 +50,14 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
     }
 
     @Override
-    public void initialize(Bootstrap<JsonBlobConfiguration> bootstrap) {
+    public void initialize(final Bootstrap<JsonBlobConfiguration> bootstrap) {
         bootstrap.addBundle(new AssetsBundle());
 
         bootstrap.addBundle(new ConfiguredHandlebarsViewBundle<JsonBlobConfiguration>() {
             @Override
             public Handlebars getInstance(JsonBlobConfiguration configuration) {
                 log.info("Using Handlebars configuration of {}", configuration.getHandlebarsConfig().getClass().getCanonicalName());
-                return configuration.getHandlebarsConfig().getInstance();
+                return configuration.getHandlebarsConfig().getInstance(bootstrap.getMetricRegistry());
             }
         });
     }
