@@ -299,9 +299,9 @@
 
         $("#createGist").click(function() {
             if (blobId) {
-                _trackEvent("Blobs", "gist", blobId);
+                ga('send', 'event', "Blobs", "gist", blobId);
             } else {
-                _trackEvent("Blobs", "gist");
+                ga('send', 'event', "Blobs", "gist");
             }
             var gist = {
                 "description": "JSON Blob from " + document.URL,
@@ -329,9 +329,9 @@
 
         $("#clear").click(function() {
             if (blobId) {
-                _trackEvent("Blobs", "clear", blobId);
+                ga('send', 'event', "Blobs", "clear", blobId);
             } else {
-                _trackEvent("Blobs", "clear");
+                ga('send', 'event', "Blobs", "clear");
             }
             app.codeEditor.set({});
             app.treeEditor.set({});
@@ -359,9 +359,9 @@
             }
 
             if (blobId) {
-                _trackEvent("Blobs", "makeRequest", blobId);
+                ga('send', 'event', "Blobs", "makeRequest", blobId);
             } else {
-                _trackEvent("Blobs", "makeRequest");
+                ga('send', 'event', "Blobs", "makeRequest");
             }
 
             var method = $(this).text();
@@ -443,9 +443,9 @@
             }
 
             if (blobId) {
-                _trackEvent("Blobs", "save", blobId);
+                ga('send', 'event',"Blobs", "save", blobId);
             } else {
-                _trackEvent("Blobs", "save");
+                ga('send', 'event', "Blobs", "save");
             }
 
             var request;
