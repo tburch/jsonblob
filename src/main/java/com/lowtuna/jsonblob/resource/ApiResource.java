@@ -54,7 +54,7 @@ public class ApiResource {
             return Response.serverError().build();
         }
 
-        return Response.created(UriBuilder.fromResource(JsonBlobResource.class).build(id)).entity(newBlob.get("blob")).build();
+        return Response.created(UriBuilder.fromResource(JsonBlobResource.class).build(id)).entity(newBlob.get("blob")).header("X-jsonblob", id).build();
     }
 
     @Path("{path: .*}")

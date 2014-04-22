@@ -33,10 +33,11 @@ public class JsonBlobResource {
     @GET
     @Timed
     @Produces(MediaType.APPLICATION_JSON)
-    public Object read() {
+    public Response read() {
         try {
             DBObject object = blobManager.read(blobId);
-            return object.get("blob");
+            ObjectId id = (ObjectId) object.get("_id");
+            return Response.ok(object.get("blob")).header("X-jsonblob", id).build();
         } catch (BlobNotFoundException e) {
             throw new NotFoundException();
         }
@@ -46,14 +47,15 @@ public class JsonBlobResource {
     @Timed
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Object update(String json) {
+    public Response update(String json) {
         if (!blobManager.isValidJson(json)) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
         try {
             DBObject object = blobManager.update(blobId, json);
-            return object.get("blob");
+            ObjectId id = (ObjectId) object.get("_id");
+            return Response.ok(object.get("blob")).header("X-jsonblob", id).build();
         } catch (BlobNotFoundException e) {
             throw new NotFoundException();
         }
