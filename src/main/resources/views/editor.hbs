@@ -303,15 +303,20 @@
             } else {
                 ga('send', 'event', "Blobs", "gist");
             }
+            
             var gist = {
                 "description": "JSON Blob from " + document.URL,
                 "public": false,
-                "files": {
-                    "blob.json": {
-                        "content": app.codeEditor == app.lastChanged ? app.codeEditor.getText() : app.treeEditor.getText()
-                    }
-                }
+                "files": {}
             };
+
+            var gistFileContent = {
+                "content": app.codeEditor == app.lastChanged ? app.codeEditor.getText() : app.treeEditor.getText()
+            };
+
+            var gistFileName = blobId ? blobId : "blob.json";
+            gist.files[gistFileName] = gistFileContent;
+
             $.ajax({
                 dataType: "json",
                 type: "POST",
