@@ -298,6 +298,11 @@
         });
 
         $("#createGist").click(function() {
+            if (blobId) {
+                _trackEvent("Blobs", "gist", blobId);
+            } else {
+                _trackEvent("Blobs", "gist");
+            }
             var gist = {
                 "description": "JSON Blob from " + document.URL,
                 "public": false,
@@ -323,6 +328,11 @@
         });
 
         $("#clear").click(function() {
+            if (blobId) {
+                _trackEvent("Blobs", "clear", blobId);
+            } else {
+                _trackEvent("Blobs", "clear");
+            }
             app.codeEditor.set({});
             app.treeEditor.set({});
             blobId = null;
@@ -346,6 +356,12 @@
             if (!url) {
                 alert("Please enter a URL for the request to be sent to!");
                 return false;
+            }
+
+            if (blobId) {
+                _trackEvent("Blobs", "makeRequest", blobId);
+            } else {
+                _trackEvent("Blobs", "makeRequest");
             }
 
             var method = $(this).text();
@@ -424,6 +440,12 @@
             if (!isValidJson(jsonString)) {
                 $('#invalidJson').modal('show');
                 return;
+            }
+
+            if (blobId) {
+                _trackEvent("Blobs", "save", blobId);
+            } else {
+                _trackEvent("Blobs", "save");
             }
 
             var request;
