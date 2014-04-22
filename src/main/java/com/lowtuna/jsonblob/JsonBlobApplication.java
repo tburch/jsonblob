@@ -18,9 +18,12 @@ import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
+
+import javax.servlet.FilterRegistration;
 
 @Slf4j
 public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
@@ -92,6 +95,10 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
         environment.jersey().register(new JsonBlobEditorResource(blobManager, configuration.getGoogleAnalyticsConfig()));
         environment.jersey().getResourceConfig().getContainerResponseFilters().add(new GitTipHeaderFilter());
         environment.jersey().getResourceConfig().getContainerRequestFilters().add(new RequestIdFilter("X-Request-ID"));
+
+        FilterRegistration.Dynamic corsFilterRegistration = environment.servlets().addFilter("cross-origin", CrossOriginFilter.class);
+        corsFilterRegistration.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,POST,PUT,DELETE,HEAD");
+        corsFilterRegistration.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "X-Requested-With,X-jsonblob,Content-Type,Accept,Origin");
     }
 
 }
