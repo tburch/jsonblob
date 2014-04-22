@@ -33,10 +33,10 @@ public class JsonBlobResource {
     @GET
     @Timed
     @Produces(MediaType.APPLICATION_JSON)
-    public DBObject read() {
+    public Object read() {
         try {
             DBObject object = blobManager.read(blobId);
-            return (DBObject) object.get("blob");
+            return object.get("blob");
         } catch (BlobNotFoundException e) {
             throw new NotFoundException();
         }
@@ -46,14 +46,14 @@ public class JsonBlobResource {
     @Timed
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public DBObject update(String json) {
+    public Object update(String json) {
         if (!blobManager.isValidJson(json)) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
         try {
             DBObject object = blobManager.update(blobId, json);
-            return (DBObject) object.get("blob");
+            return object.get("blob");
         } catch (BlobNotFoundException e) {
             throw new NotFoundException();
         }

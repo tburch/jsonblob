@@ -53,7 +53,7 @@ public class JsonBlobEditorResource {
     public EditorView blobEditor(@PathParam("blobId") ObjectId blobId) {
         try {
             DBObject object = blobManager.read(blobId);
-            DBObject blob = (DBObject) object.get("blob");
+            Object blob = object.get("blob");
             EditorView view = new EditorView(gaConfig.getWebPropertyID(), "editor", gaConfig.getCustomTrackingCodes());
             view.setBlobId(blobId.toString());
             view.setJsonBlob(blob.toString());
