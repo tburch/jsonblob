@@ -303,19 +303,16 @@
             } else {
                 ga('send', 'event', "Blobs", "gist");
             }
-            
+
             var gist = {
                 "description": "JSON Blob from " + document.URL,
                 "public": false,
                 "files": {}
             };
-
             var gistFileContent = {
                 "content": app.codeEditor == app.lastChanged ? app.codeEditor.getText() : app.treeEditor.getText()
             };
-
-            var gistFileName = blobId ? blobId : "blob.json";
-            gist.files[gistFileName] = gistFileContent;
+            gist.files[(blobId ? blobId : "blob") + ".json"] = gistFileContent;
 
             $.ajax({
                 dataType: "json",
