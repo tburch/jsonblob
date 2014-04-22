@@ -105,7 +105,8 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
             public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
                 MultivaluedMap headers = response.getHttpHeaders();
                 headers.add("Access-Control-Allow-Origin", "*");
-                headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, HEAD, OPTIONS");
+                headers.add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,HEAD,OPTIONS");
+                headers.add("Access-Control-Expose-Headers", "X-Requested-With,X-jsonblob,X-Hello-Human,Location,Date,Content-Type,Accept,Origin");
 
                 String reqHead = request.getHeaderValue("Access-Control-Request-Headers");
                 if (StringUtils.isNotEmpty(reqHead)) {
