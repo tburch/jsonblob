@@ -402,6 +402,8 @@
 
                     $('#makeRequestModal').modal('hide');
                     $('#makeRequestSuccess').modal('show');
+
+                    ga('send', 'event', "Blobs", "makeRequestSuccess");
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     if (errorThrown) {
@@ -417,6 +419,7 @@
 
                     $("#makeRequestModal").modal('hide');
                     $("#makeRequestFailure").modal('show');
+                    ga('send', 'event', "Blobs", "makeRequestFailure");
                 },
                 cache: false
             };
