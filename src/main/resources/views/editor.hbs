@@ -257,6 +257,7 @@
     <script type="text/javascript">
     {{#if blobId}}
         var blobId = "{{blobId}}";
+        ga('send', 'event', "Blobs", "load", blobId);
     {{else}}
         var blobId = null;
     {{/if}}
@@ -442,15 +443,17 @@
 
         $("#save").click(function() {
             var jsonString = app.codeEditor == app.lastChanged ? app.codeEditor.getText() : app.treeEditor.getText();
-            if (!isValidJson(jsonString)) {
-                $('#invalidJson').modal('show');
-                return;
-            }
+            var valid = !isValidJson(jsonString);
 
             if (blobId) {
-                ga('send', 'event',"Blobs", "save", blobId);
+                ga('send', 'event', "Blobs", "save", blobId, valid ? 1 : 0);
             } else {
-                ga('send', 'event', "Blobs", "save");
+                ga('send', 'event', "Blobs", "save", null, valid ? 1 : 0);
+            }
+
+            if (valid) {
+                $('#invalidJson').modal('show');
+                return;
             }
 
             var request;
