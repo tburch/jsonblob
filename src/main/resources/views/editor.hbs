@@ -216,10 +216,40 @@
             </div>
         </div>
     </div>
+
+    <ol id="tourContent" data-version="1">
+        <li data-id="codeEditor" data-text="Got it!" data-options="tipLocation:left">
+            <h2>Edit your JSON</h2>
+            <p>Edit your JSON Blob using the built in text editor.</p>
+            <p>Watch the left hand column for syntax errors!</p>
+        </li>
+        <li data-id="treeEditor" data-text="What next?" data-options="tipLocation:right">
+            <h2>Tweak your JSON</h2>
+            <p>Use the Tree Editor to modify your JSON Blob without having to worry about syntax issues.</p>
+            <p>Use the the buttons on the left to modify your JSON.</p>
+        </li>
+        <li data-id="save" data-text="Sweet!" data-options="tipLocation:top">
+            <h2>Save your JSON</h2>
+            <p>Save your JSON Blob so you can share it with others or come back to work on it later.</p>
+        </li>
+        <li data-id="makeRequest" data-text="Awesome!" data-options="tipLocation:top">
+            <h2>Send your JSON</h2>
+            <p>Send your JSON Blob as a HTTP request to any server who will accept it.</p>
+        </li>
+        <li data-id="createGist" data-text="Anything else?" data-options="tipLocation:top">
+            <h2>Export a Gist</h2>
+            <p>Export your JSON Blob as a Gist to GitHub</p>
+        </li>
+        <li data-text="Let me get started!">
+            <h2>Use our HTTP API</h2>
+            <p>You can create, modify, and delete your JSON Blobs with our <a href="/api" target="_blank">API</a>.</p>
+        </li>
+    </ol>
 {{/partial}}
 
 {{#partial "css"}}
     <link rel="stylesheet" type="text/css" href="/assets/css/jsoneditor/jsoneditor-min.css">
+    <link rel=" stylesheet" type="text/css" href="/assets/css/joyride/joyride-2.1.css">
 {{/partial}}
 
 {{#partial "customNav"}}
@@ -239,6 +269,8 @@
     <script type="text/javascript" src="/assets/js/json2.js"></script>
     <script type="text/javascript" src="/assets/js/jsonlint/jsonlint.js"></script>
     <script type="text/javascript" src="/assets/js/jwerty/jwerty.js"></script>
+    <script type="text/javascript" src="/assets/js/jquery/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/assets/js/joyride/jquery.joyride-2.1.js"></script>
 
     <script id="headerTemplate" type="text/x-jquery-tmpl">
         <tr class="requestHeader">
@@ -275,13 +307,16 @@
         };
     {{/if}}
 
+        $.cookie.json = true;
+
         var app = {};
+        app.tourVersion = $("#tourContent").data("version");
+        app.tourCookie = "jsonBlobTour";
         app.treeEditor = null;
         app.codeEditor = null;
         app.isEditorSyncChange = false;
         app.unsavedChanges = false;
         app.apiBase = "/api/jsonBlob";
-
 
         function sizing() {
             var bodyHeight = $(window).height();
@@ -290,7 +325,54 @@
             $("#codeEditor, #treeEditor").height(editorHeight+"px");
             app.codeEditor.resize();
         }
-        $(document).ready(sizing);
+
+        $(document).ready(function() {
+            sizing();
+
+            var tourCookie = $.cookie(app.tourCookie);
+            if (tourCookie == undefined || (tourCookie.version && tourCookie.version < app.tourVersion)) {
+                if (blobId) {
+                    ga('send', 'event', "Tour", "start", blobId, tourCookie && tourCookie.version ? tourCookie.version : null);
+                } else {
+                    ga('send', 'event', "Tour", "start", null, tourCookie && tourCookie.version ? tourCookie.version : null);
+                }
+                $('#tourContent').joyride({
+                    autoStart: true,
+                    expose: true,
+                    modal: true,
+                    tipAnimation: 'pop',
+                    tipAnimationFadeSpeed: 300,
+                    cookieMonster: true,
+                    cookieName: 'jsonblobTour',
+                    cookieDomain: true,
+                    postRideCallback: function () {
+                        if (blobId) {
+                            ga('send', 'event', "Tour", "complete", blobId, app.tourVersion);
+                        } else {
+                            ga('send', 'event', "Tour", "complete", null, app.tourVersion);
+                        }
+                        var cookieOpts = {
+                            viewed: (new Date()).getTime(),
+                            version: app.tourVersion
+                        };
+                        $.cookie(app.tourCookie, cookieOpts);
+                    },
+                    'postStepCallback': function (index, tip) {
+                        if (blobId) {
+                            ga('send', 'event', "Tour", "step", blobId, index);
+                        } else {
+                            ga('send', 'event', "Tour", "step", null, index);
+                        }
+                    }
+                });
+            } else {
+                if (blobId) {
+                    ga('send', 'event', "Tour", "seen", blobId, tourCookie.version);
+                } else {
+                    ga('send', 'event', "Tour", "seen", null, tourCookie.version);
+                }
+            }
+        });
         $(window).resize(sizing);
         $(window).bind('beforeunload', function() {
             if (app.unsavedChanges === true) {
