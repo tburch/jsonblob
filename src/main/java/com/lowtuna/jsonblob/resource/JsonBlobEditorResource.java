@@ -27,14 +27,21 @@ public class JsonBlobEditorResource {
     @GET
     @Timed
     public EditorView defaultEditor() {
-        return new EditorView(gaConfig.getWebPropertyID(), "editor", gaConfig.getCustomTrackingCodes());
+        return new EditorView(gaConfig.getWebPropertyID(), "editor", gaConfig.getCustomTrackingCodes(), false);
+    }
+
+    @GET
+    @Timed
+    @Path("tour")
+    public EditorView tour() {
+        return new EditorView(gaConfig.getWebPropertyID(), "editor", gaConfig.getCustomTrackingCodes(), true);
     }
 
     @GET
     @Timed
     @Path("new")
     public EditorView emptyEditor() {
-        EditorView view = new EditorView(gaConfig.getWebPropertyID(), "editor", gaConfig.getCustomTrackingCodes());
+        EditorView view = new EditorView(gaConfig.getWebPropertyID(), "editor", gaConfig.getCustomTrackingCodes(), true);
         view.setJsonBlob("{}");
         return view;
     }
@@ -54,7 +61,7 @@ public class JsonBlobEditorResource {
         try {
             DBObject object = blobManager.read(blobId);
             Object blob = object.get("blob");
-            EditorView view = new EditorView(gaConfig.getWebPropertyID(), "editor", gaConfig.getCustomTrackingCodes());
+            EditorView view = new EditorView(gaConfig.getWebPropertyID(), "editor", gaConfig.getCustomTrackingCodes(), true);
             view.setBlobId(blobId.toString());
             view.setJsonBlob(blob.toString());
             return view;

@@ -251,6 +251,10 @@
     </ol>
 {{/partial}}
 
+{{#partial "head"}}
+    
+{{/partial}}
+
 {{#partial "css"}}
     <link rel="stylesheet" type="text/css" href="/assets/css/jsoneditor/jsoneditor-min.css">
     <link rel=" stylesheet" type="text/css" href="/assets/css/joyride/joyride-2.1.css">
@@ -343,6 +347,7 @@
         $(document).ready(function() {
             sizing();
 
+            {{#if showTour}}
             var tourCookie = $.cookie(app.tourCookie);
             if (tourCookie == undefined || (tourCookie.version && tourCookie.version < app.tourVersion)) {
                 if (blobId) {
@@ -369,7 +374,7 @@
                             viewed: (new Date()).getTime(),
                             version: app.tourVersion
                         };
-                        $.cookie(app.tourCookie, cookieOpts);
+                        $.cookie(app.tourCookie, cookieOpts, {expires: 365});
                     },
                     'postStepCallback': function (index, tip) {
                         if (blobId) {
@@ -386,6 +391,7 @@
                     ga('send', 'event', "Tour", "seen", null, tourCookie.version);
                 }
             }
+            {{/if}}
         });
         $(window).resize(sizing);
         $(window).bind('beforeunload', function() {
