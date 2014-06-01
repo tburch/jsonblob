@@ -218,10 +218,6 @@
     </div>
 
     <ol id="tourContent" data-version="1">
-        <li data-class="navbar-brand" data-text="Next" data-options="tipLocation:top">
-            <h2>Welcome!</h2>
-            <p>Click 'Next' to take a tour or <a href="#" onclick="skipTour();">skip the tour</a>.</p>
-        </li>
         <li data-id="codeEditor" data-text="Got it!" data-options="tipLocation:left">
             <h2>Edit your JSON</h2>
             <p>Edit your JSON Blob using the built in text editor.</p>
@@ -330,16 +326,6 @@
             $("#codeEditor, #treeEditor").height(editorHeight+"px");
             app.codeEditor.resize();
         }
-
-        function skipTour() {
-            $(document).joyride('end');
-            if (blobId) {
-                ga('send', 'event', "Tour", "skip", blobId);
-            } else {
-                ga('send', 'event', "Tour", "skip");
-            }
-            return false;
-        };
 
         $('#tour').click(function() {
             if (blobId) {
