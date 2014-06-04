@@ -8,9 +8,11 @@
             <p class="lead">
                 JSON Blob was created to help parallelize client/server development. Mock JSON responses can be defined using the online editor and then clients can use the <a href="/api">JSON Blob API</a> to retrieve and update the mock responses.
             </p>
+            {{#if deletionEnabled}}
             <p>
                 Blobs that are not accessed in {{blobAccessTtl.quantity}} {{blobAccessTtl.unit}} will be removed.
             </p>
+            {{/if}}
             <p>
                 Credit for the JSON editor and formatter goes to <a href="https://github.com/josdejong/jsoneditor/">JSON Editor Online</a>.
             </p>
