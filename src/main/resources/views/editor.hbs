@@ -1,6 +1,6 @@
 {{#if blobId}}
     {{#partial "title" }}
-        <title xmlns="http://www.w3.org/1999/html">JSON Blob | {{blobId}}</title>
+        <title>JSON Blob | {{blobId}}</title>
     {{/partial}}
 {{/if}}
 
@@ -218,10 +218,6 @@
     </div>
 
     <ol id="tourContent" data-version="1">
-        <li data-class="navbar-brand" data-text="Next" data-options="tipLocation:top">
-            <h2>Welcome!</h2>
-            <p>Click 'Next' to take a tour or <a href="#" onclick="skipTour();">skip the tour</a>.</p>
-        </li>
         <li data-id="codeEditor" data-text="Got it!" data-options="tipLocation:left">
             <h2>Edit your JSON</h2>
             <p>Edit your JSON Blob using the built in text editor.</p>
@@ -251,25 +247,6 @@
     </ol>
 {{/partial}}
 
-{{#unless showTour}}
-    {{#partial "topHead"}}
-        <!-- Google Analytics Content Experiment code -->
-        <script>function utmx_section(){}function utmx(){}(function(){var
-                k='66852108-0',d=document,l=d.location,c=d.cookie;
-            if(l.search.indexOf('utm_expid='+k)>0)return;
-            function f(n){if(c){var i=c.indexOf(n+'=');if(i>-1){var j=c.
-                    indexOf(';',i);return escape(c.substring(i+n.length+1,j<0?c.
-                    length:j))}}}var x=f('__utmx'),xx=f('__utmxx'),h=l.hash;d.write(
-                            '<sc'+'ript src="'+'http'+(l.protocol=='https:'?'s://ssl':
-                            '://www')+'.google-analytics.com/ga_exp.js?'+'utmxkey='+k+
-                            '&utmx='+(x?x:'')+'&utmxx='+(xx?xx:'')+'&utmxtime='+new Date().
-                            valueOf()+(h?'&utmxhash='+escape(h.substr(1)):'')+
-                            '" type="text/javascript" charset="utf-8"><\/sc'+'ript>')})();
-        </script><script>utmx('url','A/B');</script>
-        <!-- End of Google Analytics Content Experiment code -->
-    {{/partial}}
-{{/unless}}
-
 {{#partial "css"}}
     <link rel="stylesheet" type="text/css" href="/assets/css/jsoneditor/jsoneditor-min.css">
     <link rel=" stylesheet" type="text/css" href="/assets/css/joyride/joyride-2.1.css">
@@ -280,6 +257,7 @@
     <li><a id="clear"><span class="glyphicon glyphicon-remove"></span> Clear</a></li>
     <li><a id="makeRequest"><span class="glyphicon glyphicon-play"></span> Make Request</a></li>
     <li><a id="createGist"><span class="fa fa-github"></span> Create Gist</a></li>
+    <li><a id="tour"><span class="fa fa-lightbulb-o"></span> Tour</a></li>
 {{/partial}}
 
 {{#partial "js"}}
@@ -349,64 +327,40 @@
             app.codeEditor.resize();
         }
 
-        function skipTour() {
-            $(document).joyride('end');
+        $('#tour').click(function() {
             if (blobId) {
-                ga('send', 'event', "Tour", "skip", blobId);
+                ga('send', 'event', "Tour", "start", blobId);
             } else {
-                ga('send', 'event', "Tour", "skip");
+                ga('send', 'event', "Tour", "start");
             }
-            return false;
-        };
+            $('#tourContent').joyride({
+                autoStart: true,
+                expose: true,
+                modal: true,
+                tipAnimation: 'pop',
+                tipAnimationFadeSpeed: 300,
+                cookieMonster: true,
+                cookieName: 'jsonblobTour',
+                cookieDomain: true,
+                postRideCallback: function () {
+                    if (blobId) {
+                        ga('send', 'event', "Tour", "complete", blobId);
+                    } else {
+                        ga('send', 'event', "Tour", "complete");
+                    }
+                },
+                'postStepCallback': function (index, tip) {
+                    if (blobId) {
+                        ga('send', 'event', "Tour", "step", blobId, index);
+                    } else {
+                        ga('send', 'event', "Tour", "step", null, index);
+                    }
+                }
+            });
+        });
 
         $(document).ready(function() {
             sizing();
-
-            {{#if showTour}}
-            var tourCookie = $.cookie(app.tourCookie);
-            if (tourCookie == undefined || (tourCookie.version && tourCookie.version < app.tourVersion)) {
-                if (blobId) {
-                    ga('send', 'event', "Tour", "start", blobId, tourCookie && tourCookie.version ? tourCookie.version : null);
-                } else {
-                    ga('send', 'event', "Tour", "start", null, tourCookie && tourCookie.version ? tourCookie.version : null);
-                }
-                $('#tourContent').joyride({
-                    autoStart: true,
-                    expose: true,
-                    modal: true,
-                    tipAnimation: 'pop',
-                    tipAnimationFadeSpeed: 300,
-                    cookieMonster: true,
-                    cookieName: 'jsonblobTour',
-                    cookieDomain: true,
-                    postRideCallback: function () {
-                        if (blobId) {
-                            ga('send', 'event', "Tour", "complete", blobId, app.tourVersion);
-                        } else {
-                            ga('send', 'event', "Tour", "complete", null, app.tourVersion);
-                        }
-                        var cookieOpts = {
-                            viewed: (new Date()).getTime(),
-                            version: app.tourVersion
-                        };
-                        $.cookie(app.tourCookie, cookieOpts, {expires: 365});
-                    },
-                    'postStepCallback': function (index, tip) {
-                        if (blobId) {
-                            ga('send', 'event', "Tour", "step", blobId, index);
-                        } else {
-                            ga('send', 'event', "Tour", "step", null, index);
-                        }
-                    }
-                });
-            } else {
-                if (blobId) {
-                    ga('send', 'event', "Tour", "seen", blobId, tourCookie.version);
-                } else {
-                    ga('send', 'event', "Tour", "seen", null, tourCookie.version);
-                }
-            }
-            {{/if}}
         });
         $(window).resize(sizing);
         $(window).bind('beforeunload', function() {
