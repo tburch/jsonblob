@@ -2,6 +2,11 @@
     margin-bottom: 19px;
 }
 
+/* Navbar for humans*/
+.nav.navbar-nav li a{
+    cursor: pointer !important;
+}
+
 /* Github Fork Ribbon*/
 
 /* Left will inherit from right (so we don't need to duplicate code) */
