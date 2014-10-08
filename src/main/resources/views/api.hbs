@@ -25,7 +25,7 @@
                     <p>Creating a JSON Blob is accomplished by sending a <code>POST</code> request to <code>/api/jsonBlob</code>. The body of the request should contain valid JSON that will used as the JSON Blob. Upon successfully storing the JSON blob, a <code>201</code> response will be returned. The <code>Location</code> header in the response will be set to the URL at which the blob can be accessed with a <a href="#get"><code>GET</code></a> request. The body of the response is the JSON that was stored in the JSON blob.</p>
                     <h3 id="post-example">Example request and response</h3>
                     <pre>
-<code>curl -i -d '{"people":["bill", "steve", "bob"]}' -H "Content-Type: application/json" -H "Accept: application/json" http://jsonblob.com/api/jsonBlob
+<code>curl -i -X "POST" -d '{"people":["bill", "steve", "bob"]}' -H "Content-Type: application/json" -H "Accept: application/json" http://jsonblob.com/api/jsonBlob
 
 HTTP/1.1 201 Created
 Location: http://jsonblob.com/api/jsonBlob/5226571730043f8b22dadc20
