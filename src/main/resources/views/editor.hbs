@@ -363,8 +363,11 @@
             sizing();
         });
         $(window).resize(sizing);
-        $(window).bind('beforeunload', function() {
-            if (app.unsavedChanges === true) {
+        $(".col-md-2").click(function() {
+            app.adClick = true;
+        });
+        $(window).bind('beforeunload', function(event) {
+            if (app.unsavedChanges === true && !app.adClick) {
                 return "You have unsaved work, it will be lost if you leave this page.";
             }
         });
