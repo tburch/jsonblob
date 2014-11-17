@@ -1,1 +1,1 @@
-web     java $JAVA_OPTS -Ddw.mongo.type=uri -Ddw.mongo.uri=$MONGOHQ_URL -Ddw.server.connector.type=http -Ddw.server.connector.port=$PORT -dw.blobManager.deleteEnabled=$BLOB_DELETE_ENABLE -jar target/jsonblob.jar server target/config/jsonblob.yml
+web     java $JAVA_OPTS -Ddw.mongo.type=uri -Ddw.mongo.uri=$MONGOHQ_URL -Ddw.server.connector.type=http -Ddw.server.connector.port=$PORT -Ddw.blobManager.deleteEnabled=$BLOB_DELETE_ENABLE -jar target/jsonblob.jar server target/config/jsonblob.yml
