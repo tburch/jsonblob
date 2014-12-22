@@ -7,6 +7,7 @@ import com.lowtuna.dropwizard.extras.heroku.RequestIdFilter;
 import com.lowtuna.dropwizard.extras.view.handlebars.ConfiguredHandlebarsViewBundle;
 import com.lowtuna.jsonblob.config.JsonBlobConfiguration;
 import com.lowtuna.jsonblob.core.BlobManager;
+import com.lowtuna.jsonblob.healthcheck.CreateDeleteBlobHealthCheck;
 import com.lowtuna.jsonblob.healthcheck.MongoHealthCheck;
 import com.lowtuna.jsonblob.resource.ApiResource;
 import com.lowtuna.jsonblob.resource.JsonBlobEditorResource;
@@ -93,6 +94,7 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
         environment.lifecycle().manage(blobManager);
 
         environment.healthChecks().register("MongoDB", new MongoHealthCheck(mongoDBInstance));
+        environment.healthChecks().register("CreateDeleteBlob", new CreateDeleteBlobHealthCheck(blobManager));
 
         environment.jersey().register(new ApiResource(blobManager, configuration.getGoogleAnalyticsConfig()));
         environment.jersey().register(new JsonBlobEditorResource(blobManager, configuration.getGoogleAnalyticsConfig()));
