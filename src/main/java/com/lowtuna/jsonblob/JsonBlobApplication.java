@@ -94,7 +94,7 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
         environment.lifecycle().manage(blobManager);
 
         environment.healthChecks().register("MongoDB", new MongoHealthCheck(mongoDBInstance));
-        environment.healthChecks().register("CreateDeleteBlob", new CreateDeleteBlobHealthCheck(blobManager));
+        environment.healthChecks().register("BlobManager", new CreateDeleteBlobHealthCheck(blobManager));
 
         environment.jersey().register(new ApiResource(blobManager, configuration.getGoogleAnalyticsConfig()));
         environment.jersey().register(new JsonBlobEditorResource(blobManager, configuration.getGoogleAnalyticsConfig()));
