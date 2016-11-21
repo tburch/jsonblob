@@ -51,7 +51,7 @@ public class BlobMigrationJob implements Runnable {
             }
 
             if (migratedBlobs % 100 == 0) {
-              log.info("Migrated {} blobs...", migratedBlobs);
+              log.info("Migrated {} blobs... (~{} per second)", migratedBlobs, migratedBlobs/stopwatch.elapsed(TimeUnit.SECONDS));
             }
           }
         } catch (MongoException e) {
