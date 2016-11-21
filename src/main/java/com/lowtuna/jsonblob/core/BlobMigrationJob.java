@@ -31,7 +31,7 @@ public class BlobMigrationJob implements Runnable {
 
     log.info("Starting blob migration");
 
-    DBCursor curs = mongoDbJsonBlobManager.getCollection().find().limit(5000);
+    DBCursor curs = mongoDbJsonBlobManager.getCollection().find();
     try {
       while (curs.hasNext()) {
         try {
