@@ -77,6 +77,8 @@ public class BlobMigrationJob implements Runnable {
       latch.await();
     } catch (Exception e) {
       log.warn("Caught exception while migrating blobs", e);
+    } finally {
+      curs.close();
     }
     log.info("Completed migrating {} blobs in {}ms", migratedBlobs, stopwatch.elapsed(TimeUnit.MILLISECONDS));
   }
