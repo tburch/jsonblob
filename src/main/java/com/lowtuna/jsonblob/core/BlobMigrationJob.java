@@ -47,7 +47,7 @@ public class BlobMigrationJob implements Runnable {
               fileSystemJsonBlobManager.createBlob(json, id.toString());
               log.trace("Completed migrating blob {}", id);
             } finally {
-//              mongoDbJsonBlobManager.deleteBlob(id.toString());
+              mongoDbJsonBlobManager.deleteBlob(id.toString());
             }
 
             if (migratedBlobs % 100 == 0) {
