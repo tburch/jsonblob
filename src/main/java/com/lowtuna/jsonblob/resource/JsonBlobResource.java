@@ -1,12 +1,10 @@
 package com.lowtuna.jsonblob.resource;
 
 import com.codahale.metrics.annotation.Timed;
-import com.lowtuna.jsonblob.core.BlobManager;
+import com.lowtuna.jsonblob.core.JsonBlobManager;
 import com.lowtuna.jsonblob.core.BlobNotFoundException;
-import com.mongodb.DBObject;
 import com.sun.jersey.api.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.types.ObjectId;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.ws.rs.Consumes;
@@ -22,22 +20,22 @@ import javax.ws.rs.core.Response;
 @Path("/{blobId}")
 @Slf4j
 public class JsonBlobResource {
-    private final ObjectId blobId;
-    private final BlobManager blobManager;
+    private final String blobId;
+    private final JsonBlobManager jsonBlobManager;
 
-    public JsonBlobResource(ObjectId blobId, BlobManager blobManager) {
+    public JsonBlobResource(String blobId, JsonBlobManager jsonBlobManager) {
         this.blobId = blobId;
-        this.blobManager = blobManager;
+        this.jsonBlobManager = jsonBlobManager;
     }
 
     @GET
     @Timed
     @Produces(MediaType.APPLICATION_JSON)
     public Response read() {
+        log.debug("Reading blob with id {} from {}", blobId, jsonBlobManager.getClass().getName());
         try {
-            DBObject object = blobManager.read(blobId);
-            ObjectId id = (ObjectId) object.get("_id");
-            return Response.ok(object.get("blob")).header("X-jsonblob", id).build();
+            String object = jsonBlobManager.getBlob(blobId);
+            return Response.ok(object).header("X-jsonblob", blobId).build();
         } catch (BlobNotFoundException e) {
             throw new NotFoundException();
         }
@@ -48,14 +46,16 @@ public class JsonBlobResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response update(String json) {
-        if (!blobManager.isValidJson(json)) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
-
+        log.debug("Updating blob with id {} from {}", blobId, jsonBlobManager.getClass().getName());
         try {
-            DBObject object = blobManager.update(blobId, json);
-            ObjectId id = (ObjectId) object.get("_id");
-            return Response.ok(object.get("blob")).header("X-jsonblob", id).build();
+            boolean updated = jsonBlobManager.updateBlob(blobId, json);
+            if (updated) {
+                return Response.ok(json).header("X-jsonblob", blobId).build();
+            } else {
+                return Response.serverError().build();
+            }
+        } catch (IllegalArgumentException e) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } catch (BlobNotFoundException e) {
             throw new NotFoundException();
         }
@@ -64,9 +64,10 @@ public class JsonBlobResource {
     @DELETE
     @Timed
     public Response delete() {
-        if (blobManager.isDeleteEnabled()) {
+        if (jsonBlobManager.isDeleteEnabled()) {
+            log.debug("Deleting blob with id {} from {}", blobId, jsonBlobManager.getClass().getName());
             try {
-                blobManager.delete(blobId);
+                jsonBlobManager.deleteBlob(blobId);
                 return Response.ok().build();
             } catch (BlobNotFoundException e) {
                 throw new NotFoundException();

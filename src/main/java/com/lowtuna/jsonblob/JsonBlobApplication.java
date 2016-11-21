@@ -6,7 +6,9 @@ import com.github.jknack.handlebars.Handlebars;
 import com.lowtuna.dropwizard.extras.heroku.RequestIdFilter;
 import com.lowtuna.dropwizard.extras.view.handlebars.ConfiguredHandlebarsViewBundle;
 import com.lowtuna.jsonblob.config.JsonBlobConfiguration;
-import com.lowtuna.jsonblob.core.BlobManager;
+import com.lowtuna.jsonblob.core.BlobMigrationJob;
+import com.lowtuna.jsonblob.core.FileSystemJsonBlobManager;
+import com.lowtuna.jsonblob.core.MongoDbJsonBlobManager;
 import com.lowtuna.jsonblob.healthcheck.CreateDeleteBlobHealthCheck;
 import com.lowtuna.jsonblob.healthcheck.MongoHealthCheck;
 import com.lowtuna.jsonblob.resource.ApiResource;
@@ -28,6 +30,8 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
 import javax.ws.rs.core.MultivaluedMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
@@ -82,22 +86,26 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
 
         DB mongoDBInstance = configuration.getMongoDbConfig().instance();
 
-        BlobManager blobManager = new BlobManager(
+        ScheduledExecutorService scheduledExecutorService = configuration.getBlobManagerConfig().getScheduledExecutorService().instance(environment);
+
+        MongoDbJsonBlobManager mongoDbBlobManager = new MongoDbJsonBlobManager(
                 mongoDBInstance,
                 configuration.getBlobManagerConfig().getBlobCollectionName(),
-                configuration.getBlobManagerConfig().getScheduledExecutorService().instance(environment),
+                scheduledExecutorService,
                 configuration.getBlobManagerConfig().getBlobCleanupFrequency(),
                 configuration.getBlobManagerConfig().getBlobAccessTtl(),
                 environment.metrics(),
                 configuration.getBlobManagerConfig().isDeleteEnabled()
         );
-        environment.lifecycle().manage(blobManager);
+        environment.lifecycle().manage(mongoDbBlobManager);
+
+        FileSystemJsonBlobManager fileSystemBlobManager = new FileSystemJsonBlobManager(configuration.getBlobManagerConfig().getFileSystemBlogDataDirectory());
 
         environment.healthChecks().register("MongoDB", new MongoHealthCheck(mongoDBInstance));
-        environment.healthChecks().register("BlobManager", new CreateDeleteBlobHealthCheck(blobManager));
+        environment.healthChecks().register("MongoDbJsonBlobManager", new CreateDeleteBlobHealthCheck(fileSystemBlobManager));
 
-        environment.jersey().register(new ApiResource(blobManager, configuration.getGoogleAnalyticsConfig()));
-        environment.jersey().register(new JsonBlobEditorResource(blobManager, configuration.getGoogleAnalyticsConfig()));
+        environment.jersey().register(new ApiResource(mongoDbBlobManager, fileSystemBlobManager, configuration.getGoogleAnalyticsConfig()));
+        environment.jersey().register(new JsonBlobEditorResource(fileSystemBlobManager, mongoDbBlobManager, configuration.getGoogleAnalyticsConfig()));
         environment.jersey().getResourceConfig().getContainerResponseFilters().add(new GitTipHeaderFilter());
         environment.jersey().getResourceConfig().getContainerRequestFilters().add(new RequestIdFilter("X-Request-ID"));
 
@@ -118,6 +126,8 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
                 return response;
             }
         });
+
+        scheduledExecutorService.scheduleWithFixedDelay(new BlobMigrationJob(mongoDbBlobManager, fileSystemBlobManager), 0, 1, TimeUnit.MINUTES);
     }
 
 }

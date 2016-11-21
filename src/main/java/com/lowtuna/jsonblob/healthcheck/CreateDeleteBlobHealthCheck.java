@@ -1,23 +1,18 @@
 package com.lowtuna.jsonblob.healthcheck;
 
-import lombok.AllArgsConstructor;
-
-import org.bson.types.ObjectId;
-
 import com.codahale.metrics.health.HealthCheck;
-import com.lowtuna.jsonblob.core.BlobManager;
-import com.mongodb.DBObject;
+import com.lowtuna.jsonblob.core.FileSystemJsonBlobManager;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class CreateDeleteBlobHealthCheck extends HealthCheck {
     private static final String SAMPLE_JSON = "{\"up\": true}";
-    private final BlobManager blobManager;
+    private final FileSystemJsonBlobManager fileSystemBlobManager;
 
     @Override
     protected Result check() throws Exception {
-        DBObject newBlob = blobManager.create(SAMPLE_JSON);
-        ObjectId id = (ObjectId) newBlob.get("_id");
-        blobManager.delete(id);
+        String newBlobId = fileSystemBlobManager.createBlob(SAMPLE_JSON);
+        fileSystemBlobManager.deleteBlob(newBlobId);
         return Result.healthy();
     }
 }

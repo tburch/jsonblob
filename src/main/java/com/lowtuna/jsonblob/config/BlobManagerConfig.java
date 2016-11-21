@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
+import java.io.File;
 
 @Data
 @NoArgsConstructor
@@ -31,5 +32,9 @@ public class BlobManagerConfig {
     @JsonProperty
     @NotNull
     private Duration blobAccessTtl = Duration.days(90);
+
+    @NotNull
+    @JsonProperty("fileSystemBlogDataDirectory")
+    private File fileSystemBlogDataDirectory;
 
 }

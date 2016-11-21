@@ -24,7 +24,7 @@ public class BlobCleanupJob implements Runnable {
         this.collection = collection;
         this.blobAccessTtl = blobAccessTtl;
 
-        String[] attributes = new String[] { BlobManager.ACCESSED_ATTR_NAME, BlobManager.CREATED_ATTR_NAME, BlobManager.UPDATED_ATTR_NAME};
+        String[] attributes = new String[] { MongoDbJsonBlobManager.ACCESSED_ATTR_NAME, MongoDbJsonBlobManager.CREATED_ATTR_NAME, MongoDbJsonBlobManager.UPDATED_ATTR_NAME};
         DecimalFormat periodFormat = new DecimalFormat("00");
 
         int maxDays = blobAccessTtl.getUnit().equals(TimeUnit.DAYS) ? (int) blobAccessTtl.getQuantity() : 90;
@@ -50,7 +50,7 @@ public class BlobCleanupJob implements Runnable {
     public void run() {
         DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minus(blobAccessTtl.toMilliseconds());
         BasicDBObject query = new BasicDBObject();
-        query.put(BlobManager.ACCESSED_ATTR_NAME, BasicDBObjectBuilder.start("$lte", new Date(minLastAccessed.getMillis())).get());
+        query.put(MongoDbJsonBlobManager.ACCESSED_ATTR_NAME, BasicDBObjectBuilder.start("$lte", new Date(minLastAccessed.getMillis())).get());
         log.info("removing all blobs that haven't been accessed since {}", minLastAccessed);
         WriteResult result = collection.remove(query);
         log.info("successfully removed {} blob(s)", result.getN());
