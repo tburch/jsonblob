@@ -15,9 +15,6 @@ import java.io.File;
 public class BlobManagerConfig {
 
     @JsonProperty
-    private boolean deleteEnabled = false;
-
-    @JsonProperty
     @NotEmpty
     private String blobCollectionName = "blob";
 

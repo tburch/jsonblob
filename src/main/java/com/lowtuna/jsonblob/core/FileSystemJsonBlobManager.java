@@ -2,7 +2,6 @@ package com.lowtuna.jsonblob.core;
 
 import com.fasterxml.uuid.Generators;
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.Charsets;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -27,11 +26,15 @@ import java.util.zip.GZIPOutputStream;
 /**
  * Created by tburch on 11/15/16.
  */
-@RequiredArgsConstructor
 public class FileSystemJsonBlobManager implements JsonBlobManager {
   private static final DateTimeFormatter DIRECTORY_FORMAT = DateTimeFormat.forPattern("yyyy/MM/dd");
 
   private final File blobDataDirectory;
+
+  public FileSystemJsonBlobManager(File blobDataDirectory) {
+    this.blobDataDirectory = blobDataDirectory;
+    blobDataDirectory.mkdirs();
+  }
 
   private File getBlobFile(String blobId, DateTime createdTimestamp) {
     File subDir = new File(blobDataDirectory, DIRECTORY_FORMAT.print(createdTimestamp));
@@ -158,11 +161,6 @@ public class FileSystemJsonBlobManager implements JsonBlobManager {
     }
 
     return blobFile.delete();
-  }
-
-  @Override
-  public boolean isDeleteEnabled() {
-    return true;
   }
 
   public boolean blobExists(String blobId) {

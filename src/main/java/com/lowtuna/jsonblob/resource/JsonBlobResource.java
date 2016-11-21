@@ -64,15 +64,12 @@ public class JsonBlobResource {
     @DELETE
     @Timed
     public Response delete() {
-        if (jsonBlobManager.isDeleteEnabled()) {
-            log.debug("Deleting blob with id {} from {}", blobId, jsonBlobManager.getClass().getName());
-            try {
-                jsonBlobManager.deleteBlob(blobId);
-                return Response.ok().build();
-            } catch (BlobNotFoundException e) {
-                throw new NotFoundException();
-            }
+        log.debug("Deleting blob with id {} from {}", blobId, jsonBlobManager.getClass().getName());
+        try {
+            jsonBlobManager.deleteBlob(blobId);
+            return Response.ok().build();
+        } catch (BlobNotFoundException e) {
+            throw new NotFoundException();
         }
-        return Response.status(HttpStatus.METHOD_NOT_ALLOWED_405).build();
     }
 }

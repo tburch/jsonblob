@@ -94,8 +94,7 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
                 scheduledExecutorService,
                 configuration.getBlobManagerConfig().getBlobCleanupFrequency(),
                 configuration.getBlobManagerConfig().getBlobAccessTtl(),
-                environment.metrics(),
-                configuration.getBlobManagerConfig().isDeleteEnabled()
+                environment.metrics()
         );
         environment.lifecycle().manage(mongoDbBlobManager);
 

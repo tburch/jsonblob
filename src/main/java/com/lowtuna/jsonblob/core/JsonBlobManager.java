@@ -8,5 +8,4 @@ public interface JsonBlobManager {
   String getBlob(String blobId) throws BlobNotFoundException;
   boolean updateBlob(String blobId, String blob) throws BlobNotFoundException;
   boolean deleteBlob(String blobId) throws BlobNotFoundException;
-  boolean isDeleteEnabled();
 }
