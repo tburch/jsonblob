@@ -126,7 +126,7 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
             }
         });
 
-        scheduledExecutorService.scheduleWithFixedDelay(new BlobMigrationJob(mongoDbBlobManager, fileSystemBlobManager), 1, 1, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleWithFixedDelay(new BlobMigrationJob(mongoDbBlobManager, fileSystemBlobManager), 1, 15, TimeUnit.SECONDS);
     }
 
 }

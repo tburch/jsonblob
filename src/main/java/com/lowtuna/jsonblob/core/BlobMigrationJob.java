@@ -31,7 +31,7 @@ public class BlobMigrationJob implements Runnable {
 
     log.info("Starting blob migration");
 
-    DBCursor curs = mongoDbJsonBlobManager.getCollection().find();
+    DBCursor curs = mongoDbJsonBlobManager.getCollection().find().limit(250);
     try {
       while (curs.hasNext()) {
         try {
@@ -50,7 +50,7 @@ public class BlobMigrationJob implements Runnable {
               mongoDbJsonBlobManager.deleteBlob(id.toString());
             }
 
-            if (migratedBlobs % 100 == 0) {
+            if (migratedBlobs % 5 == 0) {
               log.info("Migrated {} blobs... (~{} per second)", migratedBlobs, migratedBlobs/stopwatch.elapsed(TimeUnit.SECONDS));
             }
           }
