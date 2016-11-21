@@ -35,7 +35,7 @@ public class BlobMigrationJob implements Runnable {
     final AtomicInteger migratedBlobs = new AtomicInteger(0);
 
     log.info("Starting blob migration");
-    int limit = 250;
+    int limit = 2500;
     final CountDownLatch latch = new CountDownLatch(limit);
 
     DBCursor curs = mongoDbJsonBlobManager.getCollection().find().limit(limit);
@@ -43,7 +43,6 @@ public class BlobMigrationJob implements Runnable {
       while (curs.hasNext()) {
           if (curs.hasNext()) {
             DBObject o = curs.next();
-
 
             executorService.submit(new Runnable() {
               @Override
@@ -62,7 +61,7 @@ public class BlobMigrationJob implements Runnable {
                   log.warn("Caught exception while migrating blob", e);
                 } finally {
                   latch.countDown();
-                  if (completed % 5 == 0) {
+                  if (completed % 25 == 0) {
                     log.info("Migrated {} blobs... (~{} per second)", completed, completed / stopwatch.elapsed(TimeUnit.SECONDS));
                   }
                   try {
