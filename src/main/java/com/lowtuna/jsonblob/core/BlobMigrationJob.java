@@ -41,7 +41,7 @@ public class BlobMigrationJob implements Runnable {
     stopwatch.start();
     final AtomicInteger migratedBlobs = new AtomicInteger(0);
 
-    log.info("Starting blob migration");
+    log.info("Starting blob migration with skip={}", skip);
     int limit = 1000;
     final CountDownLatch latch = new CountDownLatch(limit);
 
