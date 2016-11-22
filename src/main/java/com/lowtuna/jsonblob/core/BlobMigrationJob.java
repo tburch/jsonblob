@@ -42,7 +42,8 @@ public class BlobMigrationJob implements Runnable {
     log.info("Starting blob migration");
     int limit = 2500;
     final CountDownLatch latch = new CountDownLatch(limit);
-    DBCursor curs = mongoDbJsonBlobManager.getCollection().find().skip(50).limit(limit);
+
+    DBCursor curs = mongoDbJsonBlobManager.getCollection().find().skip(5000).limit(limit);
     try {
       while (curs.hasNext()) {
           if (curs.hasNext()) {
