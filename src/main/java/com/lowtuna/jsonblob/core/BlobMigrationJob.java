@@ -28,8 +28,6 @@ public class BlobMigrationJob implements Runnable {
   private final FileSystemJsonBlobManager fileSystemJsonBlobManager;
   private final ExecutorService executorService = Executors.newFixedThreadPool(50);
 
-  private int skip = 0;
-
   public BlobMigrationJob(MongoDbJsonBlobManager mongoDbJsonBlobManager, FileSystemJsonBlobManager fileSystemJsonBlobManager) {
     this.mongoDbJsonBlobManager = mongoDbJsonBlobManager;
     this.fileSystemJsonBlobManager = fileSystemJsonBlobManager;
@@ -41,18 +39,18 @@ public class BlobMigrationJob implements Runnable {
     stopwatch.start();
     final AtomicInteger migratedBlobs = new AtomicInteger(0);
 
-    log.info("Starting blob migration with skip={}", skip);
-    int limit = 1000;
+    log.info("Starting blob migration");
+    int limit = 398;
     final CountDownLatch latch = new CountDownLatch(limit);
 
-    DBCursor curs = mongoDbJsonBlobManager.getCollection().find().skip(skip).limit(limit);
+    DBCursor curs = mongoDbJsonBlobManager.getCollection().find(new BasicDBObject(), new BasicDBObject()).limit(limit);
     try {
       while (curs.hasNext()) {
           if (curs.hasNext()) {
             DBObject o = curs.next();
             ObjectId id = (ObjectId) o.get(MongoDbJsonBlobManager.ID_ATTR_NAME);
             try {
-              final String json = o.get(MongoDbJsonBlobManager.BLOB_ATTR_NAME).toString();
+              final String json = mongoDbJsonBlobManager.getBlob(id.toString());
               executorService.submit(new Runnable() {
                 @Override
                 public void run() {
@@ -86,7 +84,6 @@ public class BlobMigrationJob implements Runnable {
       latch.await(1, TimeUnit.MINUTES);
     } catch (Exception e) {
       log.warn("Caught exception while migrating blobs", e);
-      skip += 1;
     } finally {
       curs.close();
     }
