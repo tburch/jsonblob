@@ -70,6 +70,7 @@ public class ApiResource {
 
         for (String candidate: potentialIds) {
             if (fileSystemBlobManager.blobExists(candidate)) {
+                log.info("Using FileSystemJsonBlobManager for loading blob");
                 return new JsonBlobResource(candidate, fileSystemBlobManager);
             }
         }
@@ -77,6 +78,7 @@ public class ApiResource {
         for (String candidate: potentialIds) {
             try {
                 new ObjectId(candidate);
+                log.info("Using MongoDbJsonBlobManager for loading blob");
                 return new JsonBlobResource(candidate, mongoDbBlobManager);
             } catch (IllegalArgumentException iae) {
                 //try the next part or fall out of the loop
