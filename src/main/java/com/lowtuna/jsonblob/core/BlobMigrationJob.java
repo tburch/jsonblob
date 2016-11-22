@@ -12,7 +12,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,47 +43,49 @@ public class BlobMigrationJob implements Runnable {
     int limit = 398;
     final CountDownLatch latch = new CountDownLatch(limit);
 
-    List<DBObject> curs = mongoDbJsonBlobManager.getCollection().find(new BasicDBObject(), new BasicDBObject()).limit(limit).toArray();
+    DBCursor curs = mongoDbJsonBlobManager.getCollection().find(new BasicDBObject(), new BasicDBObject()).limit(limit);
     try {
-      while (curs.iterator().hasNext()) {
-          DBObject o = curs.iterator().next();
-          ObjectId id = (ObjectId) o.get(MongoDbJsonBlobManager.ID_ATTR_NAME);
-          try {
-            final String json = mongoDbJsonBlobManager.getBlob(id.toString());
-            executorService.submit(new Runnable() {
-              @Override
-              public void run() {
-                int completed = migratedBlobs.incrementAndGet();
-                try {
-                  log.trace("Migrating blob {}", id);
-                  fileSystemJsonBlobManager.createBlob(json, id.toString());
-                  log.trace("Completed migrating blob {}", id);
-                } catch (MongoException e) {
-                  log.warn("Error while migrating blob", e);
-                } catch (Exception e) {
-                  log.warn("Caught exception while migrating blob", e);
-                } finally {
-                  latch.countDown();
-                  if (completed % 25 == 0) {
-                    log.info("Migrated {} blobs... (~{} per second)", completed, completed / stopwatch.elapsed(TimeUnit.SECONDS));
-                  }
+      while (curs.hasNext()) {
+          if (curs.hasNext()) {
+            DBObject o = curs.next();
+            ObjectId id = (ObjectId) o.get(MongoDbJsonBlobManager.ID_ATTR_NAME);
+            try {
+              final String json = mongoDbJsonBlobManager.getBlob(id.toString());
+              executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                  int completed = migratedBlobs.incrementAndGet();
                   try {
-                    mongoDbJsonBlobManager.deleteBlob(id.toString());
-                  } catch (BlobNotFoundException e) {
-                    //this shouldn't happen...
+                    log.trace("Migrating blob {}", id);
+                    fileSystemJsonBlobManager.createBlob(json, id.toString());
+                    log.trace("Completed migrating blob {}", id);
+                  } catch (MongoException e) {
+                    log.warn("Error while migrating blob", e);
+                  } catch (Exception e) {
+                    log.warn("Caught exception while migrating blob", e);
+                  } finally {
+                    latch.countDown();
+                    if (completed % 25 == 0) {
+                      log.info("Migrated {} blobs... (~{} per second)", completed, completed / stopwatch.elapsed(TimeUnit.SECONDS));
+                    }
+                    try {
+                      mongoDbJsonBlobManager.deleteBlob(id.toString());
+                    } catch (BlobNotFoundException e) {
+                      //this shouldn't happen...
+                    }
                   }
                 }
-              }
-            });
-          } catch (NullPointerException e) {
-            mongoDbJsonBlobManager.deleteBlob(id.toString());
+              });
+            } catch (NullPointerException e) {
+              mongoDbJsonBlobManager.deleteBlob(id.toString());
+            }
           }
       }
       latch.await(1, TimeUnit.MINUTES);
     } catch (Exception e) {
       log.warn("Caught exception while migrating blobs", e);
-//    } finally {
-//      curs.close();
+    } finally {
+      curs.close();
     }
     log.info("Completed migrating {} blobs in {}ms", migratedBlobs, stopwatch.elapsed(TimeUnit.MILLISECONDS));
   }
