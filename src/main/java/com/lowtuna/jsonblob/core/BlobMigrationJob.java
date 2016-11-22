@@ -28,6 +28,8 @@ public class BlobMigrationJob implements Runnable {
   private final FileSystemJsonBlobManager fileSystemJsonBlobManager;
   private final ExecutorService executorService = Executors.newFixedThreadPool(50);
 
+  private int skip = 0;
+
   public BlobMigrationJob(MongoDbJsonBlobManager mongoDbJsonBlobManager, FileSystemJsonBlobManager fileSystemJsonBlobManager) {
     this.mongoDbJsonBlobManager = mongoDbJsonBlobManager;
     this.fileSystemJsonBlobManager = fileSystemJsonBlobManager;
@@ -40,10 +42,10 @@ public class BlobMigrationJob implements Runnable {
     final AtomicInteger migratedBlobs = new AtomicInteger(0);
 
     log.info("Starting blob migration");
-    int limit = 2500;
+    int limit = 1000;
     final CountDownLatch latch = new CountDownLatch(limit);
 
-    DBCursor curs = mongoDbJsonBlobManager.getCollection().find().skip(5000).limit(limit);
+    DBCursor curs = mongoDbJsonBlobManager.getCollection().find().skip(skip).limit(limit);
     try {
       while (curs.hasNext()) {
           if (curs.hasNext()) {
@@ -84,6 +86,7 @@ public class BlobMigrationJob implements Runnable {
       latch.await(1, TimeUnit.MINUTES);
     } catch (Exception e) {
       log.warn("Caught exception while migrating blobs", e);
+      skip += 100;
     } finally {
       curs.close();
     }
