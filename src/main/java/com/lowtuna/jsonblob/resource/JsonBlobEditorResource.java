@@ -55,7 +55,7 @@ public class JsonBlobEditorResource {
             view.setBlobId(blobId);
             view.setJsonBlob(json);
             return view;
-        } catch (BlobNotFoundException e) {
+        } catch (BlobNotFoundException | IllegalArgumentException e) {
             throw new NotFoundException();
         }
     }
