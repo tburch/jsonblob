@@ -6,6 +6,7 @@ import com.github.jknack.handlebars.Options;
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
@@ -14,7 +15,7 @@ public enum Base64StringHelpers implements Helper<String> {
         @Override
         protected CharSequence safeApply(final String value, final Options options) {
             Boolean urlSafe = options.hash("urlSafe", Boolean.FALSE);
-            return urlSafe ? Base64.encodeBase64URLSafeString(value.getBytes()) : Base64.encodeBase64String(value.getBytes());
+            return urlSafe ? Base64.encodeBase64URLSafeString(value.getBytes(StandardCharsets.UTF_8)) : Base64.encodeBase64String(value.getBytes(StandardCharsets.UTF_8));
         }
 
     },
@@ -23,7 +24,7 @@ public enum Base64StringHelpers implements Helper<String> {
         @Override
         protected CharSequence safeApply(final String value, final Options options) {
             Boolean urlSafe = options.hash("urlSafe", Boolean.FALSE);
-            return new String(urlSafe ? Base64.encodeBase64URLSafe(value.getBytes()) : Base64.decodeBase64(value.getBytes()));
+            return new String(urlSafe ? Base64.encodeBase64URLSafe(value.getBytes(StandardCharsets.UTF_8)) : Base64.decodeBase64(value.getBytes(StandardCharsets.UTF_8)));
         }
     };
 
