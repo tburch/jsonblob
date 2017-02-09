@@ -13,10 +13,8 @@
             <div class="col-md-8" role="main">
                 <div class="bs-docs-section">
                     <h1 id="endpoints" class="page-header">Endpoints</h1>
-                    <h3 id="endpoints-http">HTTP</h3>
-                    <p>HTTP requests can be made to <code>http://jsonblob.com</code>.</p>
                     <h3 id="endpoints-https">HTTPS</h3>
-                    <p>HTTPS requests can be made to <code>https://jsonblob.com</code>.</p>
+                    <p>HTTPS requests can be made to <code>https://jsonblob.com</code>. HTTP requests will be <code>301</code> redirected to HTTPS, so clients should be configured to follow redirects.</p>
                 </div>
 
                 <div class="bs-docs-section">
@@ -25,10 +23,10 @@
                     <p>Creating a JSON Blob is accomplished by sending a <code>POST</code> request to <code>/api/jsonBlob</code>. The body of the request should contain valid JSON that will used as the JSON Blob. Upon successfully storing the JSON blob, a <code>201</code> response will be returned. The <code>Location</code> header in the response will be set to the URL at which the blob can be accessed with a <a href="#get"><code>GET</code></a> request. The body of the response is the JSON that was stored in the JSON blob.</p>
                     <h3 id="post-example">Example request and response</h3>
                     <pre>
-<code>curl -i -X "POST" -d '{"people":["bill", "steve", "bob"]}' -H "Content-Type: application/json" -H "Accept: application/json" http://jsonblob.com/api/jsonBlob
+<code>curl -i -X "POST" -d '{"people":["bill", "steve", "bob"]}' -H "Content-Type: application/json" -H "Accept: application/json" m/api/jsonBlob
 
 HTTP/1.1 201 Created
-Location: http://jsonblob.com/api/jsonBlob/5226571730043f8b22dadc20
+Location: m/api/jsonBlob/5226571730043f8b22dadc20
 Content-Type: application/json
 Transfer-Encoding: chunked
 
@@ -43,7 +41,7 @@ Transfer-Encoding: chunked
                     <p>Retrieving a JSON Blob is accomplished by sending a <code>GET</code> request to <code>/api/jsonBlob/&lt;blobId&gt;</code>, where <code>&lt;blobId&gt;</code> is the last part of the URL path returned from the <a href="#post"><code>POST</code></a> request. Upon successfully retrieving the JSON Blob, a <code>200</code> response will be returned. If no JSON Blob exists for the given <code>&lt;blobId&gt;</code>, a <code>404</code> response will be returned. The body of the response is the JSON that was stored in the JSON Blob.</p>
                     <h3 id="get-example">Example request and response</h3>
                     <pre>
-<code>curl -i -H "Content-Type: application/json" -H "Accept: application/json" http://jsonblob.com/api/jsonBlob/5226571730043f8b22dadc20
+<code>curl -i -H "Content-Type: application/json" -H "Accept: application/json" m/api/jsonBlob/5226571730043f8b22dadc20
 
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -59,7 +57,7 @@ Transfer-Encoding: chunked
                     <p>Updating a JSON Blob is accomplished by sending a <code>PUT</code> request to <code>/api/jsonBlob/&lt;blobId&gt;</code>. The request body should contain valid JSON that the stored JSON Blob will be replaced with. Upon successfully storing the new JSON Blob, a <code>200</code> response will be returned. If no JSON Blob exists for the given <code>&lt;blobId&gt;</code>, a <code>404</code> response will be returned. The body of the response is the JSON that was stored in the JSON Blob.</p>
                     <h3 id="put-example">Example request and response</h3>
                     <pre>
-<code>curl -i -X "PUT" -d '{"people":["fred", "mark", "andrew"]}' -H "Content-Type: application/json" -H "Accept: application/json" http://jsonblob.com/api/jsonBlob/5226571730043f8b22dadc20
+<code>curl -i -X "PUT" -d '{"people":["fred", "mark", "andrew"]}' -H "Content-Type: application/json" -H "Accept: application/json" m/api/jsonBlob/5226571730043f8b22dadc20
 
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -75,7 +73,7 @@ Transfer-Encoding: chunked
                     <p>Deleting a JSON Blob is accomplished by sending a <code>DELETE</code> request to <code>/api/jsonBlob/&lt;blobId&gt;</code>. Upon successfully deleting the JSON Blob, a <code>200</code> response will be returned. If no JSON Blob exists for the given <code>&lt;blobId&gt;</code>, a <code>404</code> response will be returned. If deleting blobs is not enabled, a <code>405</code> response will be returned.</p>
                     <h3 id="delete-example">Example request and response</h3>
                     <pre>
-<code>curl -i -X "DELETE" http://jsonblob.com/api/jsonBlob/5226571730043f8b22dadc20
+<code>curl -i -X "DELETE" m/api/jsonBlob/5226571730043f8b22dadc20
 
 HTTP/1.1 200 OK</code>
                     </pre>
@@ -88,7 +86,7 @@ HTTP/1.1 200 OK</code>
                     <p>As an example, if we were trying to mimic a RESTful url structure for getting the names of the employees in a company with a particular role, we may use want to use a url like <code>/api/company/&lt;companyId&gt;/employees/engineers"&gt;</code> where <code>5226571730043f8b22dadc20</code> is the <code>&lt;companyId&gt;</code> that represents the data the client is expecting.</p>
                     <h3>Example request and response</h3>
                     <pre>
-<code>curl -i  -H "Content-Type: application/json" -H "Accept: application/json" http://jsonblob.com/api/company/5226571730043f8b22dadc20/employees/engineers
+<code>curl -i  -H "Content-Type: application/json" -H "Accept: application/json" m/api/company/5226571730043f8b22dadc20/employees/engineers
 
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -100,7 +98,7 @@ Transfer-Encoding: chunked
                     <p>Additionally, you could make the request using the <code>X-jsonblob</code> header:</p>
                     <h3>Example request and response</h3>
                     <pre>
-<code>url -i  -H "Content-Type: application/json" -H "Accept: application/json" -H "X-jsonblob: 5226571730043f8b22dadc20" http://jsonblob.com/api/company/employees/engineers
+<code>url -i  -H "Content-Type: application/json" -H "Accept: application/json" -H "X-jsonblob: 5226571730043f8b22dadc20" m/api/company/employees/engineers
 
 HTTP/1.1 200 OK
 Content-Type: application/json
