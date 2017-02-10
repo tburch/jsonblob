@@ -43,7 +43,7 @@ public class UpdateBlobLastAccessedJob implements Runnable {
 
         log.info("Removing deleted blobs from last access map");
         Set<String> blobs = Sets.newHashSet(Lists.transform(Arrays.asList(metadataFile.getParentFile().listFiles()), f -> f.getName().split(".", 1)[0]));
-        Set<String> deletedBlobs = metadataContainer.getLastAccessedByBlobId().keySet().parallelStream().filter(blobId -> !blobs.contains(blobId)).collect(Collectors.toSet());
+        Set<String> deletedBlobs = metadataContainer.getLastAccessedByBlobId().keySet().parallelStream().filter(blobId -> blobs.contains(blobId)).collect(Collectors.toSet());
         deletedBlobs.stream().forEach(blobId -> metadataContainer.getLastAccessedByBlobId().remove(blobId));
 
         log.info("Writing metadata file at {}", metadataFile.getAbsolutePath());
