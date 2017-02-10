@@ -134,8 +134,6 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
     UUID uuid = Generators.timeBasedGenerator().generate();
     String blobId = createBlob(blob, uuid.toString());
 
-    updateLastAccessedTimestamp(blobId);
-
     return blobId;
   }
 
