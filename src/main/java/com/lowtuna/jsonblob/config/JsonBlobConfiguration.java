@@ -2,8 +2,6 @@ package com.lowtuna.jsonblob.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lowtuna.dropwizard.extras.config.GoogleAnalyticsConfig;
-import com.lowtuna.dropwizard.extras.config.mongo.MongoDbConfig;
-import com.lowtuna.dropwizard.extras.config.mongo.MongoDbPropertiesConfig;
 import com.lowtuna.jsonblob.config.view.HandlebarsConfig;
 import com.lowtuna.jsonblob.config.view.ProdHandlebarsConfig;
 import io.dropwizard.Configuration;
@@ -17,23 +15,18 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class JsonBlobConfiguration extends Configuration {
 
-    @Valid
-    @NotNull
-    @JsonProperty("blobManager")
-    private BlobManagerConfig blobManagerConfig = new BlobManagerConfig();
+  @Valid
+  @NotNull
+  @JsonProperty("blobManager")
+  private BlobManagerConfig blobManagerConfig = new BlobManagerConfig();
 
-    @Valid
-    @NotNull
-    @JsonProperty("mongo")
-    private MongoDbConfig mongoDbConfig = new MongoDbPropertiesConfig();
+  @Valid
+  @NotNull
+  @JsonProperty("ga")
+  private GoogleAnalyticsConfig googleAnalyticsConfig = new GoogleAnalyticsConfig();
 
-    @Valid
-    @NotNull
-    @JsonProperty("ga")
-    private GoogleAnalyticsConfig googleAnalyticsConfig = new GoogleAnalyticsConfig();
-
-    @Valid
-    @JsonProperty("handlebars")
-    private HandlebarsConfig handlebarsConfig = new ProdHandlebarsConfig();
+  @Valid
+  @JsonProperty("handlebars")
+  private HandlebarsConfig handlebarsConfig = new ProdHandlebarsConfig();
 
 }

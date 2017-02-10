@@ -1,58 +1,82 @@
 package com.lowtuna.jsonblob.core;
 
-import com.codahale.metrics.CachedGauge;
-import com.codahale.metrics.MetricRegistry;
-import com.mongodb.BasicDBObject;
-import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DBCollection;
-import com.mongodb.WriteResult;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Function;
+import com.google.common.base.Stopwatch;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import io.dropwizard.util.Duration;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
-import java.text.DecimalFormat;
-import java.util.Date;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor
 public class BlobCleanupJob implements Runnable {
-    private final DBCollection collection;
-    private final Duration blobAccessTtl;
+  private final Path blobDirectory;
+  private final Duration blobAccessTtl;
+  private final FileSystemJsonBlobManager fileSystemJsonBlobManager;
+  private final ObjectMapper om;
+  private final boolean deleteEnabled;
 
-    public BlobCleanupJob(final DBCollection collection, Duration blobAccessTtl, MetricRegistry metricRegistry) {
-        this.collection = collection;
-        this.blobAccessTtl = blobAccessTtl;
-
-        String[] attributes = new String[] { MongoDbJsonBlobManager.ACCESSED_ATTR_NAME, MongoDbJsonBlobManager.CREATED_ATTR_NAME, MongoDbJsonBlobManager.UPDATED_ATTR_NAME};
-        DecimalFormat periodFormat = new DecimalFormat("00");
-
-        int maxDays = blobAccessTtl.getUnit().equals(TimeUnit.DAYS) ? (int) blobAccessTtl.getQuantity() : 90;
-
-        for (final String attribute: attributes) {
-            for (int period = 1; period < maxDays; period += period == 1 ? 6 : 7) {
-                final int p = period;
-                String formattedPeriod = periodFormat.format(period);
-                metricRegistry.register(MetricRegistry.name(getClass(), attribute, formattedPeriod + "Days"), new CachedGauge<Long>(1, TimeUnit.HOURS) {
-                    @Override
-                    protected Long loadValue() {
-                        DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minusDays(p);
-                        BasicDBObject query = new BasicDBObject();
-                        query.put(attribute, BasicDBObjectBuilder.start("$gt", new Date(minLastAccessed.getMillis())).get());
-                        return collection.getCount(query);
-                    }
+  @Override
+  public void run() {
+    Stopwatch stopwatch = new Stopwatch().start();
+    try {
+      Files.walk(blobDirectory)
+              .parallel()
+              .filter(p -> !p.toFile().isDirectory())
+              .map(Path::getParent)
+              .distinct()
+              .forEach(dataDir -> {
+                Set<String> blobs = Sets
+                        .newHashSet(Lists.transform(Arrays.asList(dataDir.toFile().listFiles()), f -> f.getName().split("\\.", 2)[0]))
+                        .parallelStream()
+                        .filter(f -> fileSystemJsonBlobManager.resolveTimestamp(f).isPresent()).collect(Collectors.toSet());
+                Map<String, DateTime> lastAccessed = Maps.asMap(blobs, new Function<String, DateTime>() {
+                  @Nullable
+                  @Override
+                  public DateTime apply(@Nullable String input) {
+                    return fileSystemJsonBlobManager.resolveTimestamp(input).get();
+                  }
                 });
-            }
-        }
-    }
 
-    @Override
-    public void run() {
-        DateTime minLastAccessed = DateTime.now(DateTimeZone.UTC).minus(blobAccessTtl.toMilliseconds());
-        BasicDBObject query = new BasicDBObject();
-        query.put(MongoDbJsonBlobManager.ACCESSED_ATTR_NAME, BasicDBObjectBuilder.start("$lte", new Date(minLastAccessed.getMillis())).get());
-        log.info("removing all blobs that haven't been accessed since {}", minLastAccessed);
-        WriteResult result = collection.remove(query);
-        log.info("successfully removed {} blob(s)", result.getN());
+                File metadataFile = fileSystemJsonBlobManager.getMetaDataFile(dataDir.toFile());
+                try {
+                  BlobMetadataContainer metadataContainer = metadataFile.exists() ? om.readValue(fileSystemJsonBlobManager.readFile(metadataFile), BlobMetadataContainer.class) : new BlobMetadataContainer();
+                  lastAccessed.putAll(metadataContainer.getLastAccessedByBlobId());
+
+                  Map<String, DateTime> toRemove = Maps.filterEntries(lastAccessed, input -> input.getValue().plusMillis((int) blobAccessTtl.toMilliseconds()).isBefore(DateTime.now()));
+                  toRemove.keySet().parallelStream().forEach(blobId -> {
+                    if (deleteEnabled) {
+                      log.debug("Deleting blob with id {}", blobId);
+                      try {
+                        fileSystemJsonBlobManager.deleteBlob(blobId);
+                      } catch (BlobNotFoundException e) {
+                        log.debug("Couldn't delete blobId {} because it's already been deleted", blobId);
+                      }
+                    }
+                  });
+                } catch (IOException e) {
+                  log.warn("Couldn't load metadata file from {}", dataDir.toAbsolutePath(), e);
+                }
+              });
+      log.info("Completed cleanup in {}ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+    } catch (IOException e) {
+      log.warn("Couldn't remove old blobs", e);
     }
+  }
 }

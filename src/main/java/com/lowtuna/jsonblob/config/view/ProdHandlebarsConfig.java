@@ -13,14 +13,14 @@ import org.hibernate.validator.constraints.NotEmpty;
 @NoArgsConstructor
 public class ProdHandlebarsConfig extends HandlebarsConfig {
 
-    @NotEmpty
-    @JsonProperty
-    private String classPathTemplatesBaseDir = "/views";
+  @NotEmpty
+  @JsonProperty
+  private String classPathTemplatesBaseDir = "/views";
 
-    @Override
-    @JsonIgnore
-    public Handlebars createInstance() {
-        return new Handlebars().with(new ClassPathTemplateLoader(classPathTemplatesBaseDir, StringUtils.EMPTY));
-    }
+  @Override
+  @JsonIgnore
+  public Handlebars createInstance() {
+    return new Handlebars().with(new ClassPathTemplateLoader(classPathTemplatesBaseDir, StringUtils.EMPTY));
+  }
 
 }

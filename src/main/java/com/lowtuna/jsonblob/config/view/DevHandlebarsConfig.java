@@ -15,18 +15,18 @@ import org.hibernate.validator.constraints.NotEmpty;
 @NoArgsConstructor
 public class DevHandlebarsConfig extends HandlebarsConfig {
 
-    @JsonProperty
-    @NotEmpty
-    private String templateBaseDir;
+  @JsonProperty
+  @NotEmpty
+  private String templateBaseDir;
 
-    @Override
-    @JsonIgnore
-    public Handlebars createInstance() {
-        return new Handlebars().with(new FileTemplateLoader(templateBaseDir, StringUtils.EMPTY));
-    }
+  @Override
+  @JsonIgnore
+  public Handlebars createInstance() {
+    return new Handlebars().with(new FileTemplateLoader(templateBaseDir, StringUtils.EMPTY));
+  }
 
-    @Override
-    protected Handlebars setupTemplateCache(Handlebars handlebars, MetricRegistry metricRegistry) {
-        return handlebars.with(NullTemplateCache.INSTANCE);
-    }
+  @Override
+  protected Handlebars setupTemplateCache(Handlebars handlebars, MetricRegistry metricRegistry) {
+    return handlebars.with(NullTemplateCache.INSTANCE);
+  }
 }

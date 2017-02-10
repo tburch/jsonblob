@@ -10,12 +10,12 @@ import java.io.IOException;
 
 public class ObjectIdJacksonDeserializer extends StdDeserializer<ObjectId> {
 
-    public ObjectIdJacksonDeserializer() {
-        super(ObjectId.class);
-    }
+  public ObjectIdJacksonDeserializer() {
+    super(ObjectId.class);
+  }
 
-    @Override
-    public ObjectId deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        return new ObjectId(jp.getValueAsString());
-    }
+  @Override
+  public ObjectId deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    return new ObjectId(jp.getValueAsString());
+  }
 }

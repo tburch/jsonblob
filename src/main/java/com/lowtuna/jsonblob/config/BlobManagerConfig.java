@@ -14,24 +14,22 @@ import java.io.File;
 @NoArgsConstructor
 public class BlobManagerConfig {
 
-    @JsonProperty
-    @NotEmpty
-    private String blobCollectionName = "blob";
+  @JsonProperty
+  @NotEmpty
+  private String blobCollectionName = "blob";
 
-    @JsonProperty
-    @NotNull
-    private ScheduledExecutorServiceConfig scheduledExecutorService = new ScheduledExecutorServiceConfig("blobManagerScheduledExecutor-%d");
+  @JsonProperty
+  @NotNull
+  private ScheduledExecutorServiceConfig scheduledExecutorService = new ScheduledExecutorServiceConfig("blobManagerScheduledExecutor-%d");
 
-    @JsonProperty
-    @NotNull
-    private Duration blobCleanupFrequency = Duration.hours(1);
+  @JsonProperty
+  @NotNull
+  private Duration blobAccessTtl = Duration.days(90);
 
-    @JsonProperty
-    @NotNull
-    private Duration blobAccessTtl = Duration.days(90);
+  private boolean deleteEnabled = false;
 
-    @NotNull
-    @JsonProperty("fileSystemBlogDataDirectory")
-    private File fileSystemBlogDataDirectory;
+  @NotNull
+  @JsonProperty("fileSystemBlogDataDirectory")
+  private File fileSystemBlogDataDirectory;
 
 }

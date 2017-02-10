@@ -5,10 +5,10 @@ import org.bson.types.ObjectId;
 
 public class JacksonMongoDbModule extends SimpleModule {
 
-    public JacksonMongoDbModule() {
-        super("MongoModule");
+  public JacksonMongoDbModule() {
+    super("MongoModule");
 
-        addSerializer(new ObjectIdJacksonSerializer());
-        addDeserializer(ObjectId.class, new ObjectIdJacksonDeserializer());
-    }
+    addSerializer(new ObjectIdJacksonSerializer());
+    addDeserializer(ObjectId.class, new ObjectIdJacksonDeserializer());
+  }
 }

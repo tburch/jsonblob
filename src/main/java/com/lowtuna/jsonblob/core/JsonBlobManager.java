@@ -5,7 +5,10 @@ package com.lowtuna.jsonblob.core;
  */
 public interface JsonBlobManager {
   String createBlob(String blob);
+
   String getBlob(String blobId) throws BlobNotFoundException;
+
   boolean updateBlob(String blobId, String blob) throws BlobNotFoundException;
+
   boolean deleteBlob(String blobId) throws BlobNotFoundException;
 }

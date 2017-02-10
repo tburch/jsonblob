@@ -24,53 +24,53 @@ import com.lowtuna.jsonblob.util.mustache.Base64StringHelpers;
 @JsonIgnoreProperties(ignoreUnknown = true, value = "type")
 public abstract class HandlebarsConfig {
 
-    @JsonIgnore
-    public Handlebars getInstance(MetricRegistry metricRegistry) {
-        Handlebars handlebars = createInstance();
-        handlebars = setupTemplateCache(handlebars, metricRegistry);
-        StringHelpers.register(handlebars);
-        Base64StringHelpers.register(handlebars);
-        return handlebars;
-    }
+  @JsonIgnore
+  public Handlebars getInstance(MetricRegistry metricRegistry) {
+    Handlebars handlebars = createInstance();
+    handlebars = setupTemplateCache(handlebars, metricRegistry);
+    StringHelpers.register(handlebars);
+    Base64StringHelpers.register(handlebars);
+    return handlebars;
+  }
 
-    protected Handlebars setupTemplateCache(Handlebars handlebars, MetricRegistry metricRegistry) {
-        final Cache<TemplateSource, Template> templateCache = CacheBuilder.newBuilder().recordStats().build();
+  protected Handlebars setupTemplateCache(Handlebars handlebars, MetricRegistry metricRegistry) {
+    final Cache<TemplateSource, Template> templateCache = CacheBuilder.newBuilder().recordStats().build();
 
-        metricRegistry.register(MetricRegistry.name(GuavaTemplateCache.class, "size"), new Gauge<Long>() {
-            @Override
-            public Long getValue() {
-                return templateCache.size();
-            }
-        });
-        metricRegistry.register(MetricRegistry.name(GuavaTemplateCache.class, "hits"), new Gauge<Long>() {
-            @Override
-            public Long getValue() {
-                return templateCache.stats().hitCount();
-            }
-        });
-        metricRegistry.register(MetricRegistry.name(GuavaTemplateCache.class, "misses"), new Gauge<Long>() {
-            @Override
-            public Long getValue() {
-                return templateCache.stats().missCount();
-            }
-        });
-        metricRegistry.register(MetricRegistry.name(GuavaTemplateCache.class, "eviction-count"), new Gauge<Long>() {
-            @Override
-            public Long getValue() {
-                return templateCache.stats().evictionCount();
-            }
-        });
-        metricRegistry.register(MetricRegistry.name(GuavaTemplateCache.class, "average-load-penalty"), new Gauge<Double>() {
-            @Override
-            public Double getValue() {
-                return templateCache.stats().averageLoadPenalty();
-            }
-        });
+    metricRegistry.register(MetricRegistry.name(GuavaTemplateCache.class, "size"), new Gauge<Long>() {
+      @Override
+      public Long getValue() {
+        return templateCache.size();
+      }
+    });
+    metricRegistry.register(MetricRegistry.name(GuavaTemplateCache.class, "hits"), new Gauge<Long>() {
+      @Override
+      public Long getValue() {
+        return templateCache.stats().hitCount();
+      }
+    });
+    metricRegistry.register(MetricRegistry.name(GuavaTemplateCache.class, "misses"), new Gauge<Long>() {
+      @Override
+      public Long getValue() {
+        return templateCache.stats().missCount();
+      }
+    });
+    metricRegistry.register(MetricRegistry.name(GuavaTemplateCache.class, "eviction-count"), new Gauge<Long>() {
+      @Override
+      public Long getValue() {
+        return templateCache.stats().evictionCount();
+      }
+    });
+    metricRegistry.register(MetricRegistry.name(GuavaTemplateCache.class, "average-load-penalty"), new Gauge<Double>() {
+      @Override
+      public Double getValue() {
+        return templateCache.stats().averageLoadPenalty();
+      }
+    });
 
-        return handlebars.with(new GuavaTemplateCache(templateCache));
-    }
+    return handlebars.with(new GuavaTemplateCache(templateCache));
+  }
 
-    @JsonIgnore
-    public abstract Handlebars createInstance();
+  @JsonIgnore
+  public abstract Handlebars createInstance();
 
 }

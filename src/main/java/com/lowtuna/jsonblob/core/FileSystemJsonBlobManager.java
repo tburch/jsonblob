@@ -1,13 +1,21 @@
 package com.lowtuna.jsonblob.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.uuid.Generators;
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+import com.mongodb.util.JSON;
+import com.mongodb.util.JSONParseException;
+import io.dropwizard.lifecycle.Managed;
+import io.dropwizard.util.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.Charsets;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import javax.annotation.concurrent.GuardedBy;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,36 +26,74 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
  * Created by tburch on 11/15/16.
  */
-public class FileSystemJsonBlobManager implements JsonBlobManager {
+@Slf4j
+public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Managed {
   private static final DateTimeFormatter DIRECTORY_FORMAT = DateTimeFormat.forPattern("yyyy/MM/dd");
 
-  private final File blobDataDirectory;
+  @GuardedBy("lastAccessedLock")
+  private ConcurrentMap<String, DateTime> lastAccessedUpdates = Maps.newConcurrentMap();
+  private ReentrantReadWriteLock lastAccessedLock = new ReentrantReadWriteLock();
 
-  public FileSystemJsonBlobManager(File blobDataDirectory) {
+  private final File blobDataDirectory;
+  private final ScheduledExecutorService scheduledExecutorService;
+  private final ObjectMapper objectMapper;
+  private final Duration blobAccessTtl;
+  private final boolean deleteEnabled;
+
+  public FileSystemJsonBlobManager(File blobDataDirectory, ScheduledExecutorService scheduledExecutorService, ObjectMapper objectMapper, Duration blobAccessTtl, boolean deleteEnabled) {
     this.blobDataDirectory = blobDataDirectory;
+    this.scheduledExecutorService = scheduledExecutorService;
+    this.objectMapper = objectMapper;
+    this.blobAccessTtl = blobAccessTtl;
+    this.deleteEnabled = deleteEnabled;
+
     blobDataDirectory.mkdirs();
   }
 
-  private File getBlobFile(String blobId, DateTime createdTimestamp) {
-    File subDir = new File(blobDataDirectory, DIRECTORY_FORMAT.print(createdTimestamp));
+  File getBlobDirectory(DateTime createdTimestamp) {
+    return new File(blobDataDirectory, DIRECTORY_FORMAT.print(createdTimestamp));
+  }
+
+  File getBlobFile(String blobId, DateTime createdTimestamp) {
+    File subDir = getBlobDirectory(createdTimestamp);
     return new File(subDir, blobId + ".json.gz");
   }
 
-  private void writeFile(File file, String content) throws IOException {
-    try(Writer writer = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(file)), Charsets.UTF_8)) {
-        writer.write(content);
+  File getMetaDataFile(String blobId) {
+    Optional<DateTime> createTimestamp = resolveTimestamp(blobId);
+    if (!createTimestamp.isPresent()) {
+      throw new IllegalStateException("Couldn't generate create timestamp from " + blobId);
+    }
+
+    File blobDirectory = getBlobDirectory(createTimestamp.get());
+    return getMetaDataFile(blobDirectory);
+  }
+
+  File getMetaDataFile(File blobDirectory) {
+    return new File(blobDirectory, "blobMetadata" + ".json.gz");
+  }
+
+  void writeFile(File file, String content) throws IOException {
+    try (Writer writer = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(file)), Charsets.UTF_8)) {
+      writer.write(content);
     }
   }
 
-  private String readFile(File file) throws IOException {
+  String readFile(File file) throws IOException {
     StringBuilder sb = new StringBuilder();
     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
     String line;
@@ -81,13 +127,35 @@ public class FileSystemJsonBlobManager implements JsonBlobManager {
 
   @Override
   public String createBlob(String blob) throws IllegalArgumentException {
-    if (!MongoDbJsonBlobManager.isValidJson(blob)) {
+    if (!isValidJson(blob)) {
       throw new IllegalArgumentException();
     }
 
     UUID uuid = Generators.timeBasedGenerator().generate();
+    String blobId = createBlob(blob, uuid.toString());
 
-    return createBlob(blob, uuid.toString());
+    updateLastAccessedTimestamp(blobId);
+
+    return blobId;
+  }
+
+  private void updateLastAccessedTimestamp(String blobId) {
+    Lock lock = lastAccessedLock.writeLock();
+    try {
+      lock.lock();
+      lastAccessedUpdates.put(blobId, DateTime.now());
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  private boolean isValidJson(String json) {
+    try {
+      JSON.parse(json);
+      return true;
+    } catch (JSONParseException e) {
+      return false;
+    }
   }
 
   public String createBlob(String blob, String blobId) {
@@ -116,7 +184,11 @@ public class FileSystemJsonBlobManager implements JsonBlobManager {
     File blobFile = getBlobFile(blobId, createTimestamp.get());
 
     try {
-      return readFile(blobFile);
+      String content = readFile(blobFile);
+
+      updateLastAccessedTimestamp(blobId);
+
+      return content;
     } catch (FileNotFoundException e) {
       throw new BlobNotFoundException(blobId);
     } catch (IOException e) {
@@ -126,7 +198,11 @@ public class FileSystemJsonBlobManager implements JsonBlobManager {
 
   @Override
   public boolean updateBlob(String blobId, String blob) throws IllegalArgumentException, BlobNotFoundException {
-    return updateBlob(blobId, blob, false);
+    boolean updated = updateBlob(blobId, blob, false);
+
+    updateLastAccessedTimestamp(blobId);
+
+    return updated;
   }
 
   public boolean updateBlob(String blobId, String blob, boolean forceWrite) throws IllegalArgumentException, BlobNotFoundException {
@@ -160,6 +236,14 @@ public class FileSystemJsonBlobManager implements JsonBlobManager {
       throw new BlobNotFoundException(blobId);
     }
 
+    boolean deleted = deleteFile(blobFile);
+
+    updateLastAccessedTimestamp(blobId);
+
+    return deleted;
+  }
+
+  boolean deleteFile(File blobFile) {
     return blobFile.delete();
   }
 
@@ -173,4 +257,37 @@ public class FileSystemJsonBlobManager implements JsonBlobManager {
     return blobFile.exists();
   }
 
+  @Override
+  public void run() {
+    Map<String, DateTime> lastAccessedUpdates = Maps.newHashMap();
+    Lock lock = lastAccessedLock.writeLock();
+    try {
+      lock.lock();
+      lastAccessedUpdates.putAll(this.lastAccessedUpdates);
+      this.lastAccessedUpdates.clear();
+    } finally {
+      lock.unlock();
+    }
+
+    if (lastAccessedUpdates.isEmpty()) {
+      return;
+    }
+
+    log.debug("Updating last accessed time for {} blobs", lastAccessedUpdates.size());
+    scheduledExecutorService.submit(new UpdateBlobLastAccessedJob(lastAccessedUpdates, this, objectMapper));
+  }
+
+  @Override
+  public void start() throws Exception {
+    log.info("Scheduling the updating of blob last accessed timestamps");
+    scheduledExecutorService.scheduleWithFixedDelay(this, 1, 1, TimeUnit.MINUTES);
+
+    log.info("Scheduling blob cleanup job");
+    scheduledExecutorService.scheduleWithFixedDelay(new BlobCleanupJob(blobDataDirectory.toPath(), blobAccessTtl, this, objectMapper, deleteEnabled), 0, 1, TimeUnit.DAYS);
+  }
+
+  @Override
+  public void stop() throws Exception {
+    //nothing to do
+  }
 }
