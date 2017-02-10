@@ -46,6 +46,7 @@ public class BlobCleanupJob implements Runnable {
                         .newHashSet(Lists.transform(Arrays.asList(dataDir.toFile().listFiles()), f -> f.getName().split("\\.", 2)[0]))
                         .parallelStream()
                         .filter(f -> fileSystemJsonBlobManager.resolveTimestamp(f).isPresent()).collect(Collectors.toSet());
+                log.info("Checking for unused blobs in {}", dataDir.toAbsolutePath());
                 Map<String, DateTime> lastAccessed = Maps.asMap(blobs, new Function<String, DateTime>() {
                   @Nullable
                   @Override
@@ -75,7 +76,7 @@ public class BlobCleanupJob implements Runnable {
                 }
               });
       log.info("Completed cleanup in {}ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
-    } catch (IOException e) {
+    } catch (Exception e) {
       log.warn("Couldn't remove old blobs", e);
     }
   }

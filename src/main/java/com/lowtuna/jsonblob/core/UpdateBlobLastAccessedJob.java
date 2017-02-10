@@ -29,6 +29,7 @@ public class UpdateBlobLastAccessedJob implements Runnable {
 
   @Override
   public void run() {
+    log.info("Updating last access timestamp for {} blobs", updates.size());
     ListMultimap<File, Pair<String, DateTime>> updatesByMetadataFile = LinkedListMultimap.create();
     for (Map.Entry<String, DateTime> entry : updates.entrySet()) {
       File metadataFile = fileSystemJsonBlobManager.getMetaDataFile(entry.getKey());
