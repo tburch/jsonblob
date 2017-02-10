@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.uuid.Generators;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.Striped;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONParseException;
 import io.dropwizard.lifecycle.Managed;
@@ -33,6 +34,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -47,6 +49,7 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
   @GuardedBy("lastAccessedLock")
   private ConcurrentMap<String, DateTime> lastAccessedUpdates = Maps.newConcurrentMap();
   private ReentrantReadWriteLock lastAccessedLock = new ReentrantReadWriteLock();
+  private final Striped<ReadWriteLock> blobStripedLocks = Striped.lazyWeakReadWriteLock(5000);
 
   private final File blobDataDirectory;
   private final ScheduledExecutorService scheduledExecutorService;
@@ -64,11 +67,11 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
     blobDataDirectory.mkdirs();
   }
 
-  File getBlobDirectory(DateTime createdTimestamp) {
+  private File getBlobDirectory(DateTime createdTimestamp) {
     return new File(blobDataDirectory, DIRECTORY_FORMAT.print(createdTimestamp));
   }
 
-  File getBlobFile(String blobId, DateTime createdTimestamp) {
+  private File getBlobFile(String blobId, DateTime createdTimestamp) {
     File subDir = getBlobDirectory(createdTimestamp);
     return new File(subDir, blobId + ".json.gz");
   }
@@ -87,23 +90,7 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
     return new File(blobDirectory, "blobMetadata" + ".json.gz");
   }
 
-  void writeFile(File file, String content) throws IOException {
-    try (Writer writer = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(file)), Charsets.UTF_8)) {
-      writer.write(content);
-    }
-  }
-
-  String readFile(File file) throws IOException {
-    StringBuilder sb = new StringBuilder();
-    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
-    String line;
-    while ((line = bufferedReader.readLine()) != null) {
-      sb.append(line);
-    }
-    return sb.toString();
-  }
-
-  public Optional<DateTime> resolveTimestamp(String blobId) {
+  Optional<DateTime> resolveTimestamp(String blobId) {
     try {
       UUID uuid = UUID.fromString(blobId);
 
@@ -135,30 +122,6 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
     String blobId = createBlob(blob, uuid.toString());
 
     return blobId;
-  }
-
-  private void updateLastAccessedTimestamp(String blobId, DateTime createTimestamp) {
-    DateTime now = DateTime.now();
-    if (now.toLocalDate().equals(createTimestamp.toLocalDate())) {
-      return;
-    }
-
-    Lock lock = lastAccessedLock.writeLock();
-    try {
-      lock.lock();
-      lastAccessedUpdates.put(blobId, now);
-    } finally {
-      lock.unlock();
-    }
-  }
-
-  private boolean isValidJson(String json) {
-    try {
-      JSON.parse(json);
-      return true;
-    } catch (JSONParseException e) {
-      return false;
-    }
   }
 
   public String createBlob(String blob, String blobId) {
@@ -241,8 +204,66 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
     return deleted;
   }
 
-  boolean deleteFile(File blobFile) {
-    return blobFile.delete();
+  private void updateLastAccessedTimestamp(String blobId, DateTime createTimestamp) {
+    DateTime now = DateTime.now();
+    if (now.toLocalDate().equals(createTimestamp.toLocalDate())) {
+      return;
+    }
+
+    Lock lock = lastAccessedLock.writeLock();
+    try {
+      lock.lock();
+      lastAccessedUpdates.put(blobId, now);
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  private boolean isValidJson(String json) {
+    try {
+      JSON.parse(json);
+      return true;
+    } catch (JSONParseException e) {
+      return false;
+    }
+  }
+
+  void writeFile(File file, String content) throws IOException {
+    Lock lock = blobStripedLocks.get(file.getAbsolutePath()).writeLock();
+    try {
+      lock.lock();
+      try (Writer writer = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(file)), Charsets.UTF_8)) {
+        writer.write(content);
+      }
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  String readFile(File file) throws IOException {
+    Lock lock = blobStripedLocks.get(file.getAbsolutePath()).readLock();
+    try {
+      lock.lock();
+      StringBuilder sb = new StringBuilder();
+      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
+      String line;
+      while ((line = bufferedReader.readLine()) != null) {
+        sb.append(line);
+      }
+      return sb.toString();
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  boolean deleteFile(File file) {
+    Lock lock = blobStripedLocks.get(file.getAbsolutePath()).writeLock();
+    try {
+      lock.lock();
+      return file.delete();
+    } finally {
+      lock.unlock();
+    }
   }
 
   public boolean blobExists(String blobId) {
