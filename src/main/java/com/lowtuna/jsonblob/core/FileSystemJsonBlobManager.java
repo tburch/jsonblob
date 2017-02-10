@@ -137,11 +137,16 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
     return blobId;
   }
 
-  private void updateLastAccessedTimestamp(String blobId) {
+  private void updateLastAccessedTimestamp(String blobId, DateTime createTimestamp) {
+    DateTime now = DateTime.now();
+    if (now.toLocalDate().equals(createTimestamp.toLocalDate())) {
+      return;
+    }
+
     Lock lock = lastAccessedLock.writeLock();
     try {
       lock.lock();
-      lastAccessedUpdates.put(blobId, DateTime.now());
+      lastAccessedUpdates.put(blobId, now);
     } finally {
       lock.unlock();
     }
@@ -184,7 +189,7 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
     try {
       String content = readFile(blobFile);
 
-      updateLastAccessedTimestamp(blobId);
+      updateLastAccessedTimestamp(blobId, createTimestamp.get());
 
       return content;
     } catch (FileNotFoundException e) {
@@ -196,26 +201,21 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
 
   @Override
   public boolean updateBlob(String blobId, String blob) throws IllegalArgumentException, BlobNotFoundException {
-    boolean updated = updateBlob(blobId, blob, false);
-
-    updateLastAccessedTimestamp(blobId);
-
-    return updated;
-  }
-
-  public boolean updateBlob(String blobId, String blob, boolean forceWrite) throws IllegalArgumentException, BlobNotFoundException {
     Optional<DateTime> createTimestamp = resolveTimestamp(blobId);
     if (!createTimestamp.isPresent()) {
       throw new BlobNotFoundException(blobId);
     }
 
     File blobFile = getBlobFile(blobId, createTimestamp.get());
-    if (!blobFile.exists() && !forceWrite) {
+    if (!blobFile.exists()) {
       throw new BlobNotFoundException(blobId);
     }
 
     try {
       writeFile(blobFile, blob);
+
+      updateLastAccessedTimestamp(blobId, createTimestamp.get());
+
       return true;
     } catch (IOException e) {
       throw new IllegalStateException("Couldn't write blob", e);
@@ -236,7 +236,7 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
 
     boolean deleted = deleteFile(blobFile);
 
-    updateLastAccessedTimestamp(blobId);
+    updateLastAccessedTimestamp(blobId, createTimestamp.get());
 
     return deleted;
   }
