@@ -268,7 +268,6 @@
     <script type="text/javascript" src="/assets/js/ace/theme-jsoneditor.js"></script>
     <script type="text/javascript" src="/assets/js/base64.js"></script>
     <script type="text/javascript" src="/assets/js/json2.js"></script>
-    <script type="text/javascript" src="/assets/js/jsonlint/jsonlint.js"></script>
     <script type="text/javascript" src="/assets/js/jwerty/jwerty.js"></script>
     <script type="text/javascript" src="/assets/js/jquery/jquery.cookie.js"></script>
     <script type="text/javascript" src="/assets/js/joyride/jquery.joyride-2.1.js"></script>
@@ -296,7 +295,7 @@
     {{/if}}
 
     {{#if jsonBlob}}
-        var json = jsonlint.parse(decodeBase64("{{#base64Encode jsonBlob}}{{/base64Encode}}"));
+        var json = JSON.parse(decodeBase64("{{#base64Encode jsonBlob}}{{/base64Encode}}"));
     {{else}}
         var json = {
             "array": [1, 2, 3],
@@ -621,7 +620,7 @@
 
         function isValidJson(jsonString) {
             try {
-                jsonlint.parse(jsonString);
+                JSON.parse(jsonString);
                 return true;
             } catch (err) {
                 return false;
