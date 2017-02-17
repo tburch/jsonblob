@@ -29,7 +29,7 @@ public class JsonBlobResource {
 
   @GET
   @Timed
-  @Produces(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
   public Response read() {
     log.debug("Reading blob with id {} from {}", blobId, jsonBlobManager.getClass().getName());
     try {
@@ -42,8 +42,8 @@ public class JsonBlobResource {
 
   @PUT
   @Timed
-  @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
   public Response update(String json) {
     log.debug("Updating blob with id {} from {}", blobId, jsonBlobManager.getClass().getName());
     try {
