@@ -295,7 +295,7 @@
     {{/if}}
 
     {{#if jsonBlob}}
-        var json = JSON.parse(decodeBase64("{{#base64Encode jsonBlob}}{{/base64Encode}}"));
+        var json = JSON.parse('{{{jsonBlob}}}');
     {{else}}
         var json = {
             "array": [1, 2, 3],
