@@ -3,6 +3,7 @@ package com.lowtuna.jsonblob;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Jackson2Helper;
 import com.lowtuna.dropwizard.extras.heroku.RequestIdFilter;
 import com.lowtuna.dropwizard.extras.view.handlebars.ConfiguredHandlebarsViewBundle;
 import com.lowtuna.jsonblob.config.JsonBlobConfiguration;
@@ -60,7 +61,9 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
       @Override
       public Handlebars getInstance(JsonBlobConfiguration configuration) {
         log.info("Using Handlebars configuration of {}", configuration.getHandlebarsConfig().getClass().getCanonicalName());
-        return configuration.getHandlebarsConfig().getInstance(bootstrap.getMetricRegistry());
+        Handlebars handlebars = configuration.getHandlebarsConfig().getInstance(bootstrap.getMetricRegistry());
+        handlebars.registerHelper("json", new Jackson2Helper(bootstrap.getObjectMapper()));
+        return handlebars;
       }
     });
   }
