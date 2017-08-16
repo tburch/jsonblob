@@ -9,6 +9,7 @@ import com.mongodb.util.JSON;
 import com.mongodb.util.JSONParseException;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.util.Duration;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.Charsets;
 import org.bson.types.ObjectId;
@@ -55,6 +56,7 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
   private final ScheduledExecutorService scheduledExecutorService;
   private final ObjectMapper objectMapper;
   private final Duration blobAccessTtl;
+  @Getter
   private final boolean deleteEnabled;
 
   public FileSystemJsonBlobManager(File blobDataDirectory, ScheduledExecutorService scheduledExecutorService, ObjectMapper objectMapper, Duration blobAccessTtl, boolean deleteEnabled) {

@@ -40,7 +40,7 @@ public class JsonBlobEditorResource {
   @Timed
   @Path("about")
   public AboutView about() {
-    AboutView view = new AboutView(gaConfig.getWebPropertyID(), "editor", gaConfig.getCustomTrackingCodes(), blobAccessTtl, false);
+    AboutView view = new AboutView(gaConfig.getWebPropertyID(), "editor", gaConfig.getCustomTrackingCodes(), blobAccessTtl, fileSystemBlobManager.isDeleteEnabled());
     return view;
   }
 
