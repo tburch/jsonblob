@@ -52,7 +52,7 @@ public class BlobCleanupJobTest {
     log.info("Starting blob manager");
     blobManager.start();
 
-    Thread.sleep(200000);
+    Thread.sleep(2000);
 
     Assert.assertEquals(1, countFiles());
   }
