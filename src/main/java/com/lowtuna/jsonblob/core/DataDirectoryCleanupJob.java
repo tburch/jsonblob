@@ -70,6 +70,12 @@ public class DataDirectoryCleanupJob implements Runnable {
           return;
         }
 
+        if (toRemove.size() == blobs.size()) {
+          log.info("All {} files in {} should be deleted, so we'll delete the directory", toRemove.size(), dir);
+          dir.delete();
+          log.info("{} was deleted", dir);
+        }
+
         log.debug("Submitting BulkBlobDeleteJobs for {} blobs in {}", toRemove.size(), dir);
         List<List<String>> subSets = Lists.partition(Lists.newArrayList(toRemove.keySet()), 100);
         subSets.parallelStream().forEach(list -> executorService.submit(new BulkBlobDeleteJob(Sets.newHashSet(list), fileSystemJsonBlobManager, deleteEnabled)));

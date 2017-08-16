@@ -36,6 +36,7 @@ public class BlobCleanupJob implements Runnable {
       for(String dataDirPath: dataDirs) {
         File dir = new File(dataDirPath);
         if (dir.listFiles().length == 0) {
+          log.debug("Deleting {} because there are no files in it", dir);
           dir.delete();
         }
 
