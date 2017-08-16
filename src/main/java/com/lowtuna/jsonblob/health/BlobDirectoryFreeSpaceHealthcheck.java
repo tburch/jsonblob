@@ -17,7 +17,7 @@ public class BlobDirectoryFreeSpaceHealthcheck extends HealthCheck {
   @Override
   protected Result check() throws Exception {
     long freeSpaceKb = FileSystemUtils.freeSpaceKb(blobDataDirectory.getAbsolutePath());
-    String message = freeSpaceKb + "Kb free for " + blobDataDirectory.getAbsolutePath();
+    String message = freeSpaceKb + "Kb free for blob storage`";
     return freeSpaceKb > minFreeSpaceKb ? Result.healthy(message) : Result.unhealthy(message);
   }
 }
