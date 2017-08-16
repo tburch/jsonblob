@@ -55,6 +55,7 @@ public class BlobCleanupJob implements Runnable {
                     return fileSystemJsonBlobManager.resolveTimestamp(input).get();
                   }
                 });
+                log.info("Completed building map of {} last accessed timestamps in {}", lastAccessed.size(), dataDir);
 
                 File metadataFile = fileSystemJsonBlobManager.getMetaDataFile(dataDir.toFile());
                 try {
