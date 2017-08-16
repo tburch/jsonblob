@@ -77,7 +77,7 @@ public class DataDirectoryCleanupJob implements Runnable {
         }
 
         log.debug("Submitting BulkBlobDeleteJobs for {} blobs in {}", toRemove.size(), dir);
-        List<List<String>> subSets = Lists.partition(Lists.newArrayList(toRemove.keySet()), 100);
+        List<List<String>> subSets = Lists.partition(Lists.newArrayList(toRemove.keySet()), 1000);
         subSets.parallelStream().forEach(list -> executorService.submit(new BulkBlobDeleteJob(Sets.newHashSet(list), fileSystemJsonBlobManager, deleteEnabled)));
       } catch (IOException e) {
         log.warn("Couldn't load metadata file from {}", dir.getAbsolutePath(), e);
