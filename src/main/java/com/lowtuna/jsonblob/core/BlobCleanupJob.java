@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,11 +28,7 @@ public class BlobCleanupJob implements Runnable {
     try {
       List<String> dataDirs = Lists.newCopyOnWriteArrayList();
 
-      Files.walk(blobDirectory)
-              .parallel()
-              .filter(p -> !p.toFile().isDirectory())
-              .map(Path::getParent)
-              .distinct()
+      Files.find(blobDirectory, 3, (p, bfa) -> !bfa.isRegularFile())
               .forEach(dataDir -> dataDirs.add(dataDir.toFile().getAbsolutePath()));
 
       log.debug("Found {} data directories", dataDirs.size());
