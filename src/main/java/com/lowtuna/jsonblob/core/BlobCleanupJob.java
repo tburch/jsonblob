@@ -38,6 +38,7 @@ public class BlobCleanupJob implements Runnable {
     Stopwatch stopwatch = new Stopwatch().start();
     AtomicInteger blobsRemoved = new AtomicInteger(0);
     try {
+      Set<String> blobsToDelete = Sets.newCopyOnWriteArraySet();
       Files.walk(blobDirectory)
               .parallel()
               .filter(p -> !p.toFile().isDirectory())
@@ -72,20 +73,7 @@ public class BlobCleanupJob implements Runnable {
                     log.debug("Determining which blobs to remove from {}", dataDir);
                     Map<String, DateTime> toRemove = Maps.filterEntries(lastAccessed, input -> input.getValue().plusMillis((int) blobAccessTtl.toMilliseconds()).isBefore(DateTime.now()));
                     log.info("Identified {} blobs to remove in {}", toRemove.size(), dataDir);
-                    AtomicInteger deletedInDir = new AtomicInteger(0);
-                    toRemove.keySet().parallelStream().forEach(blobId -> {
-                      if (deleteEnabled) {
-                        log.debug("Deleting blob with id {}", blobId);
-                        try {
-                          fileSystemJsonBlobManager.deleteBlob(blobId);
-                          deletedInDir.incrementAndGet();
-                        } catch (BlobNotFoundException e) {
-                          log.debug("Couldn't delete blobId {} because it's already been deleted", blobId);
-                        }
-                      }
-                    });
-                    log.info("Removed {} blobs in {}", deletedInDir.get(), dataDir);
-                    blobsRemoved.addAndGet(deletedInDir.get());
+                    blobsToDelete.addAll(toRemove.keySet());
                   } catch (IOException e) {
                     log.warn("Couldn't load metadata file from {}", dataDir.toAbsolutePath(), e);
                   }
@@ -93,6 +81,19 @@ public class BlobCleanupJob implements Runnable {
                   log.warn("Caught Exception while trying to remove un-accessed blobs in {}", dataDir, e);
                 }
               });
+
+      log.info("Deleting {} blobs", blobsToDelete.size());
+      blobsToDelete.parallelStream().forEach(blobId -> {
+        if (deleteEnabled) {
+          log.debug("Deleting blob with id {}", blobId);
+          try {
+            fileSystemJsonBlobManager.deleteBlob(blobId);
+            blobsRemoved.incrementAndGet();
+          } catch (BlobNotFoundException e) {
+            log.debug("Couldn't delete blobId {} because it's already been deleted", blobId);
+          }
+        }
+      });
       log.info("Completed cleanup of {} blobs in {}ms", blobsRemoved.get(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
     } catch (Exception e) {
       log.warn("Couldn't remove old blobs", e);
