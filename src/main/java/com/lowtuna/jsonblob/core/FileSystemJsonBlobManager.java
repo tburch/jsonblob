@@ -304,7 +304,7 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
     scheduledExecutorService.scheduleWithFixedDelay(this, 1, 1, TimeUnit.MINUTES);
 
     log.info("Scheduling blob cleanup job");
-    scheduledExecutorService.scheduleWithFixedDelay(new BlobCleanupJob(blobDataDirectory.toPath(), blobAccessTtl, this, objectMapper, deleteEnabled), 0, 1, TimeUnit.DAYS);
+    scheduledExecutorService.scheduleWithFixedDelay(new BlobCleanupJob(blobDataDirectory.toPath(), blobAccessTtl, this, objectMapper, deleteEnabled, scheduledExecutorService), 0, 1, TimeUnit.DAYS);
   }
 
   @Override
