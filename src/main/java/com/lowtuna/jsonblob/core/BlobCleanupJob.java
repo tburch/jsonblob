@@ -60,7 +60,9 @@ public class BlobCleanupJob implements Runnable {
                 File metadataFile = fileSystemJsonBlobManager.getMetaDataFile(dataDir.toFile());
                 try {
                   BlobMetadataContainer metadataContainer = metadataFile.exists() ? om.readValue(fileSystemJsonBlobManager.readFile(metadataFile), BlobMetadataContainer.class) : new BlobMetadataContainer();
+                  log.info("Adding {} last accessed timestamp from metadata {}", metadataContainer.getLastAccessedByBlobId().size(), metadataFile.getAbsolutePath());
                   lastAccessed.putAll(metadataContainer.getLastAccessedByBlobId());
+                  log.debug("Determining which blobs to remove from {}", dataDir);
                   Map<String, DateTime> toRemove = Maps.filterEntries(lastAccessed, input -> input.getValue().plusMillis((int) blobAccessTtl.toMilliseconds()).isBefore(DateTime.now()));
                   log.info("Identified {} blobs to remove in {}", toRemove.size(), dataDir);
                   toRemove.keySet().parallelStream().forEach(blobId -> {
