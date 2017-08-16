@@ -36,7 +36,7 @@ public class BlobCleanupJobTest {
 
   @Before
   public void initBlobManage() {
-    this.blobManager = new FileSystemJsonBlobManager(TEMP, Executors.newSingleThreadScheduledExecutor(), new ObjectMapper(), blobTtl, true);
+    this.blobManager = new FileSystemJsonBlobManager(TEMP, Executors.newSingleThreadScheduledExecutor(), Executors.newSingleThreadScheduledExecutor(), new ObjectMapper(), blobTtl, true);
   }
 
   @Test
