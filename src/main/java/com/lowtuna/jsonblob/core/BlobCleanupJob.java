@@ -17,10 +17,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,6 +36,7 @@ public class BlobCleanupJob implements Runnable {
   @Override
   public void run() {
     Stopwatch stopwatch = new Stopwatch().start();
+    AtomicLong blobsRemoved = new AtomicLong(0);
     try {
       Files.walk(blobDirectory)
               .parallel()
@@ -43,8 +45,12 @@ public class BlobCleanupJob implements Runnable {
               .distinct()
               .forEach(dataDir -> {
                 log.info("Checking for blobs not accessed in the last {} in {}", blobAccessTtl, dataDir.toAbsolutePath());
+                if (!dataDir.toFile().exists() || !dataDir.toFile().isDirectory()) {
+                  return;
+                }
+                List<File> files = Arrays.asList(dataDir.toFile().listFiles()).parallelStream().filter(File::exists).collect(Collectors.toList());
                 Set<String> blobs = Sets
-                        .newHashSet(Lists.transform(Arrays.asList(dataDir.toFile().listFiles()), f -> f.getName().split("\\.", 2)[0]))
+                        .newHashSet(Lists.transform(files, f -> f.getName().split("\\.", 2)[0]))
                         .parallelStream()
                         .filter(f -> fileSystemJsonBlobManager.resolveTimestamp(f).isPresent()).collect(Collectors.toSet());
                 log.info("Identified {} blobs in {}", blobs.size(), dataDir);
@@ -70,6 +76,7 @@ public class BlobCleanupJob implements Runnable {
                       log.debug("Deleting blob with id {}", blobId);
                       try {
                         fileSystemJsonBlobManager.deleteBlob(blobId);
+                        blobsRemoved.incrementAndGet();
                       } catch (BlobNotFoundException e) {
                         log.debug("Couldn't delete blobId {} because it's already been deleted", blobId);
                       }
@@ -79,7 +86,7 @@ public class BlobCleanupJob implements Runnable {
                   log.warn("Couldn't load metadata file from {}", dataDir.toAbsolutePath(), e);
                 }
               });
-      log.info("Completed cleanup in {}ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+      log.info("Completed cleanup of {} blobs in {}ms", blobsRemoved.get(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
     } catch (Exception e) {
       log.warn("Couldn't remove old blobs", e);
     }

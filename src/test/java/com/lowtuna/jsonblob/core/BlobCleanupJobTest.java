@@ -43,11 +43,15 @@ public class BlobCleanupJobTest {
   public void testCleanup() throws Exception {
     DateTime now = DateTime.now();
 
+    String oldBlobId = (new ObjectId(now.minusDays((int) (blobTtl.toMinutes() * 2)).toDate())).toString();
+
     Assert.assertEquals(0, countFiles());
-    blobManager.createBlob("{\"foo\":|\"bar\"}", (new ObjectId(now.minusDays((int) (blobTtl.toMinutes() * 2)).toDate())).toString());
+    blobManager.createBlob("{\"foo\":|\"bar\"}", oldBlobId);
     Assert.assertEquals(1, countFiles());
     blobManager.createBlob("{\"foo\":|\"bar\"}", (new ObjectId(now.toDate())).toString());
     Assert.assertEquals(2, countFiles());
+
+    blobManager.run();
 
     log.info("Starting blob manager");
     blobManager.start();
