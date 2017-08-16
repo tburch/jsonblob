@@ -54,14 +54,16 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
 
   private final File blobDataDirectory;
   private final ScheduledExecutorService scheduledExecutorService;
+  private final ScheduledExecutorService cleanupScheduledExecutorService;
   private final ObjectMapper objectMapper;
   private final Duration blobAccessTtl;
   @Getter
   private final boolean deleteEnabled;
 
-  public FileSystemJsonBlobManager(File blobDataDirectory, ScheduledExecutorService scheduledExecutorService, ObjectMapper objectMapper, Duration blobAccessTtl, boolean deleteEnabled) {
+  public FileSystemJsonBlobManager(File blobDataDirectory, ScheduledExecutorService scheduledExecutorService, ScheduledExecutorService cleanupScheduledExecutorService, ObjectMapper objectMapper, Duration blobAccessTtl, boolean deleteEnabled) {
     this.blobDataDirectory = blobDataDirectory;
     this.scheduledExecutorService = scheduledExecutorService;
+    this.cleanupScheduledExecutorService = cleanupScheduledExecutorService;
     this.objectMapper = objectMapper;
     this.blobAccessTtl = blobAccessTtl;
     this.deleteEnabled = deleteEnabled;
@@ -304,7 +306,7 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
     scheduledExecutorService.scheduleWithFixedDelay(this, 1, 1, TimeUnit.MINUTES);
 
     log.info("Scheduling blob cleanup job");
-    scheduledExecutorService.scheduleWithFixedDelay(new BlobCleanupJob(blobDataDirectory.toPath(), blobAccessTtl, this, objectMapper, deleteEnabled, scheduledExecutorService), 0, 1, TimeUnit.DAYS);
+    cleanupScheduledExecutorService.scheduleWithFixedDelay(new BlobCleanupJob(blobDataDirectory.toPath(), blobAccessTtl, this, objectMapper, deleteEnabled, scheduledExecutorService), 0, 1, TimeUnit.DAYS);
   }
 
   @Override

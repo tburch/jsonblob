@@ -73,8 +73,9 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
     environment.metrics().register(MetricRegistry.name(getClass(), "uptime"), (Gauge<String>) () -> uptimePeriodFormatter.print(new Duration(System.currentTimeMillis() - startTIme).toPeriod()));
 
     ScheduledExecutorService scheduledExecutorService = configuration.getBlobManagerConfig().getScheduledExecutorService().instance(environment);
+    ScheduledExecutorService cleanupScheduledExecutorService = configuration.getBlobManagerConfig().getCleanupScheduledExecutorService().instance(environment);
 
-    FileSystemJsonBlobManager fileSystemBlobManager = new FileSystemJsonBlobManager(configuration.getBlobManagerConfig().getFileSystemBlogDataDirectory(), scheduledExecutorService, environment.getObjectMapper(), configuration.getBlobManagerConfig().getBlobAccessTtl(), configuration.getBlobManagerConfig().isDeleteEnabled());
+    FileSystemJsonBlobManager fileSystemBlobManager = new FileSystemJsonBlobManager(configuration.getBlobManagerConfig().getFileSystemBlogDataDirectory(), scheduledExecutorService, cleanupScheduledExecutorService, environment.getObjectMapper(), configuration.getBlobManagerConfig().getBlobAccessTtl(), configuration.getBlobManagerConfig().isDeleteEnabled());
     environment.lifecycle().manage(fileSystemBlobManager);
 
     environment.healthChecks().register("freeSpace", new BlobDirectoryFreeSpaceHealthcheck(configuration.getBlobManagerConfig().getFileSystemBlogDataDirectory(), 5242880));

@@ -24,6 +24,10 @@ public class BlobManagerConfig {
 
   @JsonProperty
   @NotNull
+  private ScheduledExecutorServiceConfig cleanupScheduledExecutorService = new ScheduledExecutorServiceConfig("blobManagerCleanupScheduledExecutor-%d");
+
+  @JsonProperty
+  @NotNull
   private Duration blobAccessTtl = Duration.days(90);
 
   private boolean deleteEnabled = false;
