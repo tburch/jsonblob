@@ -42,11 +42,12 @@ public class BlobCleanupJob implements Runnable {
               .map(Path::getParent)
               .distinct()
               .forEach(dataDir -> {
+                log.info("Checking for unused blobs in {}", dataDir.toAbsolutePath());
                 Set<String> blobs = Sets
                         .newHashSet(Lists.transform(Arrays.asList(dataDir.toFile().listFiles()), f -> f.getName().split("\\.", 2)[0]))
                         .parallelStream()
                         .filter(f -> fileSystemJsonBlobManager.resolveTimestamp(f).isPresent()).collect(Collectors.toSet());
-                log.info("Checking for unused blobs in {}", dataDir.toAbsolutePath());
+                log.info("Identified {} blobs in {}", blobs.size(), dataDir);
                 Map<String, DateTime> lastAccessed = Maps.asMap(blobs, new Function<String, DateTime>() {
                   @Nullable
                   @Override
@@ -59,8 +60,8 @@ public class BlobCleanupJob implements Runnable {
                 try {
                   BlobMetadataContainer metadataContainer = metadataFile.exists() ? om.readValue(fileSystemJsonBlobManager.readFile(metadataFile), BlobMetadataContainer.class) : new BlobMetadataContainer();
                   lastAccessed.putAll(metadataContainer.getLastAccessedByBlobId());
-
                   Map<String, DateTime> toRemove = Maps.filterEntries(lastAccessed, input -> input.getValue().plusMillis((int) blobAccessTtl.toMilliseconds()).isBefore(DateTime.now()));
+                  log.info("Identified {} blobs to remove in {}", toRemove.size(), dataDir);
                   toRemove.keySet().parallelStream().forEach(blobId -> {
                     if (deleteEnabled) {
                       log.debug("Deleting blob with id {}", blobId);
