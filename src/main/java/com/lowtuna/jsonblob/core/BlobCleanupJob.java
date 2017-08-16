@@ -42,20 +42,19 @@ public class BlobCleanupJob implements Runnable {
               .map(Path::getParent)
               .distinct()
               .forEach(dataDir -> {
-                log.info("Checking for unused blobs in {}", dataDir.toAbsolutePath());
+                log.info("Checking for blobs not accessed in the last {} in {}", blobAccessTtl, dataDir.toAbsolutePath());
                 Set<String> blobs = Sets
                         .newHashSet(Lists.transform(Arrays.asList(dataDir.toFile().listFiles()), f -> f.getName().split("\\.", 2)[0]))
                         .parallelStream()
                         .filter(f -> fileSystemJsonBlobManager.resolveTimestamp(f).isPresent()).collect(Collectors.toSet());
                 log.info("Identified {} blobs in {}", blobs.size(), dataDir);
-                Map<String, DateTime> lastAccessed = Maps.asMap(blobs, new Function<String, DateTime>() {
+                Map<String, DateTime> lastAccessed = Maps.newHashMap(Maps.asMap(blobs, new Function<String, DateTime>() {
                   @Nullable
                   @Override
                   public DateTime apply(@Nullable String input) {
                     return fileSystemJsonBlobManager.resolveTimestamp(input).get();
                   }
-                });
-                lastAccessed = Maps.newHashMap(lastAccessed);
+                }));
                 log.info("Completed building map of {} last accessed timestamps in {}", lastAccessed.size(), dataDir);
 
                 File metadataFile = fileSystemJsonBlobManager.getMetaDataFile(dataDir.toFile());
