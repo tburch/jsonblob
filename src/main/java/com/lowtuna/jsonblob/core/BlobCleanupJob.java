@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,7 +36,7 @@ public class BlobCleanupJob implements Runnable {
   @Override
   public void run() {
     Stopwatch stopwatch = new Stopwatch().start();
-    AtomicLong blobsRemoved = new AtomicLong(0);
+    AtomicInteger blobsRemoved = new AtomicInteger(0);
     try {
       Files.walk(blobDirectory)
               .parallel()
@@ -72,17 +72,20 @@ public class BlobCleanupJob implements Runnable {
                     log.debug("Determining which blobs to remove from {}", dataDir);
                     Map<String, DateTime> toRemove = Maps.filterEntries(lastAccessed, input -> input.getValue().plusMillis((int) blobAccessTtl.toMilliseconds()).isBefore(DateTime.now()));
                     log.info("Identified {} blobs to remove in {}", toRemove.size(), dataDir);
+                    AtomicInteger deletedInDir = new AtomicInteger(0);
                     toRemove.keySet().parallelStream().forEach(blobId -> {
                       if (deleteEnabled) {
                         log.debug("Deleting blob with id {}", blobId);
                         try {
                           fileSystemJsonBlobManager.deleteBlob(blobId);
-                          blobsRemoved.incrementAndGet();
+                          deletedInDir.incrementAndGet();
                         } catch (BlobNotFoundException e) {
                           log.debug("Couldn't delete blobId {} because it's already been deleted", blobId);
                         }
                       }
                     });
+                    log.info("Removed {} blobs in {}", deletedInDir.get(), dataDir);
+                    blobsRemoved.addAndGet(deletedInDir.get());
                   } catch (IOException e) {
                     log.warn("Couldn't load metadata file from {}", dataDir.toAbsolutePath(), e);
                   }
