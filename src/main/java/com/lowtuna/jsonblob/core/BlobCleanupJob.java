@@ -25,6 +25,10 @@ public class BlobCleanupJob implements Runnable {
 
   @Override
   public void run() {
+    if (true) {
+        return;
+    }
+
     try {
       List<String> dataDirs = Lists.newCopyOnWriteArrayList();
 
