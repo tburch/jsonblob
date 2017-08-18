@@ -30,7 +30,7 @@ public class BlobCleanupJobTest {
     TEMP = dir;
   }
 
-  private final Duration blobTtl = Duration.minutes(1);
+  private final Duration blobTtl = Duration.days(1);
 
   private FileSystemJsonBlobManager blobManager;
 
