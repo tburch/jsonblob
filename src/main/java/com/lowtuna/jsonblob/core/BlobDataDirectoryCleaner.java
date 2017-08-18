@@ -3,12 +3,14 @@ package com.lowtuna.jsonblob.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import io.dropwizard.util.Duration;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.DirectoryWalker;
-import org.apache.commons.lang3.time.StopWatch;
 import org.joda.time.DateTime;
 
 import java.io.File;
@@ -30,6 +32,16 @@ public class BlobDataDirectoryCleaner extends DirectoryWalker<String> implements
   private final FileSystemJsonBlobManager fileSystemJsonBlobManager;
   private final ObjectMapper om;
 
+  private final LoadingCache<String, BlobMetadataContainer> blobMetadataContainerCache = CacheBuilder.newBuilder()
+          .expireAfterWrite(1, TimeUnit.HOURS)
+          .build(new CacheLoader<String, BlobMetadataContainer>() {
+            @Override
+            public BlobMetadataContainer load(String key) throws Exception {
+              File metadataFile = new File(key);
+              return metadataFile.exists() ? om.readValue(fileSystemJsonBlobManager.readFile(metadataFile), BlobMetadataContainer.class) : new BlobMetadataContainer();
+            }
+          });
+
   @Override
   protected void handleFile(File file, int depth, Collection<String> results) throws IOException {
     log.debug("Processing {}", file.getAbsolutePath());
@@ -40,29 +52,24 @@ public class BlobDataDirectoryCleaner extends DirectoryWalker<String> implements
       return;
     }
 
-    try {
-      BlobMetadataContainer metadataContainer = metadataFile.exists() ? om.readValue(fileSystemJsonBlobManager.readFile(metadataFile), BlobMetadataContainer.class) : new BlobMetadataContainer();
+    BlobMetadataContainer metadataContainer = blobMetadataContainerCache.getUnchecked(metadataFile.getAbsolutePath());
 
-      Optional<DateTime> lastAccessed = fileSystemJsonBlobManager.resolveTimestamp(blobId);
-      if (metadataContainer.getLastAccessedByBlobId().containsKey(blobId)) {
-        lastAccessed = Optional.of(metadataContainer.getLastAccessedByBlobId().get(blobId));
-      }
+    Optional<DateTime> lastAccessed = fileSystemJsonBlobManager.resolveTimestamp(blobId);
+    if (metadataContainer.getLastAccessedByBlobId().containsKey(blobId)) {
+      lastAccessed = Optional.of(metadataContainer.getLastAccessedByBlobId().get(blobId));
+    }
 
-      if (!lastAccessed.isPresent()) {
-        log.warn("Couldn't get last accessed timestamp for blob {}", blobId);
-        return;
-      }
+    if (!lastAccessed.isPresent()) {
+      log.warn("Couldn't get last accessed timestamp for blob {}", blobId);
+      return;
+    }
 
-      log.debug("Blob {} was last accessed {}", blobId, lastAccessed.get());
+    log.debug("Blob {} was last accessed {}", blobId, lastAccessed.get());
 
-      if (lastAccessed.get().plusMillis((int) blobAccessTtl.toMilliseconds()).isBefore(DateTime.now())) {
-        log.debug("Blob {} is older than {}, so it's going to be deleted", blobId, blobAccessTtl);
-        file.delete();
-        results.add(blobId);
-      }
-
-    } catch (IOException e) {
-      log.warn("Couldn't load metadata file from {}", file.getParentFile().getAbsolutePath(), e);
+    if (lastAccessed.get().plusMillis((int) blobAccessTtl.toMilliseconds()).isBefore(DateTime.now())) {
+      log.info("Blob {} is older than {} (last accessed {}), so it's going to be deleted", blobId, blobAccessTtl, lastAccessed.get());
+      file.delete();
+      results.add(blobId);
     }
   }
 
