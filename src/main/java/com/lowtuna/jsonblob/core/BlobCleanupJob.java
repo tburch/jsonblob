@@ -46,7 +46,9 @@ public class BlobCleanupJob implements Runnable {
 
         if (localDate.isBefore(LocalDate.now().minusDays(blobAccessTtl.toDays()))) {
           log.debug("Submitting DataDirectoryCleanupJob for {}", dataDirPath);
-          executorService.submit(new DataDirectoryCleanupJob(dataDirPath, executorService, fileSystemJsonBlobManager, blobAccessTtl, om, deleteEnabled));
+          DataDirectoryCleanupJob cleanupJob = new DataDirectoryCleanupJob(dataDirPath, executorService, fileSystemJsonBlobManager, blobAccessTtl, om, deleteEnabled);
+          cleanupJob.run();
+//          executorService.submit(cleanupJob);
         }
       }
     } catch (Exception e) {
