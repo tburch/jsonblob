@@ -39,7 +39,7 @@ public class BlobDataDirectoryCleaner extends DirectoryWalker<String> implements
     if (file.equals(metadataFile)) {
       return;
     }
-    
+
     try {
       BlobMetadataContainer metadataContainer = metadataFile.exists() ? om.readValue(fileSystemJsonBlobManager.readFile(metadataFile), BlobMetadataContainer.class) : new BlobMetadataContainer();
 
@@ -74,13 +74,17 @@ public class BlobDataDirectoryCleaner extends DirectoryWalker<String> implements
       return false;
     }
 
+    boolean process = true;
     if (isDataDir(directory.getAbsolutePath())) {
       String[] dateParts = directory.getAbsolutePath().replace(dataDirectoryPath.toFile().getAbsolutePath(), "").split("/", 4);
       LocalDate localDate = LocalDate.of(Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]), Integer.parseInt(dateParts[3]));
-      return localDate.isBefore(LocalDate.now().minusDays(blobAccessTtl.toDays()));
+      process = localDate.isBefore(LocalDate.now().minusDays(blobAccessTtl.toDays()));
+      if (process) {
+        log.info("Processing {} for un-accessed blobs", directory.getAbsolutePath());
+      }
     }
 
-    return true;
+    return process;
   }
 
   private boolean isDataDir(String path) {
