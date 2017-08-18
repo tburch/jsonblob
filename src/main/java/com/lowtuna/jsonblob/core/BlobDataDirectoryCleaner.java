@@ -35,6 +35,11 @@ public class BlobDataDirectoryCleaner extends DirectoryWalker<String> implements
     log.debug("Processing {}", file.getAbsolutePath());
     String blobId = file.getName().split("\\.", 2)[0];
     File metadataFile = fileSystemJsonBlobManager.getMetaDataFile(file.getParentFile());
+
+    if (file.equals(metadataFile)) {
+      return;
+    }
+    
     try {
       BlobMetadataContainer metadataContainer = metadataFile.exists() ? om.readValue(fileSystemJsonBlobManager.readFile(metadataFile), BlobMetadataContainer.class) : new BlobMetadataContainer();
 
