@@ -45,6 +45,8 @@ import java.util.zip.GZIPOutputStream;
  */
 @Slf4j
 public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Managed {
+  public static final String BLOB_METADATA_FILE_NAME = "blobMetadata";
+
   private static final DateTimeFormatter DIRECTORY_FORMAT = DateTimeFormat.forPattern("yyyy/MM/dd");
 
   @GuardedBy("lastAccessedLock")
@@ -91,7 +93,7 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
   }
 
   File getMetaDataFile(File blobDirectory) {
-    return new File(blobDirectory, "blobMetadata" + ".json.gz");
+    return new File(blobDirectory, BLOB_METADATA_FILE_NAME + ".json.gz");
   }
 
   Optional<DateTime> resolveTimestamp(String blobId) {

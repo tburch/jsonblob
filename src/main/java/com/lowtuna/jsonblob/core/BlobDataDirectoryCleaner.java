@@ -81,6 +81,14 @@ public class BlobDataDirectoryCleaner extends DirectoryWalker<String> implements
       return false;
     }
 
+    if (directory.listFiles().length == 1) {
+      if (directory.listFiles()[0].getName().startsWith(FileSystemJsonBlobManager.BLOB_METADATA_FILE_NAME)) {
+        log.info("{} has only a metadata file, so it's being deleted", directory.getAbsolutePath());
+        directory.delete();
+        return false;
+      }
+    }
+
     boolean process = true;
     if (isDataDir(directory.getAbsolutePath())) {
       String[] dateParts = directory.getAbsolutePath().replace(dataDirectoryPath.toFile().getAbsolutePath(), "").split("/", 4);
