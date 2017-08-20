@@ -34,13 +34,15 @@ public class BlobCleanupProducer extends DirectoryWalker<Void> implements Runnab
 
   @Override
   protected boolean handleDirectory(File directory, int depth, Collection<Void> results) throws IOException {
-    if (directory.listFiles() != null && directory.listFiles().length == 0) {
+    File[] files = directory.listFiles();
+
+    if (files != null && files.length == 0) {
       if (directory.delete()) log.info("{} has no files, so it's being deleted", directory.getAbsolutePath());
       return false;
     }
 
-    if (directory.listFiles().length == 1) {
-      if (directory.listFiles()[0].getName().startsWith(FileSystemJsonBlobManager.BLOB_METADATA_FILE_NAME)) {
+    if (files.length == 1) {
+      if (files[0].getName().startsWith(FileSystemJsonBlobManager.BLOB_METADATA_FILE_NAME)) {
         if (directory.delete()) log.info("{} has only a metadata file, so it's being deleted", directory.getAbsolutePath());
         return false;
       }
@@ -53,7 +55,7 @@ public class BlobCleanupProducer extends DirectoryWalker<Void> implements Runnab
       process = localDate.isBefore(LocalDate.now().minusDays(blobAccessTtl.toDays()));
       if (process) {
         log.info("Processing {} blobs for un-accessed blobs", directory.getAbsolutePath());
-        for (File file: directory.listFiles()) {
+        for (File file: files) {
           try {
             filesToProcess.put(file);
           } catch (InterruptedException e) {
