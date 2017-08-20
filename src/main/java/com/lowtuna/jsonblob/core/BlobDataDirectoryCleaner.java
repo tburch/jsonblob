@@ -6,7 +6,6 @@ import com.google.common.base.Stopwatch;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Lists;
 import io.dropwizard.util.Duration;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,22 +17,24 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by tburch on 8/18/17.
  */
 @AllArgsConstructor
 @Slf4j
-public class BlobDataDirectoryCleaner extends DirectoryWalker<String> implements Runnable {
+public class BlobDataDirectoryCleaner extends DirectoryWalker<Void> implements Runnable {
   private final Path dataDirectoryPath;
   private final Duration blobAccessTtl;
   private final FileSystemJsonBlobManager fileSystemJsonBlobManager;
   private final ObjectMapper om;
+  private final AtomicInteger deletedBlobCount = new AtomicInteger(0);
 
   private final LoadingCache<String, BlobMetadataContainer> blobMetadataContainerCache = CacheBuilder.newBuilder()
           .expireAfterWrite(1, TimeUnit.HOURS)
+          .weakValues()
           .build(new CacheLoader<String, BlobMetadataContainer>() {
             @Override
             public BlobMetadataContainer load(String key) throws Exception {
@@ -43,7 +44,7 @@ public class BlobDataDirectoryCleaner extends DirectoryWalker<String> implements
           });
 
   @Override
-  protected void handleFile(File file, int depth, Collection<String> results) throws IOException {
+  protected void handleFile(File file, int depth, Collection<Void> results) throws IOException {
     log.debug("Processing {}", file.getAbsolutePath());
     String blobId = file.getName().split("\\.", 2)[0];
     File metadataFile = fileSystemJsonBlobManager.getMetaDataFile(file.getParentFile());
@@ -68,13 +69,14 @@ public class BlobDataDirectoryCleaner extends DirectoryWalker<String> implements
 
     if (lastAccessed.get().plusMillis((int) blobAccessTtl.toMilliseconds()).isBefore(DateTime.now())) {
       log.info("Blob {} is older than {} (last accessed {}), so it's going to be deleted", blobId, blobAccessTtl, lastAccessed.get());
-      file.delete();
-      results.add(blobId);
+      if (file.delete()) {
+        deletedBlobCount.incrementAndGet();
+      }
     }
   }
 
   @Override
-  protected boolean handleDirectory(File directory, int depth, Collection<String> results) throws IOException {
+  protected boolean handleDirectory(File directory, int depth, Collection<Void> results) throws IOException {
     if (directory.listFiles() != null && directory.listFiles().length == 0) {
       log.info("{} has no files, so it's being deleted", directory.getAbsolutePath());
       directory.delete();
@@ -108,13 +110,14 @@ public class BlobDataDirectoryCleaner extends DirectoryWalker<String> implements
 
   @Override
   public void run() {
+    deletedBlobCount.set(0);
     Stopwatch stopwatch = new Stopwatch().start();
     try {
-      List<String> removedBlobs = Lists.newArrayList();
-      walk(dataDirectoryPath.toFile(), removedBlobs);
-      log.info("Completed cleaning up {} un-accessed blobs in {}ms", removedBlobs.size(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
+      walk(dataDirectoryPath.toFile(), null);
+      log.info("Completed cleaning up {} un-accessed blobs in {}ms", deletedBlobCount.get(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
     } catch (Exception e) {
       e.printStackTrace();
     }
+    deletedBlobCount.set(0);
   }
 }
