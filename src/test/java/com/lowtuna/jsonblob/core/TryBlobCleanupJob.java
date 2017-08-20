@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
  * Created by tburch on 8/16/17.
  */
 @Log
-public class BlobCleanupJobTest {
+public class TryBlobCleanupJob {
 
   private static final File TEMP;
   static {
@@ -36,7 +36,7 @@ public class BlobCleanupJobTest {
 
   @Before
   public void initBlobManage() {
-    this.blobManager = new FileSystemJsonBlobManager(TEMP, Executors.newSingleThreadScheduledExecutor(), Executors.newSingleThreadScheduledExecutor(), new ObjectMapper(), blobTtl, true);
+    this.blobManager = new FileSystemJsonBlobManager(TEMP, Executors.newSingleThreadScheduledExecutor(), Executors.newScheduledThreadPool(10), new ObjectMapper(), blobTtl, true);
   }
 
   @Test

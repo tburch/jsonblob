@@ -31,6 +31,8 @@ import java.util.Calendar;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -45,8 +47,9 @@ import java.util.zip.GZIPOutputStream;
  */
 @Slf4j
 public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Managed {
-  public static final String BLOB_METADATA_FILE_NAME = "blobMetadata";
+  static final String BLOB_METADATA_FILE_NAME = "blobMetadata";
 
+  private static final int CONSUMER_COUNT = 7;
   private static final DateTimeFormatter DIRECTORY_FORMAT = DateTimeFormat.forPattern("yyyy/MM/dd");
 
   @GuardedBy("lastAccessedLock")
@@ -308,8 +311,12 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
     scheduledExecutorService.scheduleWithFixedDelay(this, 1, 1, TimeUnit.MINUTES);
 
     log.info("Scheduling blob cleanup job");
-    BlobDataDirectoryCleaner dataDirectoryCleaner = new BlobDataDirectoryCleaner(blobDataDirectory.toPath(), blobAccessTtl, this,objectMapper);
+    BlockingQueue<File> filesToProcess = new ArrayBlockingQueue<>(1024);
+    for (int i = 0; i < CONSUMER_COUNT; i++) {
+      cleanupScheduledExecutorService.scheduleAtFixedRate(new BlobCleanupConsumer(filesToProcess, blobAccessTtl, this, objectMapper), 0, 250, TimeUnit.MILLISECONDS);
+    }
 
+    BlobCleanupProducer dataDirectoryCleaner = new BlobCleanupProducer(blobDataDirectory.toPath(), blobAccessTtl, filesToProcess);
     cleanupScheduledExecutorService.scheduleWithFixedDelay(dataDirectoryCleaner, 0, 1, TimeUnit.DAYS);
   }
 
