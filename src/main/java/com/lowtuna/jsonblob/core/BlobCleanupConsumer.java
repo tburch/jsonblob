@@ -28,6 +28,7 @@ public class BlobCleanupConsumer implements Runnable {
 
   @Override
   public void run() {
+    log.info("Polling queue for files to process for {}", QUEUE_TIMEOUT);
     try {
       File file = filesToProcess.poll(QUEUE_TIMEOUT.getQuantity(), QUEUE_TIMEOUT.getUnit());
       log.debug("Processing {}", file.getAbsolutePath());

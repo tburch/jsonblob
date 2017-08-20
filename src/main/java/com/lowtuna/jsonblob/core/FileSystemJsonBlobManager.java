@@ -316,7 +316,7 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
     log.info("Scheduling blob cleanup job");
     BlockingQueue<File> filesToProcess = new ArrayBlockingQueue<>(1024);
     for (int i = 0; i < CONSUMER_COUNT; i++) {
-      cleanupScheduledExecutorService.scheduleAtFixedRate(new BlobCleanupConsumer(filesToProcess, blobAccessTtl, this, objectMapper), 0, 250, TimeUnit.MILLISECONDS);
+      cleanupScheduledExecutorService.scheduleAtFixedRate(new BlobCleanupConsumer(filesToProcess, blobAccessTtl, this, objectMapper), 0, 1, TimeUnit.SECONDS);
     }
 
     BlobCleanupProducer dataDirectoryCleaner = new BlobCleanupProducer(blobDataDirectory.toPath(), blobAccessTtl, filesToProcess, metricRegistry);
