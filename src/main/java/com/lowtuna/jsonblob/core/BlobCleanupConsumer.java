@@ -28,11 +28,11 @@ public class BlobCleanupConsumer implements Runnable {
 
   @Override
   public void run() {
-    log.info("Polling queue for files to process for {}", QUEUE_TIMEOUT);
+    log.debug("Polling queue for files to process for {}", QUEUE_TIMEOUT);
     try {
       File file = filesToProcess.poll(QUEUE_TIMEOUT.getQuantity(), QUEUE_TIMEOUT.getUnit());
       if (file == null) {
-        log.info("Timed out after {} while waiting for something to come onto the queue", QUEUE_TIMEOUT);
+        log.debug("Timed out after {} while waiting for something to come onto the queue", QUEUE_TIMEOUT);
         return;
       }
       log.debug("Processing {}", file.getAbsolutePath());

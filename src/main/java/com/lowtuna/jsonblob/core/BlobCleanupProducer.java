@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by tburch on 8/18/17.
@@ -41,8 +42,10 @@ public class BlobCleanupProducer extends DirectoryWalker<Void> implements Runnab
       boolean process = localDate.isBefore(LocalDate.now().minusDays(blobAccessTtl.toDays()));
       if (process) {
         log.info("Processing {} blobs for un-accessed blobs", directory.getAbsolutePath());
+        AtomicInteger fileCount = new AtomicInteger(0);
         Files.newDirectoryStream(directory.toPath())
                 .forEach(path -> {
+                  fileCount.incrementAndGet();
                   File file = path.toFile();
                   if (file.getName().startsWith(FileSystemJsonBlobManager.BLOB_METADATA_FILE_NAME)) {
                     return;
@@ -53,19 +56,19 @@ public class BlobCleanupProducer extends DirectoryWalker<Void> implements Runnab
                     log.warn("Interrupted while trying to add file to be processed at {}", file.getAbsolutePath(), e);
                   }
                 });
-      }
 
-      File[] files = directory.listFiles();
-      if (files != null && files.length == 1) {
-        if (files[0].getName().startsWith(FileSystemJsonBlobManager.BLOB_METADATA_FILE_NAME)) {
-          if (directory.delete()) {
-            log.info("{} has only a metadata file, so it's being deleted", directory.getAbsolutePath());
+        if (fileCount.get() == 0) {
+          log.info("{} has no files, so it's being deleted", directory.getAbsolutePath());
+        } else if (fileCount.get() == 1) {
+          File[] files = directory.listFiles();
+          if (files != null && files[0].getName().startsWith(FileSystemJsonBlobManager.BLOB_METADATA_FILE_NAME)) {
+            if (directory.delete()) {
+              log.info("{} has only a metadata file, so it's being deleted", directory.getAbsolutePath());
+            }
           }
         }
-      } else if (files.length == 0) {
-        log.info("{} has no files, so it's being deleted", directory.getAbsolutePath());
+        return false;
       }
-      return false;
     } else {
       File[] files = directory.listFiles();
       if (files != null && files.length == 0) {
@@ -73,7 +76,6 @@ public class BlobCleanupProducer extends DirectoryWalker<Void> implements Runnab
         return false;
       }
     }
-
     return true;
   }
 
