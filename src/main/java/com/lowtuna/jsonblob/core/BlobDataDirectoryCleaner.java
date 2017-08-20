@@ -97,7 +97,7 @@ public class BlobDataDirectoryCleaner extends DirectoryWalker<Void> implements R
       LocalDate localDate = LocalDate.of(Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]), Integer.parseInt(dateParts[3]));
       process = localDate.isBefore(LocalDate.now().minusDays(blobAccessTtl.toDays()));
       if (process) {
-        log.info("Processing {} for un-accessed blobs", directory.getAbsolutePath());
+        log.info("Processing {} with {} blobs for un-accessed blobs", directory.getAbsolutePath(), directory.listFiles().length - 1);
       }
     }
 
