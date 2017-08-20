@@ -27,6 +27,7 @@ public class BlobCleanupProducer extends DirectoryWalker<Void> implements Runnab
   private final BlockingQueue<File> filesToProcess;
 
   public BlobCleanupProducer(Path dataDirectoryPath, Duration blobAccessTtl, BlockingQueue<File> filesToProcess, MetricRegistry metricRegistry) {
+    super(null, 3);
     this.dataDirectoryPath = dataDirectoryPath;
     this.blobAccessTtl = blobAccessTtl;
     this.filesToProcess = filesToProcess;
@@ -56,6 +57,8 @@ public class BlobCleanupProducer extends DirectoryWalker<Void> implements Runnab
                     log.warn("Interrupted while trying to add file to be processed at {}", file.getAbsolutePath(), e);
                   }
                 });
+
+        log.info("Processed {} blobs in {}", fileCount.get(), directory.getAbsolutePath());
 
         if (fileCount.get() == 0) {
           log.info("{} has no files, so it's being deleted", directory.getAbsolutePath());
