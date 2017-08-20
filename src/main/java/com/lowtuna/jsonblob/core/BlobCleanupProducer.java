@@ -1,8 +1,9 @@
 package com.lowtuna.jsonblob.core;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Stopwatch;
 import io.dropwizard.util.Duration;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.DirectoryWalker;
 
@@ -17,12 +18,19 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by tburch on 8/18/17.
  */
-@AllArgsConstructor
 @Slf4j
 public class BlobCleanupProducer extends DirectoryWalker<Void> implements Runnable {
   private final Path dataDirectoryPath;
   private final Duration blobAccessTtl;
   private final BlockingQueue<File> filesToProcess;
+
+  public BlobCleanupProducer(Path dataDirectoryPath, Duration blobAccessTtl, BlockingQueue<File> filesToProcess, MetricRegistry metricRegistry) {
+    this.dataDirectoryPath = dataDirectoryPath;
+    this.blobAccessTtl = blobAccessTtl;
+    this.filesToProcess = filesToProcess;
+    metricRegistry.register(MetricRegistry.name(getClass(), "filesToProcessCount"), (Gauge<Integer>) () -> filesToProcess.size());
+  }
+
 
   @Override
   protected boolean handleDirectory(File directory, int depth, Collection<Void> results) throws IOException {
@@ -44,7 +52,7 @@ public class BlobCleanupProducer extends DirectoryWalker<Void> implements Runnab
       LocalDate localDate = LocalDate.of(Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]), Integer.parseInt(dateParts[3]));
       process = localDate.isBefore(LocalDate.now().minusDays(blobAccessTtl.toDays()));
       if (process) {
-        log.info("Processing {} with {} blobs for un-accessed blobs", directory.getAbsolutePath(), directory.listFiles().length - 1);
+        log.info("Processing {} blobs for un-accessed blobs", directory.getAbsolutePath());
         for (File file: directory.listFiles()) {
           try {
             filesToProcess.put(file);

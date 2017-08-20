@@ -19,6 +19,8 @@ import java.util.concurrent.BlockingQueue;
 @Slf4j
 @RequiredArgsConstructor
 public class BlobCleanupConsumer implements Runnable {
+  private static final Duration QUEUE_TIMEOUT = Duration.seconds(15);
+
   private final BlockingQueue<File> filesToProcess;
   private final Duration blobAccessTtl;
   private final FileSystemJsonBlobManager fileSystemJsonBlobManager;
@@ -27,7 +29,7 @@ public class BlobCleanupConsumer implements Runnable {
   @Override
   public void run() {
     try {
-      File file = filesToProcess.take();
+      File file = filesToProcess.poll(QUEUE_TIMEOUT.getQuantity(), QUEUE_TIMEOUT.getUnit());
       log.debug("Processing {}", file.getAbsolutePath());
       String blobId = file.getName().split("\\.", 2)[0];
       File metadataFile = fileSystemJsonBlobManager.getMetaDataFile(file.getParentFile());

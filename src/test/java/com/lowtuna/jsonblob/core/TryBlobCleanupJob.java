@@ -1,5 +1,6 @@
 package com.lowtuna.jsonblob.core;
 
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.util.Duration;
 import lombok.extern.java.Log;
@@ -36,7 +37,7 @@ public class TryBlobCleanupJob {
 
   @Before
   public void initBlobManage() {
-    this.blobManager = new FileSystemJsonBlobManager(TEMP, Executors.newSingleThreadScheduledExecutor(), Executors.newScheduledThreadPool(10), new ObjectMapper(), blobTtl, true);
+    this.blobManager = new FileSystemJsonBlobManager(TEMP, Executors.newSingleThreadScheduledExecutor(), Executors.newScheduledThreadPool(10), new ObjectMapper(), blobTtl, true, new MetricRegistry());
   }
 
   @Test

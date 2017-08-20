@@ -1,5 +1,6 @@
 package com.lowtuna.jsonblob.core;
 
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.uuid.Generators;
 import com.google.common.base.Optional;
@@ -64,14 +65,16 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
   private final Duration blobAccessTtl;
   @Getter
   private final boolean deleteEnabled;
+  private final MetricRegistry metricRegistry;
 
-  public FileSystemJsonBlobManager(File blobDataDirectory, ScheduledExecutorService scheduledExecutorService, ScheduledExecutorService cleanupScheduledExecutorService, ObjectMapper objectMapper, Duration blobAccessTtl, boolean deleteEnabled) {
+  public FileSystemJsonBlobManager(File blobDataDirectory, ScheduledExecutorService scheduledExecutorService, ScheduledExecutorService cleanupScheduledExecutorService, ObjectMapper objectMapper, Duration blobAccessTtl, boolean deleteEnabled, MetricRegistry metricRegistry) {
     this.blobDataDirectory = blobDataDirectory;
     this.scheduledExecutorService = scheduledExecutorService;
     this.cleanupScheduledExecutorService = cleanupScheduledExecutorService;
     this.objectMapper = objectMapper;
     this.blobAccessTtl = blobAccessTtl;
     this.deleteEnabled = deleteEnabled;
+    this.metricRegistry = metricRegistry;
 
     blobDataDirectory.mkdirs();
   }
@@ -316,7 +319,7 @@ public class FileSystemJsonBlobManager implements JsonBlobManager, Runnable, Man
       cleanupScheduledExecutorService.scheduleAtFixedRate(new BlobCleanupConsumer(filesToProcess, blobAccessTtl, this, objectMapper), 0, 250, TimeUnit.MILLISECONDS);
     }
 
-    BlobCleanupProducer dataDirectoryCleaner = new BlobCleanupProducer(blobDataDirectory.toPath(), blobAccessTtl, filesToProcess);
+    BlobCleanupProducer dataDirectoryCleaner = new BlobCleanupProducer(blobDataDirectory.toPath(), blobAccessTtl, filesToProcess, metricRegistry);
     cleanupScheduledExecutorService.scheduleWithFixedDelay(dataDirectoryCleaner, 0, 1, TimeUnit.DAYS);
   }
 

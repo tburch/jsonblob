@@ -75,7 +75,7 @@ public class JsonBlobApplication extends Application<JsonBlobConfiguration> {
     ScheduledExecutorService scheduledExecutorService = configuration.getBlobManagerConfig().getScheduledExecutorService().instance(environment);
     ScheduledExecutorService cleanupScheduledExecutorService = configuration.getBlobManagerConfig().getCleanupScheduledExecutorService().instance(environment);
 
-    FileSystemJsonBlobManager fileSystemBlobManager = new FileSystemJsonBlobManager(configuration.getBlobManagerConfig().getFileSystemBlogDataDirectory(), scheduledExecutorService, cleanupScheduledExecutorService, environment.getObjectMapper(), configuration.getBlobManagerConfig().getBlobAccessTtl(), configuration.getBlobManagerConfig().isDeleteEnabled());
+    FileSystemJsonBlobManager fileSystemBlobManager = new FileSystemJsonBlobManager(configuration.getBlobManagerConfig().getFileSystemBlogDataDirectory(), scheduledExecutorService, cleanupScheduledExecutorService, environment.getObjectMapper(), configuration.getBlobManagerConfig().getBlobAccessTtl(), configuration.getBlobManagerConfig().isDeleteEnabled(), environment.metrics());
     environment.lifecycle().manage(fileSystemBlobManager);
 
     environment.healthChecks().register("freeSpace", new BlobDirectoryFreeSpaceHealthcheck(configuration.getBlobManagerConfig().getFileSystemBlogDataDirectory(), 5242880));
