@@ -58,13 +58,13 @@ public class BlobCleanupConsumer implements Runnable {
         }
       }
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      log.warn("Interrupted while trying to poll queue", e);
     } catch (JsonParseException e) {
-      e.printStackTrace();
+      log.warn("Couldn't parse JSON from BlobMetadataContainer", e);
     } catch (JsonMappingException e) {
-      e.printStackTrace();
+      log.warn("Couldn't map JSON from BlobMetadataContainer", e);
     } catch (IOException e) {
-      e.printStackTrace();
+      log.warn("Couldn't read json for BlobMetadataContainer file", e);
     }
   }
 }
