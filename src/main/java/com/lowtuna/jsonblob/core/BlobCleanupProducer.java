@@ -64,7 +64,7 @@ public class BlobCleanupProducer extends DirectoryWalker<Void> implements Runnab
           log.info("{} has no files, so it's being deleted", directory.getAbsolutePath());
         } else if (fileCount.get() == 1) {
           File[] files = directory.listFiles();
-          if (files != null && files[0].getName().startsWith(FileSystemJsonBlobManager.BLOB_METADATA_FILE_NAME)) {
+          if (files != null && files.length > 0 && files[0].getName().startsWith(FileSystemJsonBlobManager.BLOB_METADATA_FILE_NAME)) {
             if (files[0].delete() && directory.delete()) {
               log.info("{} has only a metadata file, so it's being deleted", directory.getAbsolutePath());
             }
