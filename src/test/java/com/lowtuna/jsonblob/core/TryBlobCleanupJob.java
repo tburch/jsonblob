@@ -2,8 +2,9 @@ package com.lowtuna.jsonblob.core;
 
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import io.dropwizard.util.Duration;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -20,24 +21,49 @@ import java.util.concurrent.Executors;
 /**
  * Created by tburch on 8/16/17.
  */
-@Log
+@Slf4j
 public class TryBlobCleanupJob {
-
-  private static final File TEMP;
-  static {
-    File temp = FileUtils.getTempDirectory();
-    File dir = new File(temp, UUID.randomUUID().toString());
-    dir.deleteOnExit();
-    TEMP = dir;
-  }
-
   private final Duration blobTtl = Duration.days(1);
 
+  private File tempDir;
   private FileSystemJsonBlobManager blobManager;
 
   @Before
   public void initBlobManage() {
-    this.blobManager = new FileSystemJsonBlobManager(TEMP, Executors.newSingleThreadScheduledExecutor(), Executors.newScheduledThreadPool(10), new ObjectMapper(), blobTtl, true, new MetricRegistry());
+    File temp = FileUtils.getTempDirectory();
+    File dir = new File(temp, UUID.randomUUID().toString());
+    dir.deleteOnExit();
+    this.tempDir = dir;
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JodaModule());
+    this.blobManager = new FileSystemJsonBlobManager(tempDir, Executors.newScheduledThreadPool(10), Executors.newScheduledThreadPool(10), objectMapper, blobTtl, true, new MetricRegistry());
+  }
+
+  @Test
+  public void testCleanupWithAccessed() throws Exception {
+    DateTime now = DateTime.now();
+
+    String oldBlobId = (new ObjectId(now.minusDays((int) (blobTtl.toMinutes() * 2)).toDate())).toString();
+    String newBlobId = new ObjectId(now.toDate()).toString();
+    log.info("newBlobId={}, oldBlobId={}", newBlobId, oldBlobId);
+
+    Assert.assertEquals(0, countFiles());
+    blobManager.createBlob("{\"foo\":|\"bar\"}", oldBlobId);
+    Assert.assertEquals(1, countFiles());
+    blobManager.createBlob("{\"foo\":|\"bar\"}", newBlobId);
+    Assert.assertEquals(2, countFiles());
+
+    blobManager.getBlob(oldBlobId);
+
+    blobManager.run();
+
+    log.info("Starting blob manager");
+    blobManager.start();
+
+    Thread.sleep(2000);
+
+    Assert.assertEquals(2, countFiles());
   }
 
   @Test
@@ -45,11 +71,13 @@ public class TryBlobCleanupJob {
     DateTime now = DateTime.now();
 
     String oldBlobId = (new ObjectId(now.minusDays((int) (blobTtl.toMinutes() * 2)).toDate())).toString();
+    String newBlobId = new ObjectId(now.toDate()).toString();
+    log.info("newBlobId={}, oldBlobId={}", newBlobId, oldBlobId);
 
     Assert.assertEquals(0, countFiles());
     blobManager.createBlob("{\"foo\":|\"bar\"}", oldBlobId);
     Assert.assertEquals(1, countFiles());
-    blobManager.createBlob("{\"foo\":|\"bar\"}", (new ObjectId(now.toDate())).toString());
+    blobManager.createBlob("{\"foo\":|\"bar\"}", newBlobId);
     Assert.assertEquals(2, countFiles());
 
     blobManager.run();
@@ -63,7 +91,7 @@ public class TryBlobCleanupJob {
   }
 
   private long countFiles() throws IOException {
-    return Files.find(TEMP.toPath(), 999, (p, bfa) -> bfa.isRegularFile()).count();
+    return Files.find(tempDir.toPath(), 999, (p, bfa) -> bfa.isRegularFile()).count();
   }
 
 }
