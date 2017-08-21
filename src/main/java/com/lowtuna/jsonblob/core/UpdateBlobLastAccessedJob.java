@@ -36,7 +36,7 @@ public class UpdateBlobLastAccessedJob implements Runnable {
       updatesByMetadataFile.put(metadataFile, Pair.of(entry.getKey(), entry.getValue()));
     }
 
-    updatesByMetadataFile.keySet().parallelStream().forEach(metadataFile -> {
+    updatesByMetadataFile.keySet().stream().forEach(metadataFile -> {
       try {
         log.info(metadataFile.exists() ? "Reading metadata file at {}" : "No metadata file exists yet, so creating a new one", metadataFile.getAbsolutePath());
         BlobMetadataContainer metadataContainer = metadataFile.exists() ? om.readValue(fileSystemJsonBlobManager.readFile(metadataFile), BlobMetadataContainer.class) : new BlobMetadataContainer();
