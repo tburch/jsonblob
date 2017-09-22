@@ -7,8 +7,7 @@ JSON Blob was created to help parallelize client/server development. Mock JSON r
 
 ##Building & Running JSON Blob
 1. To run JSON Blob, you'll need the following things installed:
-   - Java (version 1.7+)
-   - Maven 
-   - MongoDB
+   - Java (version 1.8+)
+   - Maven
 1. Build the JSON Blob jar - from the command line run `mvn clean package`.
-1. Start JSON Blob - from the command run `java -Ddw.mongo.type=uri -Ddw.mongo.uri=<MONGODB_INSTANCE_URL> -jar target/jsonblob.jar server target/config/jsonblob.yml`. You'll need to replace `<MONGODB_INSTANCE_URL>` with the actual URL (something like `mongodb://username:password@localhost:27017/jsonblob`)
+1. Start JSON Blob - from the command line run `java -Ddw.blobManager.fileSystemBlogDataDirectory=<PATH TO STORE BLOBS ON THE FILESYSTEM> -jar target/jsonblob.jar server target/config/jsonblob.yml`. You'll need to replace `<PATH TO STORE BLOBS ON THE FILESYSTEM>` with the path where you want to store blobs on the file system.
