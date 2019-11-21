@@ -5,7 +5,7 @@ JSON Blob was created to help parallelize client/server development. Mock JSON r
 
 [![Build Status](https://travis-ci.org/tburch/jsonblob.svg?branch=master)](https://travis-ci.org/tburch/jsonblob)
 
-##Building & Running JSON Blob
+### Building & Running JSON Blob
 1. To run JSON Blob, you'll need the following things installed:
    - Java (version 1.8+)
    - Maven
