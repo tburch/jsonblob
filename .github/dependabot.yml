@@ -1,0 +1,18 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "12:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.projectlombok:lombok
+    versions:
+    - 1.18.18
+  - dependency-name: org.mongodb:mongo-java-driver
+    versions:
+    - 3.12.7
+  - dependency-name: org.apache.commons:commons-lang3
+    versions:
+    - "3.11"
