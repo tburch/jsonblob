@@ -1,0 +1,11 @@
+micronaut:
+  application:
+    name: jsonblob
+  metrics:
+    enabled: false
+
+ga:
+  web-property-id: foo-bar
+  custom-tracking-codes:
+    - 123
+    - xyz

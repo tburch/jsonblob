@@ -1,13 +1,20 @@
-JSON Blob
-========
+## Micronaut 2.4.0 Documentation
 
-JSON Blob was created to help parallelize client/server development. Mock JSON responses can be defined and stored using the online editor and then clients can use the JSON Blob API to retrieve and update the mock responses.
+- [User Guide](https://docs.micronaut.io/2.4.0/guide/index.html)
+- [API Reference](https://docs.micronaut.io/2.4.0/api/index.html)
+- [Configuration Reference](https://docs.micronaut.io/2.4.0/guide/configurationreference.html)
+- [Micronaut Guides](https://guides.micronaut.io/index.html)
+---
 
-[![Build Status](https://travis-ci.org/tburch/jsonblob.svg?branch=master)](https://travis-ci.org/tburch/jsonblob)
+## Feature assertj documentation
 
-### Building & Running JSON Blob
-1. To run JSON Blob, you'll need the following things installed:
-   - Java (version 1.8+)
-   - Maven
-1. Build the JSON Blob jar - from the command line run `mvn clean package`.
-1. Start JSON Blob - from the command line run `java -Ddw.blobManager.fileSystemBlogDataDirectory=<PATH TO STORE BLOBS ON THE FILESYSTEM> -jar target/jsonblob.jar server target/config/jsonblob.yml`. You'll need to replace `<PATH TO STORE BLOBS ON THE FILESYSTEM>` with the path where you want to store blobs on the file system.
+- [https://assertj.github.io/doc/](https://assertj.github.io/doc/)
+
+## Feature http-client documentation
+
+- [Micronaut HTTP Client documentation](https://docs.micronaut.io/latest/guide/index.html#httpClient)
+
+## Feature management documentation
+
+- [Micronaut Management documentation](https://docs.micronaut.io/latest/guide/index.html#management)
+

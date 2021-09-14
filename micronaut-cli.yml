@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: jsonblob
+testFramework: junit
+sourceLanguage: kotlin
+buildTool: gradle_kotlin
+features: [app-name, assertj, gradle, http-client, junit, kotlin, kotlin-application, logback, management, micrometer, micrometer-new-relic, netty-server, readme, shade, yaml]

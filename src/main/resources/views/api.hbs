@@ -1,0 +1,187 @@
+{{#partial "title" }}
+    <title>JSON Blob | API</title>
+{{/partial}}
+
+{{#partial "css"}}
+    <link href="/assets/css/api.css" rel="stylesheet">
+{{/partial}}
+
+{{#partial "content"}}
+    <!-- Begin page content -->
+    <div id="top" class="container">
+        <div class="row">
+            <div class="col-md-8" role="main">
+                <div class="bs-docs-section">
+                    <h1 id="endpoints" class="page-header">Endpoints</h1>
+                    <h3 id="endpoints-https">HTTPS</h3>
+                    <p>HTTPS requests can be made to <code>https://jsonblob.com</code>. HTTP requests will be <code>301</code> redirected to HTTPS, so clients should be configured to follow redirects.</p>
+                </div>
+
+                <div class="bs-docs-section">
+                    <h1 id="post" class="page-header">POST <small><code>/api/jsonBlob</code></small></h1>
+                    <h3 id="post-details">Details</h3>
+                    <p>Creating a JSON Blob is accomplished by sending a <code>POST</code> request to <code>/api/jsonBlob</code>. The body of the request should contain valid JSON that will used as the JSON Blob. Upon successfully storing the JSON blob, a <code>201</code> response will be returned. The <code>Location</code> header in the response will be set to the URL at which the blob can be accessed with a <a href="#get"><code>GET</code></a> request. The body of the response is the JSON that was stored in the JSON blob.</p>
+                    <h3 id="post-example">Example request and response</h3>
+                    <pre>
+<code>curl -i -X "POST" -d '{"people":["bill", "steve", "bob"]}' -H "Content-Type: application/json" -H "Accept: application/json" https://jsonblob.com/api/jsonBlob
+
+HTTP/1.1 201 Created
+Location: https://jsonblob.com/api/jsonBlob/5226571730043f8b22dadc20
+Content-Type: application/json
+Transfer-Encoding: chunked
+
+{"people":["bill","steve","bob"]}</code>
+                    </pre>
+                    <p>In this example, the id of the JSON Blob is <code>5226571730043f8b22dadc20</code> (also known as the <code>blobId</code>).</p>
+                </div>
+
+                <div class="bs-docs-section">
+                    <h1 id="get" class="page-header">GET <small><code>/api/jsonBlob/&lt;blobId&gt;</code></small></h1>
+                    <h3 id="get-details">Details</h3>
+                    <p>Retrieving a JSON Blob is accomplished by sending a <code>GET</code> request to <code>/api/jsonBlob/&lt;blobId&gt;</code>, where <code>&lt;blobId&gt;</code> is the last part of the URL path returned from the <a href="#post"><code>POST</code></a> request. Upon successfully retrieving the JSON Blob, a <code>200</code> response will be returned. If no JSON Blob exists for the given <code>&lt;blobId&gt;</code>, a <code>404</code> response will be returned. The body of the response is the JSON that was stored in the JSON Blob.</p>
+                    <h3 id="get-example">Example request and response</h3>
+                    <pre>
+<code>curl -i -H "Content-Type: application/json" -H "Accept: application/json" https://jsonblob.com/api/jsonBlob/5226571730043f8b22dadc20
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Transfer-Encoding: chunked
+
+{"people":["bill","steve","bob"]}</code>
+                    </pre>
+                </div>
+
+                <div class="bs-docs-section">
+                    <h1 id="put" class="page-header">PUT <small><code>/api/jsonBlob/&lt;blobId&gt;</code></small></h1>
+                    <h3 id="put-details">Details</h3>
+                    <p>Updating a JSON Blob is accomplished by sending a <code>PUT</code> request to <code>/api/jsonBlob/&lt;blobId&gt;</code>. The request body should contain valid JSON that the stored JSON Blob will be replaced with. Upon successfully storing the new JSON Blob, a <code>200</code> response will be returned. If no JSON Blob exists for the given <code>&lt;blobId&gt;</code>, a <code>404</code> response will be returned. The body of the response is the JSON that was stored in the JSON Blob.</p>
+                    <h3 id="put-example">Example request and response</h3>
+                    <pre>
+<code>curl -i -X "PUT" -d '{"people":["fred", "mark", "andrew"]}' -H "Content-Type: application/json" -H "Accept: application/json" https://jsonblob.com/api/jsonBlob/5226571730043f8b22dadc20
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Transfer-Encoding: chunked
+
+{"people":["fred","mark","andrew"]}</code>
+                    </pre>
+                </div>
+
+                <div class="bs-docs-section">
+                    <h1 id="delete" class="page-header">DELETE <small><code>/api/jsonBlob/&lt;blobId&gt;</code></small></h1>
+                    <h3 id="delete-details">Details</h3>
+                    <p>Deleting a JSON Blob is accomplished by sending a <code>DELETE</code> request to <code>/api/jsonBlob/&lt;blobId&gt;</code>. Upon successfully deleting the JSON Blob, a <code>200</code> response will be returned. If no JSON Blob exists for the given <code>&lt;blobId&gt;</code>, a <code>404</code> response will be returned. If deleting blobs is not enabled, a <code>405</code> response will be returned.</p>
+                    <h3 id="delete-example">Example request and response</h3>
+                    <pre>
+<code>curl -i -X "DELETE" https://jsonblob.com/api/jsonBlob/5226571730043f8b22dadc20
+
+HTTP/1.1 200 OK</code>
+                    </pre>
+                </div>
+
+                <div class="bs-docs-section">
+                    <h1 id="custom-urls" class="page-header">Custom URLs</h1>
+                    <h3 id="custom-urls-details-path">Paths with blob Ids</h3>
+                    <p><a href="#get"><code>GET</code></a>, <a href="#put"><code>PUT</code></a>, and <a href="#delete"><code>DELETE</code></a> requests can be customized to support any url path scheme. The only requirement is that the first path part is <code>/api/</code>. For  <a href="#get"><code>GET</code></a>, <a href="#put"><code>PUT</code></a>, and <a href="#delete"><code>DELETE</code></a> requests, the <code>blobId</code> must be present somewhere as a URL path part following <code>/api/</code> <strong>or</strong> the <code>blobId</code> is set in the <code>X-jsonblob</code> header and then you are free to use any URL path as long as the first path part is <code>/api/</code>. The first matching <code>blobId</code> will be returned.</p>
+                    <p>As an example, if we were trying to mimic a RESTful url structure for getting the names of the employees in a company with a particular role, we may use want to use a url like <code>/api/company/&lt;companyId&gt;/employees/engineers"&gt;</code> where <code>5226571730043f8b22dadc20</code> is the <code>&lt;companyId&gt;</code> that represents the data the client is expecting.</p>
+                    <h3>Example request and response</h3>
+                    <pre>
+<code>curl -i  -H "Content-Type: application/json" -H "Accept: application/json" https://jsonblob.com/api/company/5226571730043f8b22dadc20/employees/engineers
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Transfer-Encoding: chunked
+
+{"people":["bill","steve","bob"]}</code>
+                    </pre>
+                    <h3 id="custom-urls-details-header">Paths without blob Ids</h3>
+                    <p>Additionally, you could make the request using the <code>X-jsonblob</code> header:</p>
+                    <h3>Example request and response</h3>
+                    <pre>
+<code>url -i  -H "Content-Type: application/json" -H "Accept: application/json" -H "X-jsonblob: 5226571730043f8b22dadc20" https://jsonblob.com/api/company/employees/engineers
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+Transfer-Encoding: chunked
+
+{"people":["bill","steve","bob"]}</code>
+                    </pre>
+                </div>
+                {{> views/copyright}}
+            </div>
+
+            <div class="col-md-2">
+                <div class="bs-docs-sidebar affix hidden-print hidden-sm hidden-xs" role="complementary">
+                    <ul class="nav bs-docs-sidenav">
+                        <li>
+                            <a href="#endpoints">Endpoints</a>
+                            <ul class="nav">
+                                <li><a href="#endpoints-http">HTTP</a></li>
+                                <li><a href="#endpoints-https">HTTPS</a></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a href="#post">POST</a>
+                            <ul class="nav">
+                                <li><a href="#post-details">Details</a></li>
+                                <li><a href="#post-example">Example</a></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a href="#get">GET</a>
+                            <ul class="nav">
+                                <li><a href="#get-details">Details</a></li>
+                                <li><a href="#get-example">Example</a></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a href="#put">PUT</a>
+                            <ul class="nav">
+                                <li><a href="#put-details">Details</a></li>
+                                <li><a href="#put-example">Example</a></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a href="#delete">DELETE</a>
+                            <ul class="nav">
+                                <li><a href="#delete-details">Details</a></li>
+                                <li><a href="#delete-example">Example</a></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a href="#custom-urls">Custom URLs</a>
+                            <ul class="nav">
+                                <li><a href="#custom-urls-details-path">Details</a></li>
+                                <li><a href="#custom-urls-details-path-example">Paths with blob Ids</a></li>
+                                <li><a href="#custom-urls-details-header">Paths without blob Ids</a></li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                    <a class="back-to-top" href="#top">Back to top</a>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="row">
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-6168248064103889"
+                         data-ad-slot="5739407042"
+                         data-ad-format="auto"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+{{/partial}}
+
+{{> views/base}}

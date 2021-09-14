@@ -1,0 +1,16 @@
+micronaut:
+  application:
+    name: jsonblob
+  metrics:
+    enabled: true
+    export:
+      newrelic:
+        enabled: false
+  router:
+    static-resources:
+        json-blob:
+          paths:
+            - classpath:static-resources
+  server:
+    cors:
+      enabled: true
