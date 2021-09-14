@@ -1,1 +1,0 @@
-web: java $JAVA_OPTS -Ddw.mongo.type=uri -Ddw.mongo.uri=$MONGOHQ_URL -Ddw.server.connector.type=http -Ddw.server.connector.port=$PORT -Ddw.blobManager.fileSystemBlogDataDirectory=/var/jsonblob/data -Ddw.blobManager.blobAccessTtl=$BLOB_TTL -jar target/jsonblob.jar server target/config/jsonblob.yml
