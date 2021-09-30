@@ -14,3 +14,14 @@ micronaut:
   server:
     cors:
       enabled: true
+      configurations:
+        web:
+          exposedHeaders:
+            - X-Requested-With
+            - X-jsonblob
+            - X-Hello-Human
+            - Location
+            - Date
+            - Content-Type
+            - Accept
+            - Origin
