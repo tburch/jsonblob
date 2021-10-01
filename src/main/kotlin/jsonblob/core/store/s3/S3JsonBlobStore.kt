@@ -124,7 +124,7 @@ open class S3JsonBlobStore(
                 }.asInputStream()
             )
         }.onFailure {
-            log.warn(it) { "Couldn't retrieve blobId=$id from S3" }
+            log.warn { "Couldn't retrieve blobId=$id from S3" }
         }.getOrNull()
     }
 
