@@ -1,5 +1,6 @@
 package jsonblob.core.store.file
 
+import com.google.common.base.Stopwatch
 import io.micronaut.context.annotation.Requires
 import io.micronaut.scheduling.annotation.Scheduled
 import jsonblob.config.FileSystemJsonBlobStoreConfig
@@ -18,6 +19,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.Instant
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
@@ -34,7 +36,10 @@ class FileSystemBlobPruner(
     @Scheduled(fixedDelay = "6h", initialDelay = "1m")
     fun removeUnAccessedFiles() {
         if (jsonBlobConfig.pruneEnabled) {
-            removeUnAccessedFilesSince()
+            Stopwatch.createStarted().apply {
+                removeUnAccessedFilesSince()
+                log.info { "Removing unaccessed files took ${this.elapsed(TimeUnit.SECONDS)} seconds" }
+            }
         }
     }
 
