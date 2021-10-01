@@ -11,6 +11,8 @@ class FileSystemJsonBlobStoreConfig {
         const val PREFIX = "file-system-blob-store"
     }
 
+    var deleteConcurrency = 250
+
     var stripes = 512
 
     @get:NotBlank

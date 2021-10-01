@@ -57,7 +57,7 @@ class FileSystemBlobPruner(
         val count = runBlocking {
             flow {
                 emitAll(blobFiles)
-            }.flatMapMerge(jsonBlobConfig.deleteConcurrency) { file ->
+            }.flatMapMerge(config.deleteConcurrency) { file ->
                 flow {
                     try {
                         val attrs = Files.readAttributes(file.toPath(), BasicFileAttributes::class.java)
