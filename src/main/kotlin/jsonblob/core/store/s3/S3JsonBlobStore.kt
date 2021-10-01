@@ -120,7 +120,9 @@ open class S3JsonBlobStore(
                     ResponseTransformer.toBytes()
                 ).also {
                     log.debug { "Read blob from $latestObjectKey" }
-                    eventPublisher.publishEventAsync(S3JsonBlobAccessedEvent(latestObjectKey))
+                    if (s3JsonBlobStoreConfig.copyToResetLastModified) {
+                        eventPublisher.publishEventAsync(S3JsonBlobAccessedEvent(latestObjectKey))
+                    }
                 }.asInputStream()
             )
         }.onFailure {

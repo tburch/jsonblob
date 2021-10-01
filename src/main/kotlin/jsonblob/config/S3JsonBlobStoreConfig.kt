@@ -18,4 +18,6 @@ class S3JsonBlobStoreConfig {
     var basePath = "json-blobs"
 
     var setupLifecycle = false
+
+    var copyToResetLastModified = false
 }
