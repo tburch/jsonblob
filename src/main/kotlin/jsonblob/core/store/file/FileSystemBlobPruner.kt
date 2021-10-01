@@ -40,8 +40,8 @@ class FileSystemBlobPruner(
 
     @OptIn(FlowPreview::class)
     internal fun removeUnAccessedFilesSince() {
-        val timestamp = Instant.now().minus(jsonBlobConfig.deleteAfter)
-        log.info { "Removing blobs not accessed since $timestamp" }
+        val deleteBefore = Instant.now().minus(jsonBlobConfig.deleteAfter)
+        log.info { "Removing blobs not accessed since $deleteBefore" }
         val baseDir = File(config.basePath)
         val blobFiles = baseDir
             .walkBottomUp()
@@ -54,27 +54,35 @@ class FileSystemBlobPruner(
                 emitAll(blobFiles)
             }.flatMapMerge(jsonBlobConfig.deleteConcurrency) { file ->
                 flow {
-                    val attrs = Files.readAttributes(file.toPath(), BasicFileAttributes::class.java)
-                    if (attrs.isDirectory && file.listFiles().isEmpty()) { // empty directory
-                        emit(file)
-                    } else {
-                        if (idResolvers.any { it.handles(file.nameWithoutExtension) }) { // a json blob
-                            val lastAccessed = attrs.lastAccessTime().toInstant()
-                            when {
-                                lastAccessed == Instant.EPOCH -> log.warn { "Last Access Time was the Epoch, which typically means lastAccessTime cannot be determined" }
-                                lastAccessed.isBefore(timestamp) -> emit(file)
-                            }
-                        } else { // some other file... likely old metadata about blobs
+                    try {
+                        val attrs = Files.readAttributes(file.toPath(), BasicFileAttributes::class.java)
+                        if (attrs.isDirectory && file.listFiles().isEmpty()) { // empty directory
                             emit(file)
+                        } else if (!attrs.isDirectory) {
+                            if (idResolvers.any { it.handles(file.blobId()) }) { // a json blob
+                                val lastAccessed = attrs.lastAccessTime().toInstant()
+                                when {
+                                    lastAccessed == Instant.EPOCH -> log.warn { "Last Access Time was the Epoch, which typically means lastAccessTime cannot be determined" }
+                                    lastAccessed.isBefore(deleteBefore) -> emit(file)
+                                }
+                            } else { // some other file... likely old metadata about blobs from previous versions of json blob
+                                emit(file)
+                            }
                         }
+                    } catch (e: Exception) {
+                        log.warn(e) { "Caught exception while checking $file to see if it needed to be pruned" }
                     }
                 }
             }.count {
-                log.debug { "Deleting ${it.path}" }
+                log.info { "Deleting ${it.path}" }
                 it.delete()
             }
         }
-        log.info { "Completed removing $count files not accessed since $timestamp" }
+        log.info { "Completed removing $count files not accessed since $deleteBefore" }
     }
 
 }
+
+internal fun File.blobId(): String = runCatching {
+    name.substring(0, name.indexOf("."))
+}.getOrElse { throw IllegalStateException("$name doesn't look like a JSON Blob Id") }
