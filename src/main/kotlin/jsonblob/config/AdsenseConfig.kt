@@ -8,6 +8,7 @@ class AdsenseConfig {
 
     var adsConfig = AdsConfig()
 
+    @ConfigurationProperties("ads-config")
     class AdsConfig {
         var type : String = "DIRECT"
 

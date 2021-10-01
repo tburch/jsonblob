@@ -60,8 +60,6 @@ class EditorController(
                 googleAnalyticsConfig.customTrackingCodes,
                 "{}"
             )
-        } else if (blobId == "ads.txt") {
-            throw HttpStatusException(HttpStatus.OK, "google.com, pub-6168248064103889, DIRECT, f08c47fec0942fa0")
         }
 
         val blob = readJsonBlob(blobId)
