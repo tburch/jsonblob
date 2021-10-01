@@ -62,16 +62,22 @@ class FileSystemBlobPruner(
                     try {
                         val attrs = Files.readAttributes(file.toPath(), BasicFileAttributes::class.java)
                         if (attrs.isDirectory && file.listFiles().isEmpty()) { // empty directory
-                            emit(file)
+                            emit(file.delete()).apply {
+                                log.info { "Deleted empty directory $file" }
+                            }
                         } else if (!attrs.isDirectory) {
                             if (idResolvers.any { it.handles(file.blobId()) }) { // a json blob
                                 val lastAccessed = attrs.lastAccessTime().toInstant()
                                 when {
                                     lastAccessed == Instant.EPOCH -> log.warn { "Last Access Time was the Epoch, which typically means lastAccessTime cannot be determined" }
-                                    lastAccessed.isBefore(deleteBefore) -> emit(file)
+                                    lastAccessed.isBefore(deleteBefore) -> emit(file.delete()).apply {
+                                        log.info { "Deleted blob ${file.blobId()} at $file" }
+                                    }
                                 }
                             } else { // some other file... likely old metadata about blobs from previous versions of json blob
-                                emit(file)
+                                emit(file.delete()).apply {
+                                    log.info { "Deleted file at $file" }
+                                }
                             }
                         }
                     } catch (e: Exception) {
@@ -79,8 +85,7 @@ class FileSystemBlobPruner(
                     }
                 }
             }.count {
-                log.info { "Deleting ${it.path}" }
-                it.delete()
+                it
             }
         }
         log.info { "Completed removing $count files not accessed since $deleteBefore" }
