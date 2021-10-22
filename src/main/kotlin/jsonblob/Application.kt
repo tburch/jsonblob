@@ -6,7 +6,6 @@ fun main(args: Array<String>) {
 	build()
 	    .args(*args)
 		.packages("jsonblob")
-		.eagerInitSingletons(true)
 		.start()
 }
 

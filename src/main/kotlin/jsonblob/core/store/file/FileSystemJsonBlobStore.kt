@@ -3,8 +3,6 @@ package jsonblob.core.store.file
 import com.google.common.util.concurrent.Striped
 import io.micronaut.context.annotation.Primary
 import io.micronaut.context.annotation.Requires
-import io.micronaut.core.annotation.Order
-import io.micronaut.core.order.Ordered
 import jsonblob.config.FileSystemJsonBlobStoreConfig
 import jsonblob.core.compression.BlobCompressorPicker
 import jsonblob.core.compression.compressor.BlobCompressor
@@ -26,7 +24,6 @@ private val log = KotlinLogging.logger {}
 
 @Singleton
 @Primary
-@Order(Ordered.HIGHEST_PRECEDENCE)
 @Requires(beans = [FileSystemJsonBlobStoreConfig::class])
 open class FileSystemJsonBlobStore(
     private val config: FileSystemJsonBlobStoreConfig,

@@ -2,8 +2,6 @@ package jsonblob.core.store.s3
 
 import io.micronaut.context.annotation.Requires
 import io.micronaut.context.event.ApplicationEventPublisher
-import io.micronaut.core.annotation.Order
-import io.micronaut.core.order.Ordered
 import io.micronaut.runtime.event.annotation.EventListener
 import io.micronaut.scheduling.annotation.Async
 import jsonblob.config.JsonBlobConfig
@@ -45,7 +43,6 @@ import javax.inject.Singleton
 private val log = KotlinLogging.logger {}
 
 @Singleton
-@Order(Ordered.LOWEST_PRECEDENCE)
 @Requires(beans = [S3JsonBlobStoreConfig::class])
 open class S3JsonBlobStore(
     idResolvers: List<IdHandler<*>>,

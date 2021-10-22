@@ -35,12 +35,6 @@ private val log = KotlinLogging.logger {}
 class ApiTest: TestPropertyProvider {
     private val tempDir = Files.createTempDir().apply { deleteOnExit() }
 
-    companion object {
-        private val localstack = LocalStackContainer(DockerImageName.parse("localstack/localstack:0.11.3"))
-            .withServices(LocalStackContainer.Service.S3)
-            .apply { start() }
-    }
-
     private val bucket = "fubar"
 
     private val json = """
@@ -60,19 +54,6 @@ class ApiTest: TestPropertyProvider {
 
     @Inject
     lateinit var gzipBlobCompressor: GZIPBlobCompressor
-
-    @BeforeAll
-    fun createBucket(s3Client: S3Client) {
-        log.info { "Creating bucket named $bucket" }
-        s3Client.createBucket {
-            it.bucket(bucket)
-        }
-    }
-
-    @AfterAll
-    fun stopLocalStack() {
-        localstack.stop()
-    }
 
     @Inject
     @field:Client("/")
@@ -218,13 +199,6 @@ class ApiTest: TestPropertyProvider {
     override fun getProperties(): MutableMap<String, String> {
         return mutableMapOf(
             "file-system-blob-store.base-path" to tempDir.absolutePath,
-            "s3-blob-store.bucket" to bucket,
-            S3ClientBuilderListener.endpointProp to localstack.getEndpointOverride(
-                LocalStackContainer.Service.S3
-            ).toString(),
-            "aws.accessKeyId" to localstack.accessKey,
-            "aws.secretAccessKey" to localstack.secretKey,
-            "aws.region" to localstack.region
         )
     }
 }

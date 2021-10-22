@@ -35,7 +35,7 @@ class ApiController(
     private val jsonBlobConfig: JsonBlobConfig,
     private val idResolvers: List<IdHandler<*>>,
     private val idGenerator: IdHandler<*>,
-    private val jsonBlobStores: List<JsonBlobStore>,
+    private val jsonBlobStore: JsonBlobStore,
     private val httpHostResolver: HttpHostResolver,
     private val uriNamingStrategy: RouteBuilder.UriNamingStrategy,
     private val googleAnalyticsConfig: GoogleAnalyticsConfig
@@ -62,7 +62,7 @@ class ApiController(
                 id = idGenerator.generate(),
                 json = json
             )
-            val blob = jsonBlobStores.first().write(jsonBlob)
+            val blob = jsonBlobStore.write(jsonBlob)
             val host = httpHostResolver.resolve(httpRequest) + uriNamingStrategy.resolveUri("/api/jsonBlob/${blob.id}")
             return HttpResponse.created(blob.json, URI.create(host))
         } else {
@@ -157,7 +157,7 @@ class ApiController(
         return false
     }
 
-    private fun delete(blobId: String) = jsonBlobStores.any { it.remove(blobId) }
+    private fun delete(blobId: String) = jsonBlobStore.remove(blobId)
 
     private fun updateFirstBlobFromPath(path: String, json: String): JsonBlob? {
         val ids = blobIdsFromPath(path)
@@ -177,7 +177,7 @@ class ApiController(
                 json = json,
                 created = created
             )
-            jsonBlobStores.first().write(jsonBlob)
+            jsonBlobStore.write(jsonBlob)
         } else {
             null
         }
@@ -192,16 +192,7 @@ class ApiController(
         }
     }
 
-    private fun readJsonBlob(blobId: String) = jsonBlobStores.first().read(blobId)
-        ?: if (jsonBlobStores.size > 1) {
-            jsonBlobStores.last().read(blobId).also {
-                it?.let {
-                    jsonBlobStores.first().write(it)
-                }
-            }
-        } else {
-            null
-        }
+    private fun readJsonBlob(blobId: String) = jsonBlobStore.read(blobId)
 
     private fun blobIdsFromPath(path: String) = path
         .split("/")

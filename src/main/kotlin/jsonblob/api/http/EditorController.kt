@@ -10,12 +10,10 @@ import jsonblob.api.http.view.EditorView
 import jsonblob.config.AdsenseConfig
 import jsonblob.config.GoogleAnalyticsConfig
 import jsonblob.core.store.JsonBlobStore
-import jsonblob.core.store.file.FileSystemJsonBlobStore
 
 @Controller("/")
 class EditorController(
-    private val jsonBlobStores: List<JsonBlobStore>,
-    private val fileSystemJsonBlobStore: FileSystemJsonBlobStore,
+    private val jsonBlobStore: JsonBlobStore,
     private val googleAnalyticsConfig: GoogleAnalyticsConfig,
     private val adsenseConfig: AdsenseConfig
 ) {
@@ -23,16 +21,7 @@ class EditorController(
         private const val pageName = "editor"
     }
 
-    private fun readJsonBlob(blobId: String) = jsonBlobStores.first().read(blobId)
-        ?: if (jsonBlobStores.size > 1) {
-            jsonBlobStores.last().read(blobId).also {
-                it?.let {
-                    jsonBlobStores.first().write(it)
-                }
-            }
-        } else {
-            null
-        }
+    private fun readJsonBlob(blobId: String) = jsonBlobStore.read(blobId)
 
     @Get("ads.txt")
     fun ads() : String {

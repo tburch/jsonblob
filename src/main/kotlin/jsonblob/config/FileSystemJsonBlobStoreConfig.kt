@@ -5,7 +5,7 @@ import io.micronaut.context.annotation.Requires
 import javax.validation.constraints.NotBlank
 
 @ConfigurationProperties(FileSystemJsonBlobStoreConfig.PREFIX)
-@Requires(property = FileSystemJsonBlobStoreConfig.PREFIX)
+@Requires(property = FileSystemJsonBlobStoreConfig.PREFIX + ".base-path")
 class FileSystemJsonBlobStoreConfig {
     companion object {
         const val PREFIX = "file-system-blob-store"
