@@ -6,7 +6,7 @@ plugins {
     id("io.micronaut.application") version "2.0.2"
 }
 
-version = "1.0"
+version = "1.0.1"
 group = "com.jsonblob"
 
 val kotlinVersion= project.properties["kotlinVersion"]
