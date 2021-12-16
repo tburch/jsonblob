@@ -47,7 +47,7 @@ dependencies {
     implementation("io.micronaut.views:micronaut-views-handlebars")
     implementation("commons-codec:commons-codec:1.15")
 
-    runtimeOnly("ch.qos.logback:logback-classic")
+    runtimeOnly("ch.qos.logback:logback-classic:1.2.8")
     runtimeOnly("com.nixxcode.jvmbrotli:jvmbrotli-darwin-x86-amd64:$jvmBrotliVersion")
     runtimeOnly("com.nixxcode.jvmbrotli:jvmbrotli-linux-x86-amd64:$jvmBrotliVersion")
 
