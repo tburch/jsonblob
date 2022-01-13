@@ -11,7 +11,7 @@ import io.micronaut.http.filter.ServerFilterChain
 import org.reactivestreams.Publisher
 
 
-@Filter("/")
+@Filter(Filter.MATCH_ALL_PATTERN)
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class CorsAdvice: HttpServerFilter {
     override fun doFilter(request: HttpRequest<*>, chain: ServerFilterChain): Publisher<MutableHttpResponse<*>>? {
