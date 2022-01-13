@@ -1,12 +1,12 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.5.21"
-    id("org.jetbrains.kotlin.kapt") version "1.5.21"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.5.21"
+    id("org.jetbrains.kotlin.jvm") version "1.6.10"
+    id("org.jetbrains.kotlin.kapt") version "1.6.10"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
     id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("io.micronaut.application") version "2.0.2"
+    id("io.micronaut.application") version "3.1.1"
 }
 
-version = "1.1.1"
+version = "1.1.2"
 group = "com.jsonblob"
 
 val kotlinVersion= project.properties["kotlinVersion"]
@@ -31,23 +31,24 @@ dependencies {
     implementation("io.micronaut:micronaut-validation")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("io.micronaut:micronaut-runtime")
     implementation("io.micronaut:micronaut-management")
     implementation("io.micronaut.micrometer:micronaut-micrometer-core")
     implementation("io.micronaut.micrometer:micronaut-micrometer-registry-new-relic")
     implementation("io.micronaut.aws:micronaut-aws-sdk-v2")
+    implementation("javax.inject:javax.inject:1")
     implementation("software.amazon.awssdk:s3")
     implementation("com.fasterxml.uuid:java-uuid-generator:3.1.4")
     implementation("org.mongodb:mongo-java-driver:3.2.2")
     implementation("com.google.guava:guava:30.1-jre")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
     implementation("com.nixxcode.jvmbrotli:jvmbrotli:$jvmBrotliVersion")
     implementation("io.micronaut.views:micronaut-views-handlebars")
     implementation("commons-codec:commons-codec:1.15")
 
-    runtimeOnly("ch.qos.logback:logback-classic:1.2.8")
+    runtimeOnly("ch.qos.logback:logback-classic:1.2.10")
     runtimeOnly("com.nixxcode.jvmbrotli:jvmbrotli-darwin-x86-amd64:$jvmBrotliVersion")
     runtimeOnly("com.nixxcode.jvmbrotli:jvmbrotli-linux-x86-amd64:$jvmBrotliVersion")
 

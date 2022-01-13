@@ -511,7 +511,11 @@
                         var parts = locationHeader.split("/");
                         blobId = parts[parts.length - 1];
                         history.pushState(null, "JSON Blob " + blobId, "/" + blobId);
-                        $("#jsonBlobUrl").text(locationHeader.replace(app.apiBase, ""));
+                        var url = locationHeader.replace(app.apiBase, "")
+                        if (location.protocol != "http:") {
+                            url = url.replace("http://", "https://")
+                        }
+                        $("#jsonBlobUrl").text(url);
                         $('#blobCreated').modal('show');
                         $('#blobCreated').on('hidden.bs.modal', function (e) {
                             window.location = locationHeader.replace(app.apiBase, "");
