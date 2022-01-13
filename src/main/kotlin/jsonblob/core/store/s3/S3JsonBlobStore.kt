@@ -51,7 +51,7 @@ open class S3JsonBlobStore(
     private val config: JsonBlobConfig,
     private val s3JsonBlobStoreConfig: S3JsonBlobStoreConfig,
     private val blobCompressors: List<BlobCompressor>,
-    private val eventPublisher: ApplicationEventPublisher,
+    private val eventPublisher: ApplicationEventPublisher<S3JsonBlobAccessedEvent>,
 ) : JsonBlobStore(s3JsonBlobStoreConfig.basePath, idResolvers, compressorPicker) {
     private val lastAccessedFormat = DateTimeFormatter.ISO_LOCAL_DATE.withZone(ZoneId.of("UTC"))
     private val lastAccessedTag = "last-accessed"

@@ -7,7 +7,6 @@ import jsonblob.config.FileSystemJsonBlobStoreConfig
 import jsonblob.config.JsonBlobConfig
 import jsonblob.core.id.IdHandler
 import jsonblob.core.store.JsonBlobBase
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.emitAll
@@ -43,7 +42,6 @@ class FileSystemBlobPruner(
         }
     }
 
-    @OptIn(FlowPreview::class)
     internal fun removeUnAccessedFilesSince() {
         val deleteBefore = Instant.now().minus(jsonBlobConfig.deleteAfter)
         log.info { "Removing blobs not accessed since $deleteBefore" }
