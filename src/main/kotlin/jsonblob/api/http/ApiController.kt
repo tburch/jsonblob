@@ -157,7 +157,7 @@ class ApiController(
         return false
     }
 
-    private fun delete(blobId: String) = jsonBlobStore.remove(blobId)
+    private fun delete(blobId: String) = jsonBlobStore.exists(blobId) && jsonBlobStore.remove(blobId)
 
     private fun updateFirstBlobFromPath(path: String, json: String): JsonBlob? {
         val ids = blobIdsFromPath(path)
@@ -170,7 +170,7 @@ class ApiController(
 
     private fun update(blobId: String, json: String): JsonBlob? {
         val resolver = idResolvers.firstOrNull { it.handles(blobId) }
-        return if (resolver != null) {
+        return if (resolver != null && jsonBlobStore.exists(blobId)) {
             val created = resolver.resolveTimestamp(blobId)
             val jsonBlob = JsonBlob(
                 id = blobId,
