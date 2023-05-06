@@ -58,7 +58,7 @@ open class FileSystemJsonBlobStore(
                 lock.unlock()
             }
         }.onFailure {
-            log.warn { "Couldn't retrieve JsonBlob with id=$id " }
+            log.debug { "Couldn't retrieve JsonBlob with id=$id " }
         }.getOrNull()
     }
 

@@ -170,7 +170,7 @@ class ApiController(
 
     private fun update(blobId: String, json: String): JsonBlob? {
         val resolver = idResolvers.firstOrNull { it.handles(blobId) }
-        return if (resolver != null && jsonBlobStore.exists(blobId)) {
+        return if (resolver != null) {
             val created = resolver.resolveTimestamp(blobId)
             val jsonBlob = JsonBlob(
                 id = blobId,

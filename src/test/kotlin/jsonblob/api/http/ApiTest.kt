@@ -25,6 +25,7 @@ import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.shaded.com.google.common.io.Files
 import org.testcontainers.utility.DockerImageName
 import software.amazon.awssdk.services.s3.S3Client
+import java.util.UUID
 import javax.inject.Inject
 
 
@@ -127,6 +128,22 @@ class ApiTest: TestPropertyProvider {
                 .toBlocking()
                 .exchange(PUT("/api/jsonBlob/$it", updateJson).contentType(MediaType.APPLICATION_JSON_TYPE), String::class.java)
         }
+    }
+
+    @Test
+    fun `blob is created on API PUT`() {
+        val resp = client
+            .toBlocking()
+            .exchange(PUT("/api/jsonBlob/${type1UUIDJsonBlobHandler.generate()}", json).contentType(MediaType.APPLICATION_JSON_TYPE), String::class.java)
+        assertThat(resp.code()).isEqualTo(200)
+    }
+
+    @Test
+    fun `blob is not created on bad API PUT`() {
+        val resp = client
+            .toBlocking()
+            .exchange(PUT("/api/jsonBlob/${UUID.randomUUID()}", json).contentType(MediaType.APPLICATION_JSON_TYPE), String::class.java)
+        assertThat(resp.code()).isEqualTo(400)
     }
 
     @Test
