@@ -1,8 +1,8 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.5.21"
-    id("org.jetbrains.kotlin.kapt") version "1.5.21"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.5.21"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("org.jetbrains.kotlin.jvm") version "1.7.20"
+    id("org.jetbrains.kotlin.kapt") version "1.7.20"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.20"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.micronaut.application") version "2.0.2"
 }
 
@@ -73,20 +73,10 @@ application {
     mainClass.set("jsonblob.ApplicationKt")
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("1.8")
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
 tasks {
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-    compileTestKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
     test {
         useJUnitPlatform()
     }
