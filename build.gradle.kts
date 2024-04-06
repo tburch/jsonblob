@@ -73,6 +73,7 @@ dependencies {
 application {
     mainClass.set("jsonblob.ApplicationKt")
 }
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
