@@ -18,7 +18,7 @@ FROM gcr.io/distroless/java17-debian12:nonroot
 
 USER 10014
 
-EXPOSE 80
+EXPOSE 8080
 
 # Add jar to Container
 COPY --from=builder /build/libs /
