@@ -46,6 +46,7 @@ dependencies {
     implementation("com.nixxcode.jvmbrotli:jvmbrotli:$jvmBrotliVersion")
     implementation("io.micronaut.views:micronaut-views-handlebars")
     implementation("commons-codec:commons-codec:1.16.1")
+    implementation("org.apache.commons:commons-text:1.11.0") // Fix for transitive dep that has CVE-2022-42889
 
     runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
     runtimeOnly("com.nixxcode.jvmbrotli:jvmbrotli-darwin-x86-amd64:$jvmBrotliVersion")
