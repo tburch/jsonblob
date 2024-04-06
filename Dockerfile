@@ -17,7 +17,7 @@ RUN ls -l build/libs
 # 2. Just using the build artifact and then removing the build-container
 FROM openjdk:17-alpine
 
-RUN apk -U upgrade
+RUN apk update && apk upgrade
 
 # Create a new user with UID 10014
 RUN addgroup -g 10014 choreo && \
