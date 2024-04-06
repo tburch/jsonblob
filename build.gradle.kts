@@ -44,7 +44,9 @@ dependencies {
     implementation("com.google.guava:guava:33.0.0-jre")
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
     implementation("com.nixxcode.jvmbrotli:jvmbrotli:$jvmBrotliVersion")
-    implementation("io.micronaut.views:micronaut-views-handlebars")
+    implementation("io.micronaut.views:micronaut-views-handlebars") {
+        exclude("org.apache.commons:commons-text")
+    }
     implementation("commons-codec:commons-codec:1.16.1")
     implementation("org.apache.commons:commons-text:1.11.0") // Fix for transitive dep that has CVE-2022-42889
 
