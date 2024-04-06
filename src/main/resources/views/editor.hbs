@@ -289,7 +289,6 @@
     <script type="text/javascript">
     {{#if blobId}}
         var blobId = "{{blobId}}";
-        ga('send', 'event', "Blobs", "load", blobId);
     {{else}}
         var blobId = null;
     {{/if}}
@@ -322,11 +321,6 @@
             app.codeEditor.resize();
         }
         $('#tour').click(function() {
-            if (blobId) {
-                ga('send', 'event', "Tour", "start", blobId);
-            } else {
-                ga('send', 'event', "Tour", "start");
-            }
             $('#tourContent').joyride({
                 autoStart: true,
                 expose: true,
@@ -335,21 +329,7 @@
                 tipAnimationFadeSpeed: 300,
                 cookieMonster: true,
                 cookieName: 'jsonblobTour',
-                cookieDomain: true,
-                postRideCallback: function () {
-                    if (blobId) {
-                        ga('send', 'event', "Tour", "complete", blobId);
-                    } else {
-                        ga('send', 'event', "Tour", "complete");
-                    }
-                },
-                'postStepCallback': function (index, tip) {
-                    if (blobId) {
-                        ga('send', 'event', "Tour", "step", blobId, index);
-                    } else {
-                        ga('send', 'event', "Tour", "step", null, index);
-                    }
-                }
+                cookieDomain: true
             });
         });
         $(document).ready(function() {
@@ -365,11 +345,6 @@
             }
         });
         $("#createGist").click(function() {
-            if (blobId) {
-                ga('send', 'event', "Blobs", "gist", blobId);
-            } else {
-                ga('send', 'event', "Blobs", "gist");
-            }
             var gist = {
                 "description": "JSON Blob from " + document.URL,
                 "public": false,
@@ -394,11 +369,6 @@
             });
         });
         $("#clear").click(function() {
-            if (blobId) {
-                ga('send', 'event', "Blobs", "clear", blobId);
-            } else {
-                ga('send', 'event', "Blobs", "clear");
-            }
             app.codeEditor.set({});
             app.treeEditor.set({});
             blobId = null;
@@ -418,11 +388,6 @@
             if (!url) {
                 alert("Please enter a URL for the request to be sent to!");
                 return false;
-            }
-            if (blobId) {
-                ga('send', 'event', "Blobs", "makeRequest", blobId);
-            } else {
-                ga('send', 'event', "Blobs", "makeRequest");
             }
             var method = $(this).text();
             var headers = {};
@@ -455,7 +420,6 @@
                     }
                     $('#makeRequestModal').modal('hide');
                     $('#makeRequestSuccess').modal('show');
-                    ga('send', 'event', "Blobs", "makeRequestSuccess");
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     if (errorThrown) {
@@ -470,7 +434,6 @@
                     $(".requestedUrl").text($("#requestUrl").val());
                     $("#makeRequestModal").modal('hide');
                     $("#makeRequestFailure").modal('show');
-                    ga('send', 'event', "Blobs", "makeRequestFailure");
                 },
                 cache: false
             };
@@ -490,11 +453,6 @@
         $("#save").click(function() {
             var jsonString = app.codeEditor == app.lastChanged ? app.codeEditor.getText() : app.treeEditor.getText();
             var valid = !isValidJson(jsonString);
-            if (blobId) {
-                ga('send', 'event', "Blobs", "save", blobId, valid ? 1 : 0);
-            } else {
-                ga('send', 'event', "Blobs", "save", null, valid ? 1 : 0);
-            }
             if (valid) {
                 $('#invalidJson').modal('show');
                 return;
