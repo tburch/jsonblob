@@ -6,13 +6,13 @@ FROM gradle:7.6.4-jdk17-alpine
 ADD . /
 WORKDIR /
 
-# Just echo so we can see, if everything is there :)
-RUN ls -l
-
 # Run Maven build
 RUN ./gradlew clean build -x test
 
+# We only need one runnable jar
+RUN ls -l build/libs
 RUN rm build/libs/jsonblob-*-runner.jar
+RUN ls -l build/libs
 
 # 2. Just using the build artifact and then removing the build-container
 FROM openjdk:17-alpine
