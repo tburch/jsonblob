@@ -41,13 +41,13 @@ dependencies {
     implementation("software.amazon.awssdk:s3")
     implementation("com.fasterxml.uuid:java-uuid-generator:3.1.4")
     implementation("org.mongodb:mongo-java-driver:3.2.2")
-    implementation("com.google.guava:guava:30.1-jre")
+    implementation("com.google.guava:guava:33.0.0-jre")
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
     implementation("com.nixxcode.jvmbrotli:jvmbrotli:$jvmBrotliVersion")
     implementation("io.micronaut.views:micronaut-views-handlebars")
-    implementation("commons-codec:commons-codec:1.15")
+    implementation("commons-codec:commons-codec:1.16.1")
 
-    runtimeOnly("ch.qos.logback:logback-classic:1.2.8")
+    runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
     runtimeOnly("com.nixxcode.jvmbrotli:jvmbrotli-darwin-x86-amd64:$jvmBrotliVersion")
     runtimeOnly("com.nixxcode.jvmbrotli:jvmbrotli-linux-x86-amd64:$jvmBrotliVersion")
 
@@ -62,7 +62,7 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:localstack:$testContainersVersion")
-    testImplementation("com.amazonaws:aws-java-sdk-s3:1.11.1030") // for localstack
+    testImplementation("com.amazonaws:aws-java-sdk-s3:1.12.638") // for localstack
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testRuntimeOnly("com.nixxcode.jvmbrotli:jvmbrotli-darwin-x86-amd64:$jvmBrotliVersion")
