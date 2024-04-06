@@ -54,7 +54,6 @@ dependencies {
     implementation("commons-codec:commons-codec:1.16.1")
 
     runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
-    runtimeOnly("org.fusesource.jansi:jansi:2.4.1")
     runtimeOnly("com.nixxcode.jvmbrotli:jvmbrotli-darwin-x86-amd64:$jvmBrotliVersion")
     runtimeOnly("com.nixxcode.jvmbrotli:jvmbrotli-linux-x86-amd64:$jvmBrotliVersion")
 
