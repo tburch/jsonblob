@@ -9,21 +9,6 @@
         </encoder>
     </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>/var/log/jsonblob/log.txt </file>
-        <append>true</append>
-        <encoder>
-            <pattern>%cyan(%date{"yyyy-MM-dd'T'HH:mm:ss,SSSXXX", UTC}) %gray([%thread]) %highlight(%-5level) %magenta(%logger{36}) - %msg%n</pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/var/log/jsonblob/logs/logFile.%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>50MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
-    </appender>
-
     <root level="info">
         <appender-ref ref="FILE" />
         <appender-ref ref="STDOUT" />
