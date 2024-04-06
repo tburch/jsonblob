@@ -17,6 +17,13 @@ RUN ls -l build/libs
 # 2. Just using the build artifact and then removing the build-container
 FROM openjdk:17-alpine
 
+# Fix CVEs
+RUN apk add apk-tools=2.12.6-r0
+RUN apk add libcrypto1.1=1.1.1l-r0
+RUN apk add libssl1.1=1.1.1l-r0
+RUN apk add libtasn1=4.17.0-r1
+RUN apk add zlib=1.2.12-r2
+
 RUN apk update && apk upgrade
 
 # Create a new user with UID 10014
