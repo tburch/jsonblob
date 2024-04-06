@@ -27,9 +27,15 @@ micronaut {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        force("org.apache.commons:commons-text:1.11.0")
+    }
+}
+
 dependencies {
     implementation("io.micronaut:micronaut-validation")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
@@ -44,11 +50,8 @@ dependencies {
     implementation("com.google.guava:guava:33.0.0-jre")
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
     implementation("com.nixxcode.jvmbrotli:jvmbrotli:$jvmBrotliVersion")
-    implementation("io.micronaut.views:micronaut-views-handlebars") {
-        exclude("org.apache.commons:commons-text")
-    }
+    implementation("io.micronaut.views:micronaut-views-handlebars")
     implementation("commons-codec:commons-codec:1.16.1")
-    implementation("org.apache.commons:commons-text:1.11.0") // Fix for transitive dep that has CVE-2022-42889
 
     runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
     runtimeOnly("com.nixxcode.jvmbrotli:jvmbrotli-darwin-x86-amd64:$jvmBrotliVersion")
