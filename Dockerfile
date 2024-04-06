@@ -1,7 +1,7 @@
 # Docker multi-stage build
 
 # 1. Building the App with Maven
-FROM 7.6.4-jdk17-alpine
+FROM gradle:7.6.4-jdk17-alpine
 
 ADD . /
 WORKDIR /
