@@ -12,6 +12,8 @@ RUN ls -l
 # Run Maven build
 RUN ./gradlew clean build -x test
 
+RUN rm /build/libs/jsonblob-*-runner.jar
+
 # 2. Just using the build artifact and then removing the build-container
 FROM openjdk:17-alpine
 
