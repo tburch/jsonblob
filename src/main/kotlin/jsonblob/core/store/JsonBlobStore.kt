@@ -32,7 +32,7 @@ abstract class JsonBlobStore(
                 created = created
             )
         }.onFailure {
-            log.warn { "Couldn't read JsonBlob with id=$id " }
+            log.debug { "Couldn't read JsonBlob with id=$id " }
         }.getOrNull()
     }
 

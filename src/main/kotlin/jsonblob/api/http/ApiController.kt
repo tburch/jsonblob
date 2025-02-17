@@ -157,7 +157,7 @@ class ApiController(
         return false
     }
 
-    private fun delete(blobId: String) = jsonBlobStore.remove(blobId)
+    private fun delete(blobId: String) = jsonBlobStore.exists(blobId) && jsonBlobStore.remove(blobId)
 
     private fun updateFirstBlobFromPath(path: String, json: String): JsonBlob? {
         val ids = blobIdsFromPath(path)
@@ -169,17 +169,21 @@ class ApiController(
     }
 
     private fun update(blobId: String, json: String): JsonBlob? {
-        val resolver = idResolvers.firstOrNull { it.handles(blobId) }
-        return if (resolver != null) {
-            val created = resolver.resolveTimestamp(blobId)
-            val jsonBlob = JsonBlob(
-                id = blobId,
-                json = json,
-                created = created
-            )
-            jsonBlobStore.write(jsonBlob)
+        if (JsonCleaner.validJson(json)) {
+            val resolver = idResolvers.firstOrNull { it.handles(blobId) }
+            return if (resolver != null) {
+                val created = resolver.resolveTimestamp(blobId)
+                val jsonBlob = JsonBlob(
+                    id = blobId,
+                    json = json,
+                    created = created
+                )
+                jsonBlobStore.write(jsonBlob)
+            } else {
+                null
+            }
         } else {
-            null
+            throw HttpStatusException(HttpStatus.BAD_REQUEST, "Invalid JSON")
         }
     }
 

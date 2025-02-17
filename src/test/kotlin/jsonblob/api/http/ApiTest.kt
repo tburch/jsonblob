@@ -8,23 +8,20 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
+import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.micronaut.test.support.TestPropertyProvider
-import jsonblob.config.S3ClientBuilderListener
 import jsonblob.core.compression.compressor.GZIPBlobCompressor
 import jsonblob.core.id.Type1UUIDJsonBlobHandler
 import jsonblob.core.store.JsonBlobStore
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.skyscreamer.jsonassert.JSONAssert.assertEquals
-import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.shaded.com.google.common.io.Files
-import org.testcontainers.utility.DockerImageName
-import software.amazon.awssdk.services.s3.S3Client
+import java.util.UUID
 import javax.inject.Inject
 
 
@@ -127,6 +124,24 @@ class ApiTest: TestPropertyProvider {
                 .toBlocking()
                 .exchange(PUT("/api/jsonBlob/$it", updateJson).contentType(MediaType.APPLICATION_JSON_TYPE), String::class.java)
         }
+    }
+
+    @Test
+    fun `blob is created on API PUT`() {
+        val resp = client
+            .toBlocking()
+            .exchange(PUT("/api/jsonBlob/${type1UUIDJsonBlobHandler.generate()}", json).contentType(MediaType.APPLICATION_JSON_TYPE), String::class.java)
+        assertThat(resp.code()).isEqualTo(200)
+    }
+
+    @Test
+    fun `blob is not created on bad API PUT`() {
+        assertThatThrownBy {
+            client
+                .toBlocking()
+                .exchange(PUT("/api/jsonBlob/${UUID.randomUUID()}", json).contentType(MediaType.APPLICATION_JSON_TYPE), String::class.java)
+
+        }.isInstanceOf(HttpClientResponseException::class.java)
     }
 
     @Test
